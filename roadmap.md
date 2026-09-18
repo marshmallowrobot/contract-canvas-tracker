@@ -16,3 +16,6 @@
 - [x] Add paging to the contract details transaction ledger
 - [x] Demonstrate the 10-item side-panel limit with a 12-transaction contract
 
+
+
+- [x] Remove Export button from Contract Balances header (prototype scope)
