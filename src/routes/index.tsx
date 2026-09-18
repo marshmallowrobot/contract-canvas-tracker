@@ -46,6 +46,20 @@ const statusChip: Record<DueStatus, string> = {
   settled: "bg-canvas text-subtle",
 };
 
+function StatusPill({ status }: { status: ContractStatus }) {
+  const meta = contractStatusMeta[status];
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${meta.chip} ${
+        status === "terminated" ? "line-through decoration-1" : ""
+      }`}
+    >
+      <i className={`size-1.5 rounded-full ${meta.dot}`} />
+      {meta.label}
+    </span>
+  );
+}
+
 function IdChips({ values, max = 2 }: { values: string[]; max?: number }) {
   const shown = values.slice(0, max);
   const rest = values.length - shown.length;
