@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, ArrowUpDown, Download, Split, ExternalLink, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Download, Split, ExternalLink, Funnel, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
