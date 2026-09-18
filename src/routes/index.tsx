@@ -216,35 +216,84 @@ function ContractBalances() {
           <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
             <div className="border-b border-hair px-5 py-3">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="font-display text-base font-bold">Contracts</h2>
-                <span className="text-xs text-subtle">{visibleContracts.length} results</span>
+                <div className="flex items-center gap-3">
+                  <h2 className="font-display text-base font-bold">Contracts</h2>
+                  <span className="text-xs text-subtle">{visibleContracts.length} results</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFiltersOpen((open) => !open)}
+                    className="text-primary hover:text-primary"
+                    aria-expanded={filtersOpen}
+                  >
+                    <Funnel className="size-4" />
+                    {activeFilterCount > 0 ? `${activeFilterCount} ${activeFilterCount === 1 ? "filter" : "filters"}` : "Filters"}
+                  </Button>
+                  <span className="h-4 w-px bg-hair" aria-hidden />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearFilters}
+                    disabled={activeFilterCount === 0}
+                    className="text-subtle disabled:opacity-50"
+                  >
+                    Clear all
+                  </Button>
+                </div>
               </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-[160px_minmax(190px,1fr)_180px_auto]">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger aria-label="Filter by status" className="bg-panel"><SelectValue placeholder="All statuses" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All statuses</SelectItem>
-                    <SelectItem value="open">Open</SelectItem>
-                    <SelectItem value="settled">Settled</SelectItem>
-                    <SelectItem value="terminated">Terminated</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={counterpartyFilter} onValueChange={setCounterpartyFilter}>
-                  <SelectTrigger aria-label="Filter by counterparty" className="bg-panel"><SelectValue placeholder="All counterparties" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All counterparties</SelectItem>
-                    {counterparties.map((counterparty) => <SelectItem key={counterparty} value={counterparty}>{counterparty}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-                <input
-                  value={contractFilter}
-                  onChange={(event) => setContractFilter(event.target.value)}
-                  aria-label="Filter by contract ID"
-                  placeholder="Contract ID"
-                  className="h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20"
-                />
-                {hasFilters && <Button variant="ghost" size="sm" onClick={clearFilters}><X />Clear</Button>}
-              </div>
+              {filtersOpen && (
+                <div className="relative mt-3 rounded-md border border-hair bg-table-head p-4">
+                  <button
+                    type="button"
+                    onClick={() => setFiltersOpen(false)}
+                    aria-label="Close filters"
+                    className="absolute right-3 top-3 rounded p-1 text-subtle hover:bg-panel hover:text-ink"
+                  >
+                    <X className="size-4" />
+                  </button>
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <label className="block">
+                      <span className="text-[11px] font-bold uppercase text-ink">Status</span>
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger aria-label="Filter by status" className="mt-1 bg-panel"><SelectValue placeholder="All statuses" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All statuses</SelectItem>
+                          <SelectItem value="open">Open</SelectItem>
+                          <SelectItem value="settled">Settled</SelectItem>
+                          <SelectItem value="terminated">Terminated</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </label>
+                    <label className="block">
+                      <span className="text-[11px] font-bold uppercase text-ink">Counterparty</span>
+                      <Select value={counterpartyFilter} onValueChange={setCounterpartyFilter}>
+                        <SelectTrigger aria-label="Filter by counterparty" className="mt-1 bg-panel"><SelectValue placeholder="All counterparties" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All counterparties</SelectItem>
+                          {counterparties.map((counterparty) => <SelectItem key={counterparty} value={counterparty}>{counterparty}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </label>
+                    <label className="block">
+                      <span className="text-[11px] font-bold uppercase text-ink">Contract ID</span>
+                      <input
+                        value={contractFilter}
+                        onChange={(event) => setContractFilter(event.target.value)}
+                        aria-label="Filter by contract ID"
+                        placeholder="Filter by contract ID"
+                        className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20"
+                      />
+                    </label>
+                    <div className="flex items-end">
+                      <Button size="sm" className="w-full" onClick={() => setFiltersOpen(false)}>
+                        Apply filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="overflow-x-auto">
               <div className="min-w-[760px]">
