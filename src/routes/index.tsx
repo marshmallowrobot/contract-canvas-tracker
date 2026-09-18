@@ -208,7 +208,7 @@ function ContractBalances() {
               </div>
             </div>
 
-            <div className="grid grid-cols-[150px_1fr_130px_120px_150px] gap-3 border-b border-hair px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
+            <div className="grid grid-cols-[175px_1fr_130px_120px_150px] gap-3 border-b border-hair px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
               <span>Contract</span>
               <span>Identifiers</span>
               <span>Due date</span>
