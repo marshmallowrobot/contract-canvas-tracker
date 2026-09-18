@@ -105,7 +105,7 @@ function ContractDetail() {
     <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
       <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
         <Button asChild variant="ghost" size="sm" className="-ml-3 mb-3 text-subtle">
-          <Link to="/"><ArrowLeft />Contract balances</Link>
+          <Link to="/"><ArrowLeft />Buy Contract Balances</Link>
         </Button>
 
         <header className="rounded-md border border-hair bg-panel shadow-sm">
