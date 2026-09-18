@@ -94,6 +94,7 @@ function ContractDetail() {
   const { contract } = Route.useLoaderData();
   const [page, setPage] = useState(1);
   const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
+  const startingRins = contract.outstandingRins + appliedRins;
   const pageCount = Math.max(1, Math.ceil(contract.transactions.length / TRANSACTIONS_PER_PAGE));
   const pageStart = (page - 1) * TRANSACTIONS_PER_PAGE;
   const visibleTransactions = contract.transactions.slice(pageStart, pageStart + TRANSACTIONS_PER_PAGE);
