@@ -202,7 +202,6 @@ function ContractBalances() {
             <h1 className="font-display text-2xl font-bold">Contract Balances</h1>
             <p className="mt-1 text-sm text-subtle">RIN obligations and applied buy transactions</p>
           </div>
-          <Button variant="outline" size="sm"><Download />Export</Button>
         </header>
 
         <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Contract summary">
