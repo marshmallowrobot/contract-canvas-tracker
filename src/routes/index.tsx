@@ -175,7 +175,8 @@ function ContractBalances() {
       });
   }, [contractFilter, counterpartyFilter, sortDirection, sortKey, statusFilter]);
   const selected = visibleContracts.find((contract) => contract.contractId === selectedId) ?? visibleContracts[0];
-  const previewTransactions = selected?.transactions.slice(0, 10) ?? [];
+  const previewTransactions = selected?.transactions.slice(-10) ?? [];
+  const hiddenTransactionCount = Math.max((selected?.transactions.length ?? 0) - previewTransactions.length, 0);
   const hasFilters = statusFilter !== "all" || counterpartyFilter !== "all" || contractFilter !== "";
 
   const handleSort = (field: SortKey) => {
@@ -282,7 +283,7 @@ function ContractBalances() {
 
           {selected ? <aside className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm xl:sticky xl:top-5">
             <div className="flex items-start justify-between gap-3 border-b border-hair px-5 py-4">
-              <div><h2 className="font-display text-base font-bold">Buy Transactions</h2><p className="mt-1 text-xs text-subtle">{selected.contractId} · showing up to 10 recent</p></div>
+              <div><h2 className="font-display text-base font-bold">Buy Transactions</h2><p className="mt-1 text-xs text-subtle">{selected.contractId} · {previewTransactions.length} of {selected.transactions.length} shown</p></div>
               <Button asChild variant="outline" size="sm"><Link to="/contracts/$contractId" params={{ contractId: selected.contractId }}>Full history<ExternalLink /></Link></Button>
             </div>
             <div className="flex items-center justify-between border-b border-hair bg-table-head px-5 py-3">
@@ -298,6 +299,11 @@ function ContractBalances() {
                   <div className="mt-1 text-xs text-subtle">RIN balance after: {numberFmt.format(transaction.rinBalanceAfter)}</div>
                 </div>
               ))}
+              {hiddenTransactionCount > 0 && (
+                <div className="border-t border-hair bg-table-head px-5 py-3 text-center text-xs text-subtle">
+                  {hiddenTransactionCount} older {hiddenTransactionCount === 1 ? "transaction" : "transactions"} not shown · Open full history to view all
+                </div>
+              )}
             </div>
           </aside> : (
             <aside className="rounded-md border border-hair bg-panel p-6 text-center text-sm text-subtle shadow-sm">No contract selected</aside>

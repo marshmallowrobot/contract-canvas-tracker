@@ -14,4 +14,5 @@
 - [x] Add sorting for contract, counterparty, and due date
 - [x] Use plain text for transaction status on the contract details page
 - [x] Add paging to the contract details transaction ledger
+- [x] Demonstrate the 10-item side-panel limit with a 12-transaction contract
 
