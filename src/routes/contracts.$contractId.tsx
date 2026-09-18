@@ -154,7 +154,7 @@ function ContractDetail() {
           </div>
 
           <div className="overflow-x-auto">
-          <table className="min-w-[1080px] w-full text-left">
+          <table className="min-w-[920px] w-full text-left">
             <thead>
               <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle">
                 <th className="px-4 py-2 font-medium">Date</th>
@@ -162,10 +162,9 @@ function ContractDetail() {
                 <th className="px-4 py-2 font-medium">Detail</th>
                 <th className="px-4 py-2 font-medium">RIN / year</th>
                 <th className="px-4 py-2 font-medium">Assignment</th>
+                <th className="px-4 py-2 font-medium">Status</th>
                 <th className="px-4 py-2 text-right font-medium">RINs</th>
-                <th className="px-4 py-2 text-right font-medium">Applied</th>
                 <th className="px-4 py-2 text-right font-medium">RIN balance</th>
-                <th className="px-4 py-2 text-right font-medium">Balance after</th>
               </tr>
             </thead>
             <tbody>
@@ -181,17 +180,12 @@ function ContractDetail() {
                     </div>
                   </td>
                   <td className="px-4 py-2.5"><AssignmentMark type={t.assignmentType} /></td>
+                  <td className="px-4 py-2.5"><TxStatusPill status={t.txStatus} /></td>
                   <td className="px-4 py-2.5 text-right text-xs font-bold tabular-nums text-primary">
                     {numberFmt.format(t.rinApplied)}
                   </td>
-                  <td className="px-4 py-2.5 text-right text-xs tabular-nums">
-                    −{currencyFmt.format(t.amountApplied)}
-                  </td>
                   <td className="px-4 py-2.5 text-right text-xs tabular-nums text-subtle">
                     {numberFmt.format(t.rinBalanceAfter)}
-                  </td>
-                  <td className="px-4 py-2.5 text-right text-xs font-semibold tabular-nums">
-                    {currencyFmt.format(t.balanceAfter)}
                   </td>
                 </tr>
               ))}
