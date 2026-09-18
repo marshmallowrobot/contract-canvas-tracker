@@ -1,10 +1,13 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { ArrowUp, Split } from "lucide-react";
 
 import {
   contractStatusMeta,
   currencyFmt,
   getContract,
   numberFmt,
+  type AssignmentType,
+  type RinCode,
 } from "@/lib/contracts-data";
 
 export const Route = createFileRoute("/contracts/$contractId")({
@@ -27,6 +30,8 @@ export const Route = createFileRoute("/contracts/$contractId")({
         { name: "description", content: description },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
     };
   },
@@ -55,6 +60,24 @@ function Field({ label, values }: { label: string; values: string[] }) {
         ))}
       </div>
     </div>
+  );
+}
+
+const rinCodeClass: Record<RinCode, string> = {
+  D3: "bg-rin-d3 text-rin-on-color",
+  D4: "bg-rin-d4 text-rin-on-color",
+  D5: "bg-rin-d5 text-rin-on-color",
+  D6: "bg-rin-d6 text-rin-on-color",
+  D7: "bg-rin-d7 text-rin-on-color",
+};
+
+function AssignmentMark({ type }: { type: AssignmentType }) {
+  const assigned = type === "assigned";
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-sm border px-2 py-1 text-[10px] font-bold uppercase ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-subtle"}`}>
+      {assigned ? "Assigned" : "Separated"}
+      {assigned ? <ArrowUp className="size-3" strokeWidth={2.2} /> : <Split className="size-3" strokeWidth={2.2} />}
+    </span>
   );
 }
 
@@ -100,7 +123,7 @@ function ContractDetail() {
                 {contract.contractId}
               </h1>
               <div className="mt-1 font-mono text-[12px] text-subtle">
-                Deal #{contract.dealNumber} · {contract.product} · due {contract.dueDate}
+                Deal #{contract.dealNumber} · {contract.dueDate ? `due ${contract.dueDate}` : "no due date"}
               </div>
             </div>
             <div className="flex gap-3">
@@ -154,12 +177,15 @@ function ContractDetail() {
             </div>
           </div>
 
-          <table className="w-full text-left">
+          <div className="overflow-x-auto">
+          <table className="min-w-[1080px] w-full text-left">
             <thead>
               <tr className="border-b border-hair font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
                 <th className="px-4 py-2 font-medium">Date</th>
                 <th className="px-4 py-2 font-medium">Reference</th>
                 <th className="px-4 py-2 font-medium">Detail</th>
+                <th className="px-4 py-2 font-medium">RIN / year</th>
+                <th className="px-4 py-2 font-medium">Assignment</th>
                 <th className="px-4 py-2 text-right font-medium">RINs</th>
                 <th className="px-4 py-2 text-right font-medium">Applied</th>
                 <th className="px-4 py-2 text-right font-medium">RIN balance</th>
@@ -172,6 +198,13 @@ function ContractDetail() {
                   <td className="px-4 py-2.5 font-mono text-[12px] text-subtle">{t.date}</td>
                   <td className="px-4 py-2.5 font-mono text-[12px]">{t.reference}</td>
                   <td className="px-4 py-2.5 text-[13px] text-subtle">{t.description}</td>
+                  <td className="px-4 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[t.rinCode]}`}>{t.rinCode}</span>
+                      <span className="text-[11px] font-semibold text-subtle">{t.vintageYear}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-2.5"><AssignmentMark type={t.assignmentType} /></td>
                   <td className="px-4 py-2.5 text-right font-mono text-[12px] tabular-nums text-ice">
                     {numberFmt.format(t.rinApplied)}
                   </td>
@@ -188,6 +221,7 @@ function ContractDetail() {
               ))}
             </tbody>
           </table>
+          </div>
         </section>
       </div>
     </div>

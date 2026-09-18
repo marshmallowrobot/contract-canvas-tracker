@@ -8,3 +8,8 @@
 - [x] Remove dollar balance from the list and include a contract without a due date
 - [x] Keep lifecycle status as the primary chip and simplify identifiers and due timing
 - [x] Move Full history to the transaction header and cap the preview at 10 items
+- [x] Remove contract-level fuel and assignment fields from the list
+- [x] Add fuel, vintage, and assignment details to buy transactions
+- [x] Add contract status, counterparty, and ID filters
+- [x] Add sorting for contract, counterparty, and due date
+
