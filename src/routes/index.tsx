@@ -86,7 +86,7 @@ function StatCard({
 }
 
 function ContractBalances() {
-  const [selectedId, setSelectedId] = useState(contracts[0].contractId);
+  const [selectedId, setSelectedId] = useState(contracts[0]!.contractId);
   const selected = contracts.find((c) => c.contractId === selectedId) as Contract;
 
   return (
