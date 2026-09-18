@@ -22,9 +22,9 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Contract Balances — Verdant Ledger" },
+      { title: "Buy Contract Balances — Verdant Ledger" },
       { name: "description", content: "Outstanding RIN balances across fuel and RIN purchase contracts." },
-      { property: "og:title", content: "Contract Balances — Verdant Ledger" },
+      { property: "og:title", content: "Buy Contract Balances — Verdant Ledger" },
       { property: "og:description", content: "Outstanding RIN balances across fuel and RIN purchase contracts." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
