@@ -1,6 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 
-import { currencyFmt, getContract, numberFmt } from "@/lib/contracts-data";
+import {
+  contractStatusMeta,
+  currencyFmt,
+  getContract,
+  numberFmt,
+} from "@/lib/contracts-data";
 
 export const Route = createFileRoute("/contracts/$contractId")({
   loader: ({ params }) => {
