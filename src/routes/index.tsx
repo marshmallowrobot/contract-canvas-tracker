@@ -149,6 +149,7 @@ function ContractBalances() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [counterpartyFilter, setCounterpartyFilter] = useState("all");
   const [contractFilter, setContractFilter] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("contractId");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const counterparties = useMemo(
@@ -176,7 +177,7 @@ function ContractBalances() {
   const selected = visibleContracts.find((contract) => contract.contractId === selectedId) ?? visibleContracts[0];
   const previewTransactions = selected?.transactions.slice(-10) ?? [];
   const hiddenTransactionCount = Math.max((selected?.transactions.length ?? 0) - previewTransactions.length, 0);
-  const hasFilters = statusFilter !== "all" || counterpartyFilter !== "all" || contractFilter !== "";
+  const activeFilterCount = (statusFilter !== "all" ? 1 : 0) + (counterpartyFilter !== "all" ? 1 : 0) + (contractFilter.trim() !== "" ? 1 : 0);
 
   const handleSort = (field: SortKey) => {
     if (sortKey === field) {
