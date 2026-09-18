@@ -11,11 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  buyTxStatusMeta,
   contracts,
   contractStatusMeta,
   numberFmt,
   summary,
   type AssignmentType,
+  type BuyTransactionStatus,
   type Contract,
   type ContractStatus,
   type RinCode,
@@ -59,6 +61,16 @@ function AssignmentMark({ type }: { type: AssignmentType }) {
     <span className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-1 text-[10px] font-bold uppercase ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-subtle"}`}>
       {assigned ? "Assigned" : "Separated"}
       {assigned ? <ArrowUp className="size-3" strokeWidth={2.2} /> : <Split className="size-3" strokeWidth={2.2} />}
+    </span>
+  );
+}
+
+function TxStatusPill({ status }: { status: BuyTransactionStatus }) {
+  const meta = buyTxStatusMeta[status];
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${meta.chip}`}>
+      <i className={`size-1.5 rounded-full ${meta.dot}`} />
+      {meta.label}
     </span>
   );
 }
@@ -280,8 +292,8 @@ function ContractBalances() {
             <div>
               {previewTransactions.map((transaction) => (
                 <div key={transaction.id} className="border-b border-hair px-5 py-3 last:border-0">
-                  <div className="flex items-center justify-between gap-3"><span className="text-sm font-semibold">{transaction.reference}</span><span className="text-sm font-bold tabular-nums text-primary">{numberFmt.format(transaction.rinApplied)} RIN</span></div>
-                  <div className="mt-1 text-xs text-subtle">{transaction.date} · {transaction.description}</div>
+                  <div className="flex items-center justify-between gap-3"><span className="text-sm font-semibold">{transaction.reference}</span><TxStatusPill status={transaction.txStatus} /></div>
+                  <div className="mt-1 flex items-center justify-between gap-3"><span className="text-xs text-subtle">{transaction.date} · {transaction.description}</span><span className="text-sm font-bold tabular-nums text-primary">{numberFmt.format(transaction.rinApplied)} RIN</span></div>
                   <TransactionFuel rinCode={transaction.rinCode} vintageYear={transaction.vintageYear} assignmentType={transaction.assignmentType} />
                   <div className="mt-1 text-xs text-subtle">RIN balance after: {numberFmt.format(transaction.rinBalanceAfter)}</div>
                 </div>

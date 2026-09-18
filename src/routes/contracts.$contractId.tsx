@@ -4,11 +4,12 @@ import { ArrowLeft, ArrowUp, Split } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
+  buyTxStatusMeta,
   contractStatusMeta,
-  currencyFmt,
   getContract,
   numberFmt,
   type AssignmentType,
+  type BuyTransactionStatus,
   type RinCode,
 } from "@/lib/contracts-data";
 
@@ -73,6 +74,16 @@ function AssignmentMark({ type }: { type: AssignmentType }) {
     <span className={`inline-flex items-center gap-1 rounded-sm border px-2 py-1 text-[10px] font-bold uppercase ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-subtle"}`}>
       {assigned ? "Assigned" : "Separated"}
       {assigned ? <ArrowUp className="size-3" strokeWidth={2.2} /> : <Split className="size-3" strokeWidth={2.2} />}
+    </span>
+  );
+}
+
+function TxStatusPill({ status }: { status: BuyTransactionStatus }) {
+  const meta = buyTxStatusMeta[status];
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${meta.chip}`}>
+      <i className={`size-1.5 rounded-full ${meta.dot}`} />
+      {meta.label}
     </span>
   );
 }
@@ -153,7 +164,7 @@ function ContractDetail() {
           </div>
 
           <div className="overflow-x-auto">
-          <table className="min-w-[1080px] w-full text-left">
+          <table className="min-w-[920px] w-full text-left">
             <thead>
               <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle">
                 <th className="px-4 py-2 font-medium">Date</th>
@@ -161,10 +172,9 @@ function ContractDetail() {
                 <th className="px-4 py-2 font-medium">Detail</th>
                 <th className="px-4 py-2 font-medium">RIN / year</th>
                 <th className="px-4 py-2 font-medium">Assignment</th>
+                <th className="px-4 py-2 font-medium">Status</th>
                 <th className="px-4 py-2 text-right font-medium">RINs</th>
-                <th className="px-4 py-2 text-right font-medium">Applied</th>
                 <th className="px-4 py-2 text-right font-medium">RIN balance</th>
-                <th className="px-4 py-2 text-right font-medium">Balance after</th>
               </tr>
             </thead>
             <tbody>
@@ -180,17 +190,12 @@ function ContractDetail() {
                     </div>
                   </td>
                   <td className="px-4 py-2.5"><AssignmentMark type={t.assignmentType} /></td>
+                  <td className="px-4 py-2.5"><TxStatusPill status={t.txStatus} /></td>
                   <td className="px-4 py-2.5 text-right text-xs font-bold tabular-nums text-primary">
                     {numberFmt.format(t.rinApplied)}
                   </td>
-                  <td className="px-4 py-2.5 text-right text-xs tabular-nums">
-                    −{currencyFmt.format(t.amountApplied)}
-                  </td>
                   <td className="px-4 py-2.5 text-right text-xs tabular-nums text-subtle">
                     {numberFmt.format(t.rinBalanceAfter)}
-                  </td>
-                  <td className="px-4 py-2.5 text-right text-xs font-semibold tabular-nums">
-                    {currencyFmt.format(t.balanceAfter)}
                   </td>
                 </tr>
               ))}
