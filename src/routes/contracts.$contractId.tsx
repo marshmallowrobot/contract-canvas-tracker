@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUp, Split } from "lucide-react";
+import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Split } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -78,19 +79,26 @@ function AssignmentMark({ type }: { type: AssignmentType }) {
   );
 }
 
-function TxStatusPill({ status }: { status: BuyTransactionStatus }) {
+function TxStatusText({ status }: { status: BuyTransactionStatus }) {
   const meta = buyTxStatusMeta[status];
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${meta.chip}`}>
-      <i className={`size-1.5 rounded-full ${meta.dot}`} />
+    <span className={status === "failed" ? "text-xs font-semibold text-rose" : "text-xs text-subtle"}>
       {meta.label}
     </span>
   );
 }
 
+const TRANSACTIONS_PER_PAGE = 3;
+
 function ContractDetail() {
   const { contract } = Route.useLoaderData();
+  const [page, setPage] = useState(1);
   const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
+  const pageCount = Math.max(1, Math.ceil(contract.transactions.length / TRANSACTIONS_PER_PAGE));
+  const pageStart = (page - 1) * TRANSACTIONS_PER_PAGE;
+  const visibleTransactions = contract.transactions.slice(pageStart, pageStart + TRANSACTIONS_PER_PAGE);
+  const rangeStart = contract.transactions.length === 0 ? 0 : pageStart + 1;
+  const rangeEnd = Math.min(pageStart + TRANSACTIONS_PER_PAGE, contract.transactions.length);
 
   return (
     <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
@@ -178,7 +186,7 @@ function ContractDetail() {
               </tr>
             </thead>
             <tbody>
-              {contract.transactions.map((t) => (
+              {visibleTransactions.map((t) => (
                 <tr key={t.id} className="border-b border-hair last:border-0">
                   <td className="px-4 py-3 text-xs text-subtle">{t.date}</td>
                   <td className="px-4 py-3 text-xs font-semibold">{t.reference}</td>
@@ -190,7 +198,7 @@ function ContractDetail() {
                     </div>
                   </td>
                   <td className="px-4 py-2.5"><AssignmentMark type={t.assignmentType} /></td>
-                  <td className="px-4 py-2.5"><TxStatusPill status={t.txStatus} /></td>
+                  <td className="px-4 py-2.5"><TxStatusText status={t.txStatus} /></td>
                   <td className="px-4 py-2.5 text-right text-xs font-bold tabular-nums text-primary">
                     {numberFmt.format(t.rinApplied)}
                   </td>
@@ -201,6 +209,38 @@ function ContractDetail() {
               ))}
             </tbody>
           </table>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hair px-4 py-3">
+            <div className="text-xs text-subtle">
+              {rangeStart}–{rangeEnd} of {contract.transactions.length} transactions
+            </div>
+            <div className="flex items-center gap-1" aria-label="Transaction pages">
+              <Button
+                variant="outline"
+                size="icon"
+                className="size-8"
+                disabled={page === 1}
+                onClick={() => setPage((current) => Math.max(1, current - 1))}
+                aria-label="Previous transaction page"
+                title="Previous page"
+              >
+                <ChevronLeft className="size-4" />
+              </Button>
+              <span className="min-w-20 px-2 text-center text-xs font-semibold text-ink">
+                Page {page} of {pageCount}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                className="size-8"
+                disabled={page === pageCount}
+                onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
+                aria-label="Next transaction page"
+                title="Next page"
+              >
+                <ChevronRight className="size-4" />
+              </Button>
+            </div>
           </div>
         </section>
       </main>

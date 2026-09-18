@@ -12,4 +12,6 @@
 - [x] Add fuel, vintage, and assignment details to buy transactions
 - [x] Add contract status, counterparty, and ID filters
 - [x] Add sorting for contract, counterparty, and due date
+- [x] Use plain text for transaction status on the contract details page
+- [x] Add paging to the contract details transaction ledger
 
