@@ -128,6 +128,20 @@ function ContractDetail() {
             <Field label="Bill of lading" values={contract.billOfLading} />
             <Field label="Invoice numbers" values={contract.invoices} />
           </div>
+
+          {contract.terminationNote && (
+            <div className="mt-5 flex items-start gap-3 rounded-xl border border-rose/30 bg-rose-soft/40 px-4 py-3">
+              <i className="mt-0.5 size-1.5 shrink-0 rounded-full bg-rose" />
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-rose">
+                  Termination note
+                </div>
+                <div className="mt-1 text-[13px] text-ink/80">
+                  {contract.terminationNote}
+                </div>
+              </div>
+            </div>
+          )}
         </header>
 
         <section className="glass mt-4 overflow-hidden rounded-2xl border border-white/60 ring-1 ring-black/5">
