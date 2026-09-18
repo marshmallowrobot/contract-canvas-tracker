@@ -158,7 +158,7 @@ function ContractBalances() {
     <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
       <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
         <header className="mb-6">
-          <h1 className="font-display text-2xl font-bold">Contract Balances</h1>
+          <h1 className="font-display text-2xl font-bold">Buy Contract Balances</h1>
           <p className="mt-1 text-sm text-subtle">RIN obligations and applied buy transactions</p>
         </header>
 
@@ -173,7 +173,7 @@ function ContractBalances() {
           <div className="border-b border-hair px-5 py-3">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <h2 className="font-display text-base font-bold">Contracts</h2>
+                <h2 className="font-display text-base font-bold">Buy Contracts</h2>
                 <span className="text-xs text-subtle">{visibleContracts.length} results</span>
               </div>
               <div className="flex items-center gap-2">
