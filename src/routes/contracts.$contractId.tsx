@@ -88,7 +88,7 @@ function TxStatusText({ status }: { status: BuyTransactionStatus }) {
   );
 }
 
-const TRANSACTIONS_PER_PAGE = 3;
+const TRANSACTIONS_PER_PAGE = 50;
 
 function ContractDetail() {
   const { contract } = Route.useLoaderData();
