@@ -94,6 +94,7 @@ function ContractDetail() {
   const { contract } = Route.useLoaderData();
   const [page, setPage] = useState(1);
   const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
+  const startingRins = contract.outstandingRins + appliedRins;
   const pageCount = Math.max(1, Math.ceil(contract.transactions.length / TRANSACTIONS_PER_PAGE));
   const pageStart = (page - 1) * TRANSACTIONS_PER_PAGE;
   const visibleTransactions = contract.transactions.slice(pageStart, pageStart + TRANSACTIONS_PER_PAGE);
@@ -133,10 +134,18 @@ function ContractDetail() {
                 Deal #{contract.dealNumber} · {contract.dueDate ? `due ${contract.dueDate}` : "no due date"}
               </div>
             </div>
-            <div className="min-w-[220px] rounded-md border border-hair bg-table-head px-5 py-4 text-right">
-              <div className="text-xs font-semibold text-subtle">Outstanding RINs</div>
-              <div className="mt-1 font-display text-2xl font-bold tabular-nums text-primary">
-                {numberFmt.format(contract.outstandingRins)}
+            <div className="flex gap-3">
+              <div className="min-w-[140px] rounded-md border border-hair bg-table-head px-5 py-4 text-right">
+                <div className="text-xs font-semibold text-subtle">Starting RINs</div>
+                <div className="mt-1 font-display text-2xl font-bold tabular-nums text-ink">
+                  {numberFmt.format(startingRins)}
+                </div>
+              </div>
+              <div className="min-w-[160px] rounded-md border border-hair bg-table-head px-5 py-4 text-right">
+                <div className="text-xs font-semibold text-subtle">Outstanding RINs</div>
+                <div className="mt-1 font-display text-2xl font-bold tabular-nums text-primary">
+                  {numberFmt.format(contract.outstandingRins)}
+                </div>
               </div>
             </div>
           </div>
