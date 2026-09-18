@@ -78,6 +78,16 @@ function AssignmentMark({ type }: { type: AssignmentType }) {
   );
 }
 
+function TxStatusPill({ status }: { status: BuyTransactionStatus }) {
+  const meta = buyTxStatusMeta[status];
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${meta.chip}`}>
+      <i className={`size-1.5 rounded-full ${meta.dot}`} />
+      {meta.label}
+    </span>
+  );
+}
+
 function ContractDetail() {
   const { contract } = Route.useLoaderData();
   const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
