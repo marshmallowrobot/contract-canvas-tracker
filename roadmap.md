@@ -19,3 +19,5 @@
 
 
 - [x] Remove Export button from Contract Balances header (prototype scope)
+- [x] Make contract row click open the detail page (remove selection sidecar)
+- [x] Add 50/100 per-page paging to the contract list

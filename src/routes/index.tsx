@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp, ArrowUpDown, Split, ExternalLink, Funnel, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Funnel, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,16 +11,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  buyTxStatusMeta,
   contracts,
   contractStatusMeta,
   numberFmt,
   summary,
-  type AssignmentType,
-  type BuyTransactionStatus,
   type Contract,
   type ContractStatus,
-  type RinCode,
 } from "@/lib/contracts-data";
 
 export const Route = createFileRoute("/")({
@@ -37,14 +33,6 @@ export const Route = createFileRoute("/")({
   component: ContractBalances,
 });
 
-const rinCodeClass: Record<RinCode, string> = {
-  D3: "bg-rin-d3 text-rin-on-color",
-  D4: "bg-rin-d4 text-rin-on-color",
-  D5: "bg-rin-d5 text-rin-on-color",
-  D6: "bg-rin-d6 text-rin-on-color",
-  D7: "bg-rin-d7 text-rin-on-color",
-};
-
 function StatusPill({ status }: { status: ContractStatus }) {
   const meta = contractStatusMeta[status];
   return (
@@ -55,27 +43,10 @@ function StatusPill({ status }: { status: ContractStatus }) {
   );
 }
 
-function AssignmentMark({ type }: { type: AssignmentType }) {
-  const assigned = type === "assigned";
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-1 text-[10px] font-bold uppercase ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-subtle"}`}>
-      {assigned ? "Assigned" : "Separated"}
-      {assigned ? <ArrowUp className="size-3" strokeWidth={2.2} /> : <Split className="size-3" strokeWidth={2.2} />}
-    </span>
-  );
-}
-
-function TxStatusText({ status }: { status: BuyTransactionStatus }) {
-  const meta = buyTxStatusMeta[status];
-  return (
-    <span className={status === "failed" ? "text-xs font-semibold text-rose" : "text-xs text-subtle"}>
-      {meta.label}
-    </span>
-  );
-}
-
 type SortKey = "contractId" | "counterparty" | "dueDate";
 type SortDirection = "asc" | "desc";
+
+const PAGE_SIZE_OPTIONS = [50, 100] as const;
 
 function SortHeader({
   label,
@@ -105,24 +76,6 @@ function SortHeader({
   );
 }
 
-function TransactionFuel({
-  rinCode,
-  vintageYear,
-  assignmentType,
-}: {
-  rinCode: RinCode;
-  vintageYear: number;
-  assignmentType: AssignmentType;
-}) {
-  return (
-    <div className="mt-2 flex flex-wrap items-center gap-2">
-      <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[rinCode]}`}>{rinCode}</span>
-      <span className="text-[11px] font-semibold text-subtle">{vintageYear}</span>
-      <AssignmentMark type={assignmentType} />
-    </div>
-  );
-}
-
 function StatCard({ label, value, note, tone }: { label: string; value: string; note: string; tone?: string }) {
   return (
     <div className="rounded-md border border-hair bg-panel px-5 py-4 shadow-sm">
@@ -145,13 +98,14 @@ function identifiers(contract: Contract) {
 }
 
 function ContractBalances() {
-  const [selectedId, setSelectedId] = useState(contracts[0]?.contractId ?? "");
   const [statusFilter, setStatusFilter] = useState("all");
   const [counterpartyFilter, setCounterpartyFilter] = useState("all");
   const [contractFilter, setContractFilter] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("contractId");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
+  const [page, setPage] = useState(1);
   const counterparties = useMemo(
     () => [...new Set(contracts.map((contract) => contract.counterparty))].sort(),
     [],
@@ -174,10 +128,16 @@ function ContractBalances() {
         return sortDirection === "asc" ? comparison : -comparison;
       });
   }, [contractFilter, counterpartyFilter, sortDirection, sortKey, statusFilter]);
-  const selected = visibleContracts.find((contract) => contract.contractId === selectedId) ?? visibleContracts[0];
-  const previewTransactions = selected?.transactions.slice(-10) ?? [];
-  const hiddenTransactionCount = Math.max((selected?.transactions.length ?? 0) - previewTransactions.length, 0);
   const activeFilterCount = (statusFilter !== "all" ? 1 : 0) + (counterpartyFilter !== "all" ? 1 : 0) + (contractFilter.trim() !== "" ? 1 : 0);
+
+  // Reset to first page whenever the result set or page size changes.
+  useEffect(() => { setPage(1); }, [statusFilter, counterpartyFilter, contractFilter, sortKey, sortDirection, pageSize]);
+
+  const totalPages = Math.max(Math.ceil(visibleContracts.length / pageSize), 1);
+  const currentPage = Math.min(page, totalPages);
+  const startIndex = (currentPage - 1) * pageSize;
+  const pageContracts = visibleContracts.slice(startIndex, startIndex + pageSize);
+  const endIndex = Math.min(startIndex + pageContracts.length, visibleContracts.length);
 
   const handleSort = (field: SortKey) => {
     if (sortKey === field) {
@@ -197,11 +157,9 @@ function ContractBalances() {
   return (
     <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
       <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
-        <header className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <div>
-            <h1 className="font-display text-2xl font-bold">Contract Balances</h1>
-            <p className="mt-1 text-sm text-subtle">RIN obligations and applied buy transactions</p>
-          </div>
+        <header className="mb-6">
+          <h1 className="font-display text-2xl font-bold">Contract Balances</h1>
+          <p className="mt-1 text-sm text-subtle">RIN obligations and applied buy transactions</p>
         </header>
 
         <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Contract summary">
@@ -211,152 +169,165 @@ function ContractBalances() {
           <StatCard label="RINs applied this month" value={numberFmt.format(summary.appliedRins)} note={`${summary.appliedTxns} buy transactions`} tone="text-primary" />
         </section>
 
-        <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
-          <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
-            <div className="border-b border-hair px-5 py-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <h2 className="font-display text-base font-bold">Contracts</h2>
-                  <span className="text-xs text-subtle">{visibleContracts.length} results</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setFiltersOpen((open) => !open)}
-                    className="text-primary hover:text-primary"
-                    aria-expanded={filtersOpen}
-                  >
-                    <Funnel className="size-4" />
-                    {activeFilterCount > 0 ? `${activeFilterCount} ${activeFilterCount === 1 ? "filter" : "filters"}` : "Filters"}
-                  </Button>
-                  <span className="h-4 w-px bg-hair" aria-hidden />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearFilters}
-                    disabled={activeFilterCount === 0}
-                    className="text-subtle disabled:opacity-50"
-                  >
-                    Clear all
-                  </Button>
-                </div>
+        <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
+          <div className="border-b border-hair px-5 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <h2 className="font-display text-base font-bold">Contracts</h2>
+                <span className="text-xs text-subtle">{visibleContracts.length} results</span>
               </div>
-              {filtersOpen && (
-                <div className="relative mt-3 rounded-md border border-hair bg-table-head p-4">
-                  <button
-                    type="button"
-                    onClick={() => setFiltersOpen(false)}
-                    aria-label="Close filters"
-                    className="absolute right-3 top-3 rounded p-1 text-subtle hover:bg-panel hover:text-ink"
-                  >
-                    <X className="size-4" />
-                  </button>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <label className="block">
-                      <span className="text-[11px] font-bold uppercase text-ink">Status</span>
-                      <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger aria-label="Filter by status" className="mt-1 bg-panel"><SelectValue placeholder="All statuses" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All statuses</SelectItem>
-                          <SelectItem value="open">Open</SelectItem>
-                          <SelectItem value="settled">Settled</SelectItem>
-                          <SelectItem value="terminated">Terminated</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </label>
-                    <label className="block">
-                      <span className="text-[11px] font-bold uppercase text-ink">Counterparty</span>
-                      <Select value={counterpartyFilter} onValueChange={setCounterpartyFilter}>
-                        <SelectTrigger aria-label="Filter by counterparty" className="mt-1 bg-panel"><SelectValue placeholder="All counterparties" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All counterparties</SelectItem>
-                          {counterparties.map((counterparty) => <SelectItem key={counterparty} value={counterparty}>{counterparty}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </label>
-                    <label className="block">
-                      <span className="text-[11px] font-bold uppercase text-ink">Contract ID</span>
-                      <input
-                        value={contractFilter}
-                        onChange={(event) => setContractFilter(event.target.value)}
-                        aria-label="Filter by contract ID"
-                        placeholder="Filter by contract ID"
-                        className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20"
-                      />
-                    </label>
-                    <div className="flex items-end">
-                      <Button size="sm" className="w-full" onClick={() => setFiltersOpen(false)}>
-                        Apply filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="overflow-x-auto">
-              <div className="min-w-[760px]">
-                <div className="grid grid-cols-[190px_220px_minmax(180px,1fr)_120px_125px] items-center gap-3 border-b border-hair bg-table-head px-5 py-2 text-[10px] font-bold uppercase text-subtle">
-                  <SortHeader label="Contract" field="contractId" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
-                  <SortHeader label="Counterparty" field="counterparty" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
-                  <span>Identifiers</span>
-                  <SortHeader label="Due date" field="dueDate" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
-                  <span className="text-right">RIN balance</span>
-                </div>
-                {visibleContracts.map((contract) => {
-                  const active = contract.contractId === selected?.contractId;
-                  return (
-                    <button key={contract.contractId} onClick={() => setSelectedId(contract.contractId)} className={`grid w-full grid-cols-[190px_220px_minmax(180px,1fr)_120px_125px] items-center gap-3 border-b border-hair px-5 py-3 text-left transition-colors last:border-0 ${active ? "bg-selected" : "hover:bg-table-head"}`}>
-                      <div>
-                        <div className="flex items-center gap-2"><span className="text-sm font-semibold">{contract.contractId}</span><StatusPill status={contract.contractStatus} /></div>
-                        <div className="mt-1 text-xs text-subtle">Deal {contract.dealNumber}</div>
-                      </div>
-                      <div className="text-sm font-medium">{contract.counterparty}</div>
-                      {identifiers(contract)}
-                      <div><div className="text-sm font-medium">{contract.dueDate ?? "—"}</div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : "text-subtle"}`}>{contract.dueDate ? contract.dueNote : "No due date"}</div></div>
-                      <div className="text-right text-base font-bold tabular-nums text-primary">{numberFmt.format(contract.outstandingRins)}</div>
-                    </button>
-                  );
-                })}
-                {!visibleContracts.length && (
-                  <div className="px-5 py-12 text-center">
-                    <div className="text-sm font-semibold">No matching contracts</div>
-                    <div className="mt-1 text-xs text-subtle">Adjust the filters or clear them to see all contracts.</div>
-                    <Button variant="outline" size="sm" className="mt-4" onClick={clearFilters}>Clear filters</Button>
-                  </div>
-                )}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFiltersOpen((open) => !open)}
+                  className="text-primary hover:text-primary"
+                  aria-expanded={filtersOpen}
+                >
+                  <Funnel className="size-4" />
+                  {activeFilterCount > 0 ? `${activeFilterCount} ${activeFilterCount === 1 ? "filter" : "filters"}` : "Filters"}
+                </Button>
+                <span className="h-4 w-px bg-hair" aria-hidden />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  disabled={activeFilterCount === 0}
+                  className="text-subtle disabled:opacity-50"
+                >
+                  Clear all
+                </Button>
               </div>
             </div>
-          </section>
-
-          {selected ? <aside className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm xl:sticky xl:top-5">
-            <div className="flex items-start justify-between gap-3 border-b border-hair px-5 py-4">
-              <div><h2 className="font-display text-base font-bold">Buy Transactions</h2><p className="mt-1 text-xs text-subtle">{selected.contractId} · {previewTransactions.length} of {selected.transactions.length} shown</p></div>
-              <Button asChild variant="outline" size="sm"><Link to="/contracts/$contractId" params={{ contractId: selected.contractId }}>Full history<ExternalLink /></Link></Button>
-            </div>
-            <div className="flex items-center justify-between border-b border-hair bg-table-head px-5 py-3">
-              <span className="text-xs font-medium text-subtle">Outstanding RINs</span>
-              <span className="font-display text-xl font-bold tabular-nums text-primary">{numberFmt.format(selected.outstandingRins)}</span>
-            </div>
-            <div>
-              {previewTransactions.map((transaction) => (
-                <div key={transaction.id} className="border-b border-hair px-5 py-3 last:border-0">
-                  <div className="flex items-center justify-between gap-3"><span className="text-sm font-semibold">{transaction.reference}</span><TxStatusText status={transaction.txStatus} /></div>
-                  <div className="mt-1 flex items-center justify-between gap-3"><span className="text-xs text-subtle">{transaction.date} · {transaction.description}</span><span className="text-sm font-bold tabular-nums text-primary">{numberFmt.format(transaction.rinApplied)} RIN</span></div>
-                  <TransactionFuel rinCode={transaction.rinCode} vintageYear={transaction.vintageYear} assignmentType={transaction.assignmentType} />
-                  <div className="mt-1 text-xs text-subtle">RIN balance after: {numberFmt.format(transaction.rinBalanceAfter)}</div>
+            {filtersOpen && (
+              <div className="relative mt-3 rounded-md border border-hair bg-table-head p-4">
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen(false)}
+                  aria-label="Close filters"
+                  className="absolute right-3 top-3 rounded p-1 text-subtle hover:bg-panel hover:text-ink"
+                >
+                  <X className="size-4" />
+                </button>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <label className="block">
+                    <span className="text-[11px] font-bold uppercase text-ink">Status</span>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger aria-label="Filter by status" className="mt-1 bg-panel"><SelectValue placeholder="All statuses" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All statuses</SelectItem>
+                        <SelectItem value="open">Open</SelectItem>
+                        <SelectItem value="settled">Settled</SelectItem>
+                        <SelectItem value="terminated">Terminated</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] font-bold uppercase text-ink">Counterparty</span>
+                    <Select value={counterpartyFilter} onValueChange={setCounterpartyFilter}>
+                      <SelectTrigger aria-label="Filter by counterparty" className="mt-1 bg-panel"><SelectValue placeholder="All counterparties" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All counterparties</SelectItem>
+                        {counterparties.map((counterparty) => <SelectItem key={counterparty} value={counterparty}>{counterparty}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] font-bold uppercase text-ink">Contract ID</span>
+                    <input
+                      value={contractFilter}
+                      onChange={(event) => setContractFilter(event.target.value)}
+                      aria-label="Filter by contract ID"
+                      placeholder="Filter by contract ID"
+                      className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20"
+                    />
+                  </label>
+                  <div className="flex items-end">
+                    <Button size="sm" className="w-full" onClick={() => setFiltersOpen(false)}>
+                      Apply filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+                    </Button>
+                  </div>
                 </div>
+              </div>
+            )}
+          </div>
+          <div className="overflow-x-auto">
+            <div className="min-w-[760px]">
+              <div className="grid grid-cols-[190px_220px_minmax(180px,1fr)_120px_125px] items-center gap-3 border-b border-hair bg-table-head px-5 py-2 text-[10px] font-bold uppercase text-subtle">
+                <SortHeader label="Contract" field="contractId" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
+                <SortHeader label="Counterparty" field="counterparty" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
+                <span>Identifiers</span>
+                <SortHeader label="Due date" field="dueDate" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
+                <span className="text-right">RIN balance</span>
+              </div>
+              {pageContracts.map((contract) => (
+                <Link
+                  key={contract.contractId}
+                  to="/contracts/$contractId"
+                  params={{ contractId: contract.contractId }}
+                  className="grid w-full grid-cols-[190px_220px_minmax(180px,1fr)_120px_125px] items-center gap-3 border-b border-hair px-5 py-3 text-left transition-colors last:border-0 hover:bg-table-head"
+                >
+                  <div>
+                    <div className="flex items-center gap-2"><span className="text-sm font-semibold">{contract.contractId}</span><StatusPill status={contract.contractStatus} /></div>
+                    <div className="mt-1 text-xs text-subtle">Deal {contract.dealNumber}</div>
+                  </div>
+                  <div className="text-sm font-medium">{contract.counterparty}</div>
+                  {identifiers(contract)}
+                  <div><div className="text-sm font-medium">{contract.dueDate ?? "—"}</div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : "text-subtle"}`}>{contract.dueDate ? contract.dueNote : "No due date"}</div></div>
+                  <div className="text-right text-base font-bold tabular-nums text-primary">{numberFmt.format(contract.outstandingRins)}</div>
+                </Link>
               ))}
-              {hiddenTransactionCount > 0 && (
-                <div className="border-t border-hair bg-table-head px-5 py-3 text-center text-xs text-subtle">
-                  {hiddenTransactionCount} older {hiddenTransactionCount === 1 ? "transaction" : "transactions"} not shown · Open full history to view all
+              {!visibleContracts.length && (
+                <div className="px-5 py-12 text-center">
+                  <div className="text-sm font-semibold">No matching contracts</div>
+                  <div className="mt-1 text-xs text-subtle">Adjust the filters or clear them to see all contracts.</div>
+                  <Button variant="outline" size="sm" className="mt-4" onClick={clearFilters}>Clear filters</Button>
                 </div>
               )}
             </div>
-          </aside> : (
-            <aside className="rounded-md border border-hair bg-panel p-6 text-center text-sm text-subtle shadow-sm">No contract selected</aside>
-          )}
-        </div>
+          </div>
+          <div className="flex flex-col gap-3 border-t border-hair px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-xs text-subtle">
+              {visibleContracts.length === 0
+                ? "No contracts"
+                : `Showing ${startIndex + 1}–${endIndex} of ${visibleContracts.length} contracts`}
+            </span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-subtle">Rows</span>
+                <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
+                  <SelectTrigger aria-label="Rows per page" className="h-8 w-[72px] bg-panel"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PAGE_SIZE_OPTIONS.map((option) => <SelectItem key={option} value={String(option)}>{option}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <span className="text-xs text-subtle">Page {currentPage} of {totalPages}</span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-8"
+                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  disabled={currentPage <= 1}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-8"
+                  onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                  disabled={currentPage >= totalPages}
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="size-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
