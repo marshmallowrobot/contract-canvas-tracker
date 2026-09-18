@@ -226,10 +226,13 @@ function ContractBalances() {
                     active ? "bg-ice/8 ring-1 ring-ice/20" : "hover:bg-ice/5"
                   }`}
                 >
-                  <div className="grid grid-cols-[150px_1fr_130px_120px_150px] items-center gap-3">
+                  <div className="grid grid-cols-[175px_1fr_130px_120px_150px] items-center gap-3">
                     <div>
-                      <div className="font-mono text-[13px] font-semibold">{c.contractId}</div>
-                      <div className="font-mono text-[11px] text-subtle">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[13px] font-semibold">{c.contractId}</span>
+                        <StatusPill status={c.contractStatus} />
+                      </div>
+                      <div className="mt-1 font-mono text-[11px] text-subtle">
                         #{c.dealNumber} / {c.product.split(" · ")[0]}
                       </div>
                     </div>
