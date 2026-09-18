@@ -177,7 +177,8 @@ function ContractDetail() {
             </div>
           </div>
 
-          <table className="w-full text-left">
+          <div className="overflow-x-auto">
+          <table className="min-w-[1080px] w-full text-left">
             <thead>
               <tr className="border-b border-hair font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
                 <th className="px-4 py-2 font-medium">Date</th>
@@ -220,6 +221,7 @@ function ContractDetail() {
               ))}
             </tbody>
           </table>
+          </div>
         </section>
       </div>
     </div>
