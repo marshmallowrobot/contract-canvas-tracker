@@ -17,4 +17,5 @@
 - [x] Demonstrate the 10-item side-panel limit with a 12-transaction contract
 
 
-- [ ] Remove Export button from Contract Balances header (prototype scope)
+
+- [x] Remove Export button from Contract Balances header (prototype scope)
