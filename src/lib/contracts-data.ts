@@ -12,6 +12,13 @@ export type ContractStatus = "open" | "settled" | "terminated";
 export type RinCode = "D3" | "D4" | "D5" | "D6" | "D7";
 export type AssignmentType = "assigned" | "separated";
 
+/**
+ * Status of an individual buy transaction. The full application has a
+ * richer set, but for this prototype a transaction is either Completed
+ * (it applied to the contract balance) or Failed (it did not settle).
+ */
+export type BuyTransactionStatus = "completed" | "failed";
+
 export type BuyTransaction = {
   id: string;
   date: string;
@@ -20,6 +27,7 @@ export type BuyTransaction = {
   rinCode: RinCode;
   vintageYear: number;
   assignmentType: AssignmentType;
+  txStatus: BuyTransactionStatus;
   rinApplied: number;
   amountApplied: number;
   rinBalanceAfter: number;
@@ -68,6 +76,7 @@ export const contracts: Contract[] = [
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 6200,
         amountApplied: 62350,
         rinBalanceAfter: 24800,
@@ -81,6 +90,7 @@ export const contracts: Contract[] = [
         rinCode: "D6",
         vintageYear: 2026,
         assignmentType: "separated",
+        txStatus: "failed",
         rinApplied: 5200,
         amountApplied: 24000,
         rinBalanceAfter: 19600,
@@ -94,6 +104,7 @@ export const contracts: Contract[] = [
         rinCode: "D5",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 3100,
         amountApplied: 22150,
         rinBalanceAfter: 16500,
@@ -107,6 +118,7 @@ export const contracts: Contract[] = [
         rinCode: "D3",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 4100,
         amountApplied: 19100,
         rinBalanceAfter: 12400,
@@ -137,6 +149,7 @@ export const contracts: Contract[] = [
         rinCode: "D7",
         vintageYear: 2026,
         assignmentType: "separated",
+        txStatus: "completed",
         rinApplied: 9800,
         amountApplied: 98600,
         rinBalanceAfter: 28050,
@@ -150,6 +163,7 @@ export const contracts: Contract[] = [
         rinCode: "D5",
         vintageYear: 2026,
         assignmentType: "assigned",
+        txStatus: "failed",
         rinApplied: 5400,
         amountApplied: 44500,
         rinBalanceAfter: 22650,
@@ -163,6 +177,7 @@ export const contracts: Contract[] = [
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 4400,
         amountApplied: 34000,
         rinBalanceAfter: 18250,
@@ -193,6 +208,7 @@ export const contracts: Contract[] = [
         rinCode: "D6",
         vintageYear: 2026,
         assignmentType: "separated",
+        txStatus: "failed",
         rinApplied: 11200,
         amountApplied: 128600,
         rinBalanceAfter: 33400,
@@ -206,6 +222,7 @@ export const contracts: Contract[] = [
         rinCode: "D5",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 11800,
         amountApplied: 83000,
         rinBalanceAfter: 21600,
@@ -236,6 +253,7 @@ export const contracts: Contract[] = [
         rinCode: "D3",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 8600,
         amountApplied: 166500,
         rinBalanceAfter: 18000,
@@ -249,6 +267,7 @@ export const contracts: Contract[] = [
         rinCode: "D7",
         vintageYear: 2026,
         assignmentType: "separated",
+        txStatus: "completed",
         rinApplied: 8600,
         amountApplied: 82000,
         rinBalanceAfter: 9400,
@@ -281,6 +300,7 @@ export const contracts: Contract[] = [
         rinCode: "D5",
         vintageYear: 2026,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 6100,
         amountApplied: 44900,
         rinBalanceAfter: 32900,
@@ -294,6 +314,7 @@ export const contracts: Contract[] = [
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 6100,
         amountApplied: 22000,
         rinBalanceAfter: 26800,
@@ -307,6 +328,7 @@ export const contracts: Contract[] = [
         rinCode: "D6",
         vintageYear: 2026,
         assignmentType: "separated",
+        txStatus: "completed",
         rinApplied: 26800,
         amountApplied: 198100,
         rinBalanceAfter: 0,
@@ -337,6 +359,7 @@ export const contracts: Contract[] = [
         rinCode: "D5",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 14800,
         amountApplied: 201400,
         rinBalanceAfter: 46000,
@@ -350,6 +373,7 @@ export const contracts: Contract[] = [
         rinCode: "D3",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 14800,
         amountApplied: 86000,
         rinBalanceAfter: 31200,
@@ -380,6 +404,7 @@ export const contracts: Contract[] = [
         rinCode: "D7",
         vintageYear: 2026,
         assignmentType: "separated",
+        txStatus: "failed",
         rinApplied: 4200,
         amountApplied: 148000,
         rinBalanceAfter: 11550,
@@ -393,6 +418,7 @@ export const contracts: Contract[] = [
         rinCode: "D5",
         vintageYear: 2026,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 4200,
         amountApplied: 73100,
         rinBalanceAfter: 7350,
@@ -423,6 +449,7 @@ export const contracts: Contract[] = [
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
+        txStatus: "completed",
         rinApplied: 5600,
         amountApplied: 120000,
         rinBalanceAfter: 5600,
@@ -436,6 +463,7 @@ export const contracts: Contract[] = [
         rinCode: "D6",
         vintageYear: 2026,
         assignmentType: "separated",
+        txStatus: "completed",
         rinApplied: 5600,
         amountApplied: 60000,
         rinBalanceAfter: 0,
@@ -493,6 +521,26 @@ export const contractStatusMeta: Record<
   },
   terminated: {
     label: "Terminated",
+    dot: "bg-rose",
+    chip: "bg-rose-soft text-rose",
+  },
+};
+
+/**
+ * Display config for each buy transaction status: dot color, chip classes,
+ * and a human label. Used by both the side preview and the full history table.
+ */
+export const buyTxStatusMeta: Record<
+  BuyTransactionStatus,
+  { label: string; dot: string; chip: string }
+> = {
+  completed: {
+    label: "Completed",
+    dot: "bg-moss",
+    chip: "bg-moss-soft text-moss",
+  },
+  failed: {
+    label: "Failed",
     dot: "bg-rose",
     chip: "bg-rose-soft text-rose",
   },

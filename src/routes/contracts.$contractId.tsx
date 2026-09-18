@@ -4,11 +4,12 @@ import { ArrowLeft, ArrowUp, Split } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
+  buyTxStatusMeta,
   contractStatusMeta,
-  currencyFmt,
   getContract,
   numberFmt,
   type AssignmentType,
+  type BuyTransactionStatus,
   type RinCode,
 } from "@/lib/contracts-data";
 
