@@ -1,5 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowUp, Split } from "lucide-react";
+import { ArrowLeft, ArrowUp, Split } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 import {
   contractStatusMeta,
@@ -51,14 +53,8 @@ export const Route = createFileRoute("/contracts/$contractId")({
 function Field({ label, values }: { label: string; values: string[] }) {
   return (
     <div>
-      <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">{label}</div>
-      <div className="mt-1.5 flex flex-wrap gap-1.5">
-        {values.map((v) => (
-          <span key={v} className="rounded-md bg-ice-soft px-2 py-1 font-mono text-[10px] text-ice">
-            {v}
-          </span>
-        ))}
-      </div>
+      <div className="text-[10px] font-bold uppercase text-subtle">{label}</div>
+      <div className="mt-1 text-sm font-medium text-ink">{values.join(", ") || "—"}</div>
     </div>
   );
 }
@@ -86,28 +82,20 @@ function ContractDetail() {
   const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
 
   return (
-    <div className="relative min-h-screen bg-canvas font-sans text-ink antialiased">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/4 h-[520px] w-[520px] rounded-full bg-ice/25 blur-[120px]" />
-        <div className="absolute -right-24 top-24 h-[460px] w-[460px] rounded-full bg-amber/15 blur-[130px]" />
-      </div>
+    <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
+      <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
+        <Button asChild variant="ghost" size="sm" className="-ml-3 mb-3 text-subtle">
+          <Link to="/"><ArrowLeft />Contract balances</Link>
+        </Button>
 
-      <div className="relative mx-auto max-w-[1100px] px-5 pb-16 pt-5">
-        <Link to="/" className="font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">
-          ← Contract balances
-        </Link>
-
-        <header className="glass mt-3 rounded-2xl border border-white/60 p-5 ring-1 ring-black/5">
+        <header className="rounded-md border border-hair bg-panel shadow-sm">
+          <div className="p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
                 <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] ${
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                     contractStatusMeta[contract.contractStatus].chip
-                  } ${
-                    contract.contractStatus === "terminated"
-                      ? "line-through decoration-1"
-                      : ""
                   }`}
                 >
                   <i
@@ -115,48 +103,37 @@ function ContractDetail() {
                   />
                   {contractStatusMeta[contract.contractStatus].label}
                 </span>
-                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-subtle">
+                <div className="text-sm text-subtle">
                   {contract.counterparty}
                 </div>
               </div>
-              <h1 className="mt-1 font-mono text-3xl font-semibold tracking-tight">
+              <h1 className="mt-2 font-display text-2xl font-bold">
                 {contract.contractId}
               </h1>
-              <div className="mt-1 font-mono text-[12px] text-subtle">
+              <div className="mt-1 text-sm text-subtle">
                 Deal #{contract.dealNumber} · {contract.dueDate ? `due ${contract.dueDate}` : "no due date"}
               </div>
             </div>
-            <div className="flex gap-3">
-              <div className="rounded-xl bg-canvas px-4 py-3 text-right">
-                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">
-                  Outstanding RINs
-                </div>
-                <div className="font-mono text-2xl font-semibold tabular-nums text-ice">
-                  {numberFmt.format(contract.outstandingRins)}
-                </div>
-              </div>
-              <div className="rounded-xl bg-canvas px-4 py-3 text-right">
-                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-subtle">
-                  Outstanding balance
-                </div>
-                <div className="font-mono text-2xl font-semibold tabular-nums">
-                  {currencyFmt.format(contract.outstandingBalance)}
-                </div>
+            <div className="min-w-[220px] rounded-md border border-hair bg-table-head px-5 py-4 text-right">
+              <div className="text-xs font-semibold text-subtle">Outstanding RINs</div>
+              <div className="mt-1 font-display text-2xl font-bold tabular-nums text-primary">
+                {numberFmt.format(contract.outstandingRins)}
               </div>
             </div>
           </div>
+          </div>
 
-          <div className="mt-5 grid gap-4 border-t border-hair pt-4 sm:grid-cols-3">
+          <div className="grid gap-4 border-t border-hair bg-table-head px-5 py-4 sm:grid-cols-3">
             <Field label="PTD" values={contract.ptd} />
             <Field label="Bill of lading" values={contract.billOfLading} />
             <Field label="Invoice numbers" values={contract.invoices} />
           </div>
 
           {contract.terminationNote && (
-            <div className="mt-5 flex items-start gap-3 rounded-xl border border-rose/30 bg-rose-soft/40 px-4 py-3">
+            <div className="flex items-start gap-3 border-t border-rose/30 bg-rose-soft/40 px-5 py-4">
               <i className="mt-0.5 size-1.5 shrink-0 rounded-full bg-rose" />
               <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-rose">
+                <div className="text-[10px] font-bold uppercase text-rose">
                   Termination note
                 </div>
                 <div className="mt-1 text-[13px] text-ink/80">
@@ -167,12 +144,10 @@ function ContractDetail() {
           )}
         </header>
 
-        <section className="glass mt-4 overflow-hidden rounded-2xl border border-white/60 ring-1 ring-black/5">
-          <div className="flex items-center justify-between border-b border-hair px-4 py-3">
-            <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">
-              Buy transactions applied
-            </div>
-            <div className="font-mono text-[11px] text-subtle">
+        <section className="mt-5 overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-hair px-5 py-4">
+            <h2 className="font-display text-base font-bold">Buy Transactions</h2>
+            <div className="text-xs text-subtle">
               {contract.transactions.length} txns · {numberFmt.format(appliedRins)} RIN applied
             </div>
           </div>
@@ -180,7 +155,7 @@ function ContractDetail() {
           <div className="overflow-x-auto">
           <table className="min-w-[1080px] w-full text-left">
             <thead>
-              <tr className="border-b border-hair font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
+              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle">
                 <th className="px-4 py-2 font-medium">Date</th>
                 <th className="px-4 py-2 font-medium">Reference</th>
                 <th className="px-4 py-2 font-medium">Detail</th>
@@ -195,8 +170,8 @@ function ContractDetail() {
             <tbody>
               {contract.transactions.map((t) => (
                 <tr key={t.id} className="border-b border-hair last:border-0">
-                  <td className="px-4 py-2.5 font-mono text-[12px] text-subtle">{t.date}</td>
-                  <td className="px-4 py-2.5 font-mono text-[12px]">{t.reference}</td>
+                  <td className="px-4 py-3 text-xs text-subtle">{t.date}</td>
+                  <td className="px-4 py-3 text-xs font-semibold">{t.reference}</td>
                   <td className="px-4 py-2.5 text-[13px] text-subtle">{t.description}</td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-2">
@@ -205,16 +180,16 @@ function ContractDetail() {
                     </div>
                   </td>
                   <td className="px-4 py-2.5"><AssignmentMark type={t.assignmentType} /></td>
-                  <td className="px-4 py-2.5 text-right font-mono text-[12px] tabular-nums text-ice">
+                  <td className="px-4 py-2.5 text-right text-xs font-bold tabular-nums text-primary">
                     {numberFmt.format(t.rinApplied)}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-[12px] tabular-nums">
+                  <td className="px-4 py-2.5 text-right text-xs tabular-nums">
                     −{currencyFmt.format(t.amountApplied)}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-[12px] tabular-nums text-subtle">
+                  <td className="px-4 py-2.5 text-right text-xs tabular-nums text-subtle">
                     {numberFmt.format(t.rinBalanceAfter)}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono text-[12px] font-semibold tabular-nums">
+                  <td className="px-4 py-2.5 text-right text-xs font-semibold tabular-nums">
                     {currencyFmt.format(t.balanceAfter)}
                   </td>
                 </tr>
@@ -223,7 +198,7 @@ function ContractDetail() {
           </table>
           </div>
         </section>
-      </div>
+      </main>
     </div>
   );
 }
