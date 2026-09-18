@@ -29,6 +29,8 @@ export type Contract = {
   dueDate: string;
   dueNote: string;
   status: DueStatus;
+  contractStatus: ContractStatus;
+  terminationNote?: string;
   ptd: string[];
   billOfLading: string[];
   invoices: string[];
