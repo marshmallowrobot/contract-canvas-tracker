@@ -43,7 +43,7 @@ function StatusPill({ status }: { status: ContractStatus }) {
   );
 }
 
-type SortKey = "contractId" | "counterparty" | "dueDate";
+type SortKey = "contractId" | "counterparty" | "dueDate" | "rinBalance";
 type SortDirection = "asc" | "desc";
 
 const PAGE_SIZE_OPTIONS = [50, 100] as const;
@@ -122,6 +122,10 @@ function ContractBalances() {
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;
           const comparison = Date.parse(`${a.dueDate}, 2026`) - Date.parse(`${b.dueDate}, 2026`);
+          return sortDirection === "asc" ? comparison : -comparison;
+        }
+        if (sortKey === "rinBalance") {
+          const comparison = a.outstandingRins - b.outstandingRins;
           return sortDirection === "asc" ? comparison : -comparison;
         }
         const comparison = a[sortKey].localeCompare(b[sortKey], undefined, { numeric: true });
@@ -258,7 +262,9 @@ function ContractBalances() {
                 <SortHeader label="Counterparty" field="counterparty" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <span>Identifiers</span>
                 <SortHeader label="Due date" field="dueDate" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
-                <span className="text-right">RIN balance</span>
+                <div className="flex justify-end">
+                  <SortHeader label="RIN balance" field="rinBalance" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
+                </div>
               </div>
               {pageContracts.map((contract) => (
                 <Link
