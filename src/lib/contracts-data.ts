@@ -1,5 +1,15 @@
 export type DueStatus = "overdue" | "soon" | "ontime" | "settled";
 
+/**
+ * Lifecycle status of a contract, independent of its due timing.
+ *  - open       : still being drawn against
+ *  - settled    : outstanding balance naturally reached 0
+ *  - terminated : closed out by the user — either created by mistake,
+ *                  or the remaining balance was written down because no
+ *                  further transactions are expected
+ */
+export type ContractStatus = "open" | "settled" | "terminated";
+
 export type BuyTransaction = {
   id: string;
   date: string;
@@ -19,6 +29,8 @@ export type Contract = {
   dueDate: string;
   dueNote: string;
   status: DueStatus;
+  contractStatus: ContractStatus;
+  terminationNote?: string;
   ptd: string[];
   billOfLading: string[];
   invoices: string[];
@@ -37,6 +49,7 @@ export const contracts: Contract[] = [
     dueDate: "Feb 09",
     dueNote: "14d late",
     status: "overdue",
+    contractStatus: "open",
     ptd: ["PTD 0912", "PTD 1140", "PTD 1188", "PTD 1204"],
     billOfLading: ["BOL 71130", "BOL 71131", "BOL 71166"],
     invoices: ["INV 2290", "INV 2291"],
@@ -94,6 +107,7 @@ export const contracts: Contract[] = [
     dueDate: "Feb 22",
     dueNote: "9d",
     status: "soon",
+    contractStatus: "open",
     ptd: ["PTD 0733", "PTD 0891"],
     billOfLading: ["BOL 71201"],
     invoices: ["INV 2331", "INV 2332", "INV 2338"],
@@ -141,6 +155,7 @@ export const contracts: Contract[] = [
     dueDate: "Mar 02",
     dueNote: "17d",
     status: "soon",
+    contractStatus: "open",
     ptd: ["PTD 0450", "PTD 0455", "PTD 0461", "PTD 0470", "PTD 0488"],
     billOfLading: ["BOL 71220", "BOL 71244"],
     invoices: ["INV 2340"],
@@ -178,6 +193,7 @@ export const contracts: Contract[] = [
     dueDate: "Mar 14",
     dueNote: "29d",
     status: "ontime",
+    contractStatus: "open",
     ptd: ["PTD 0311"],
     billOfLading: ["BOL 71188", "BOL 71190", "BOL 71195"],
     invoices: ["INV 2322", "INV 2326"],
@@ -213,14 +229,17 @@ export const contracts: Contract[] = [
     product: "RIN D3 · Cellulosic",
     counterparty: "Cascade Renewables",
     dueDate: "Feb 04",
-    dueNote: "19d late",
-    status: "overdue",
+    dueNote: "written down",
+    status: "settled",
+    contractStatus: "terminated",
+    terminationNote:
+      "Counterparty ceased deliveries; remaining 26,800 RINs written down at close-out.",
     ptd: ["PTD 0208", "PTD 0219"],
     billOfLading: ["BOL 71090"],
     invoices: ["INV 2281", "INV 2284", "INV 2288"],
-    outstandingBalance: 198100,
+    outstandingBalance: 0,
     contractValue: 265000,
-    outstandingRins: 26800,
+    outstandingRins: 0,
     transactions: [
       {
         id: "t1",
@@ -242,6 +261,16 @@ export const contracts: Contract[] = [
         rinBalanceAfter: 26800,
         balanceAfter: 198100,
       },
+      {
+        id: "t3",
+        date: "Feb 19",
+        reference: "TX-91200",
+        description: "Remaining balance write-down at termination",
+        rinApplied: 26800,
+        amountApplied: 198100,
+        rinBalanceAfter: 0,
+        balanceAfter: 0,
+      },
     ],
   },
   {
@@ -252,6 +281,7 @@ export const contracts: Contract[] = [
     dueDate: "Apr 03",
     dueNote: "49d",
     status: "ontime",
+    contractStatus: "open",
     ptd: ["PTD 6010", "PTD 6011", "PTD 6012"],
     billOfLading: ["BOL 71160", "BOL 71162"],
     invoices: ["INV 2310", "INV 2311", "INV 2315", "INV 2319"],
@@ -289,6 +319,7 @@ export const contracts: Contract[] = [
     dueDate: "Apr 18",
     dueNote: "64d",
     status: "ontime",
+    contractStatus: "open",
     ptd: ["PTD 6201", "PTD 6208", "PTD 6214"],
     billOfLading: ["BOL 71255", "BOL 71259"],
     invoices: ["INV 2355", "INV 2358", "INV 2360"],
@@ -326,6 +357,7 @@ export const contracts: Contract[] = [
     dueDate: "Jan 30",
     dueNote: "settled",
     status: "settled",
+    contractStatus: "settled",
     ptd: ["PTD 5810"],
     billOfLading: ["BOL 71290"],
     invoices: ["INV 2361"],
@@ -380,7 +412,34 @@ export const summary = {
     0,
   ),
   appliedTxns: contracts.reduce((s, c) => s + c.transactions.length, 0),
-  openCount: contracts.filter((c) => c.status !== "settled").length,
+  openCount: contracts.filter((c) => c.contractStatus === "open").length,
+  settledCount: contracts.filter((c) => c.contractStatus === "settled").length,
+  terminatedCount: contracts.filter((c) => c.contractStatus === "terminated").length,
+};
+
+/**
+ * Display config for each contract lifecycle status: dot color, chip
+ * classes, and a human label. Used by both the list rows and the detail view.
+ */
+export const contractStatusMeta: Record<
+  ContractStatus,
+  { label: string; dot: string; chip: string }
+> = {
+  open: {
+    label: "Open",
+    dot: "bg-ice",
+    chip: "bg-ice-soft text-ice",
+  },
+  settled: {
+    label: "Settled",
+    dot: "bg-moss",
+    chip: "bg-moss-soft text-moss",
+  },
+  terminated: {
+    label: "Terminated",
+    dot: "bg-rose",
+    chip: "bg-rose-soft text-rose",
+  },
 };
 
 export function getContract(id: string) {

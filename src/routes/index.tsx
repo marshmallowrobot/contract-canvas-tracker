@@ -3,10 +3,12 @@ import { useState } from "react";
 
 import {
   contracts,
+  contractStatusMeta,
   currencyFmt,
   numberFmt,
   summary,
   type Contract,
+  type ContractStatus,
   type DueStatus,
 } from "@/lib/contracts-data";
 
@@ -43,6 +45,20 @@ const statusChip: Record<DueStatus, string> = {
   ontime: "bg-ice-soft text-ice",
   settled: "bg-canvas text-subtle",
 };
+
+function StatusPill({ status }: { status: ContractStatus }) {
+  const meta = contractStatusMeta[status];
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${meta.chip} ${
+        status === "terminated" ? "line-through decoration-1" : ""
+      }`}
+    >
+      <i className={`size-1.5 rounded-full ${meta.dot}`} />
+      {meta.label}
+    </span>
+  );
+}
 
 function IdChips({ values, max = 2 }: { values: string[]; max?: number }) {
   const shown = values.slice(0, max);
@@ -163,7 +179,20 @@ function ContractBalances() {
               <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">
                 Contracts <span className="text-ink/40">/ {contracts.length}</span>
               </div>
-              <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.14em] text-subtle">
+              <div className="flex flex-wrap items-center gap-4 font-mono text-[10px] uppercase tracking-[0.14em] text-subtle">
+                <span className="flex items-center gap-1.5">
+                  <i className="size-1.5 rounded-full bg-ice" />
+                  Open
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <i className="size-1.5 rounded-full bg-moss" />
+                  Settled
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <i className="size-1.5 rounded-full bg-rose" />
+                  Terminated
+                </span>
+                <span className="mx-1 h-3 w-px bg-hair" />
                 <span className="flex items-center gap-1.5">
                   <i className="size-1.5 rounded-full bg-rose" />
                   Overdue
@@ -179,7 +208,7 @@ function ContractBalances() {
               </div>
             </div>
 
-            <div className="grid grid-cols-[150px_1fr_130px_120px_150px] gap-3 border-b border-hair px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
+            <div className="grid grid-cols-[175px_1fr_130px_120px_150px] gap-3 border-b border-hair px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
               <span>Contract</span>
               <span>Identifiers</span>
               <span>Due date</span>
@@ -197,10 +226,13 @@ function ContractBalances() {
                     active ? "bg-ice/8 ring-1 ring-ice/20" : "hover:bg-ice/5"
                   }`}
                 >
-                  <div className="grid grid-cols-[150px_1fr_130px_120px_150px] items-center gap-3">
+                  <div className="grid grid-cols-[175px_1fr_130px_120px_150px] items-center gap-3">
                     <div>
-                      <div className="font-mono text-[13px] font-semibold">{c.contractId}</div>
-                      <div className="font-mono text-[11px] text-subtle">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[13px] font-semibold">{c.contractId}</span>
+                        <StatusPill status={c.contractStatus} />
+                      </div>
+                      <div className="mt-1 font-mono text-[11px] text-subtle">
                         #{c.dealNumber} / {c.product.split(" · ")[0]}
                       </div>
                     </div>

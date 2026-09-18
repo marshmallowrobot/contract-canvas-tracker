@@ -1,6 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 
-import { currencyFmt, getContract, numberFmt } from "@/lib/contracts-data";
+import {
+  contractStatusMeta,
+  currencyFmt,
+  getContract,
+  numberFmt,
+} from "@/lib/contracts-data";
 
 export const Route = createFileRoute("/contracts/$contractId")({
   loader: ({ params }) => {
@@ -72,8 +77,24 @@ function ContractDetail() {
         <header className="glass mt-3 rounded-2xl border border-white/60 p-5 ring-1 ring-black/5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-subtle">
-                {contract.counterparty}
+              <div className="flex items-center gap-2.5">
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] ${
+                    contractStatusMeta[contract.contractStatus].chip
+                  } ${
+                    contract.contractStatus === "terminated"
+                      ? "line-through decoration-1"
+                      : ""
+                  }`}
+                >
+                  <i
+                    className={`size-1.5 rounded-full ${contractStatusMeta[contract.contractStatus].dot}`}
+                  />
+                  {contractStatusMeta[contract.contractStatus].label}
+                </span>
+                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-subtle">
+                  {contract.counterparty}
+                </div>
               </div>
               <h1 className="mt-1 font-mono text-3xl font-semibold tracking-tight">
                 {contract.contractId}
@@ -107,6 +128,20 @@ function ContractDetail() {
             <Field label="Bill of lading" values={contract.billOfLading} />
             <Field label="Invoice numbers" values={contract.invoices} />
           </div>
+
+          {contract.terminationNote && (
+            <div className="mt-5 flex items-start gap-3 rounded-xl border border-rose/30 bg-rose-soft/40 px-4 py-3">
+              <i className="mt-0.5 size-1.5 shrink-0 rounded-full bg-rose" />
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-rose">
+                  Termination note
+                </div>
+                <div className="mt-1 text-[13px] text-ink/80">
+                  {contract.terminationNote}
+                </div>
+              </div>
+            </div>
+          )}
         </header>
 
         <section className="glass mt-4 overflow-hidden rounded-2xl border border-white/60 ring-1 ring-black/5">
