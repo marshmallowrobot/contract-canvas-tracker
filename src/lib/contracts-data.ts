@@ -1,5 +1,15 @@
 export type DueStatus = "overdue" | "soon" | "ontime" | "settled";
 
+/**
+ * Lifecycle status of a contract, independent of its due timing.
+ *  - open       : still being drawn against
+ *  - settled    : outstanding balance naturally reached 0
+ *  - terminated : closed out by the user — either created by mistake,
+ *                  or the remaining balance was written down because no
+ *                  further transactions are expected
+ */
+export type ContractStatus = "open" | "settled" | "terminated";
+
 export type BuyTransaction = {
   id: string;
   date: string;
