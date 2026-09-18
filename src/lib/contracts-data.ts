@@ -9,6 +9,8 @@ export type DueStatus = "overdue" | "soon" | "ontime" | "settled";
  *                  further transactions are expected
  */
 export type ContractStatus = "open" | "settled" | "terminated";
+export type RinCode = "D3" | "D4" | "D5" | "D6" | "D7";
+export type AssignmentType = "assigned" | "separated";
 
 export type BuyTransaction = {
   id: string;
@@ -26,10 +28,13 @@ export type Contract = {
   dealNumber: string;
   product: string;
   counterparty: string;
-  dueDate: string;
+  dueDate: string | null;
   dueNote: string;
   status: DueStatus;
   contractStatus: ContractStatus;
+  rinCode: RinCode;
+  vintageYear: number;
+  assignmentType: AssignmentType;
   terminationNote?: string;
   ptd: string[];
   billOfLading: string[];
@@ -50,6 +55,9 @@ export const contracts: Contract[] = [
     dueNote: "14d late",
     status: "overdue",
     contractStatus: "open",
+    rinCode: "D4",
+    vintageYear: 2025,
+    assignmentType: "assigned",
     ptd: ["PTD 0912", "PTD 1140", "PTD 1188", "PTD 1204"],
     billOfLading: ["BOL 71130", "BOL 71131", "BOL 71166"],
     invoices: ["INV 2290", "INV 2291"],
@@ -108,6 +116,9 @@ export const contracts: Contract[] = [
     dueNote: "9d",
     status: "soon",
     contractStatus: "open",
+    rinCode: "D6",
+    vintageYear: 2026,
+    assignmentType: "separated",
     ptd: ["PTD 0733", "PTD 0891"],
     billOfLading: ["BOL 71201"],
     invoices: ["INV 2331", "INV 2332", "INV 2338"],
@@ -156,6 +167,9 @@ export const contracts: Contract[] = [
     dueNote: "17d",
     status: "soon",
     contractStatus: "open",
+    rinCode: "D6",
+    vintageYear: 2026,
+    assignmentType: "assigned",
     ptd: ["PTD 0450", "PTD 0455", "PTD 0461", "PTD 0470", "PTD 0488"],
     billOfLading: ["BOL 71220", "BOL 71244"],
     invoices: ["INV 2340"],
@@ -190,10 +204,13 @@ export const contracts: Contract[] = [
     dealNumber: "D-2151",
     product: "Diesel #2 · ULSD",
     counterparty: "BlueHarbor Refining",
-    dueDate: "Mar 14",
-    dueNote: "29d",
+    dueDate: null,
+    dueNote: "No due date",
     status: "ontime",
     contractStatus: "open",
+    rinCode: "D7",
+    vintageYear: 2026,
+    assignmentType: "separated",
     ptd: ["PTD 0311"],
     billOfLading: ["BOL 71188", "BOL 71190", "BOL 71195"],
     invoices: ["INV 2322", "INV 2326"],
@@ -232,6 +249,9 @@ export const contracts: Contract[] = [
     dueNote: "written down",
     status: "settled",
     contractStatus: "terminated",
+    rinCode: "D3",
+    vintageYear: 2025,
+    assignmentType: "assigned",
     terminationNote:
       "Counterparty ceased deliveries; remaining 26,800 RINs written down at close-out.",
     ptd: ["PTD 0208", "PTD 0219"],
@@ -282,6 +302,9 @@ export const contracts: Contract[] = [
     dueNote: "49d",
     status: "ontime",
     contractStatus: "open",
+    rinCode: "D5",
+    vintageYear: 2026,
+    assignmentType: "assigned",
     ptd: ["PTD 6010", "PTD 6011", "PTD 6012"],
     billOfLading: ["BOL 71160", "BOL 71162"],
     invoices: ["INV 2310", "INV 2311", "INV 2315", "INV 2319"],
@@ -320,6 +343,9 @@ export const contracts: Contract[] = [
     dueNote: "64d",
     status: "ontime",
     contractStatus: "open",
+    rinCode: "D7",
+    vintageYear: 2026,
+    assignmentType: "separated",
     ptd: ["PTD 6201", "PTD 6208", "PTD 6214"],
     billOfLading: ["BOL 71255", "BOL 71259"],
     invoices: ["INV 2355", "INV 2358", "INV 2360"],
@@ -358,6 +384,9 @@ export const contracts: Contract[] = [
     dueNote: "settled",
     status: "settled",
     contractStatus: "settled",
+    rinCode: "D5",
+    vintageYear: 2025,
+    assignmentType: "separated",
     ptd: ["PTD 5810"],
     billOfLading: ["BOL 71290"],
     invoices: ["INV 2361"],

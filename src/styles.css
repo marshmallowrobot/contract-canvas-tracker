@@ -61,8 +61,9 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* Glacial Ledger design system */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-display: "Sora", system-ui, sans-serif;
+  --font-mono: "Manrope", system-ui, sans-serif;
   --color-ink: var(--ink);
   --color-subtle: var(--subtle);
   --color-hair: var(--hair);
@@ -76,18 +77,29 @@
   --color-rose-soft: var(--rose-soft);
   --color-moss: var(--moss);
   --color-moss-soft: var(--moss-soft);
+  --color-table-head: var(--table-head);
+  --color-selected: var(--selected);
+  --color-assigned: var(--assigned);
+  --color-assigned-border: var(--assigned-border);
+  --color-assigned-foreground: var(--assigned-foreground);
+  --color-rin-on-color: var(--rin-on-color);
+  --color-rin-d3: var(--rin-d3);
+  --color-rin-d4: var(--rin-d4);
+  --color-rin-d5: var(--rin-d5);
+  --color-rin-d6: var(--rin-d6);
+  --color-rin-d7: var(--rin-d7);
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --background: oklch(0.966 0.011 196);
+  --foreground: oklch(0.36 0.015 235);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.6 0.14 220);
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
@@ -117,7 +129,7 @@
   --ink: oklch(0.21 0.03 264);
   --subtle: oklch(0.55 0.03 257);
   --hair: oklch(0.9 0.01 255);
-  --canvas: oklch(0.975 0.005 247);
+  --canvas: oklch(0.966 0.011 196);
   --panel: oklch(1 0 0);
   --ice: oklch(0.52 0.12 240);
   --ice-soft: oklch(0.94 0.03 240);
@@ -125,6 +137,17 @@
   --amber-soft: oklch(0.94 0.05 70);
   --rose: oklch(0.58 0.2 22);
   --rose-soft: oklch(0.94 0.04 22);
+  --table-head: oklch(0.968 0.006 240);
+  --selected: oklch(0.955 0.025 205);
+  --assigned: oklch(0.932 0.055 161);
+  --assigned-border: oklch(0.86 0.075 161);
+  --assigned-foreground: oklch(0.4 0.08 165);
+  --rin-on-color: oklch(1 0 0);
+  --rin-d3: oklch(0.55 0.23 305);
+  --rin-d4: oklch(0.78 0.15 75);
+  --rin-d5: oklch(0.58 0.15 235);
+  --rin-d6: oklch(0.58 0.17 135);
+  --rin-d7: oklch(0.64 0.2 45);
 }
 
 .dark {
