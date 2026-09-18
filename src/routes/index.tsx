@@ -179,7 +179,20 @@ function ContractBalances() {
               <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">
                 Contracts <span className="text-ink/40">/ {contracts.length}</span>
               </div>
-              <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.14em] text-subtle">
+              <div className="flex flex-wrap items-center gap-4 font-mono text-[10px] uppercase tracking-[0.14em] text-subtle">
+                <span className="flex items-center gap-1.5">
+                  <i className="size-1.5 rounded-full bg-ice" />
+                  Open
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <i className="size-1.5 rounded-full bg-moss" />
+                  Settled
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <i className="size-1.5 rounded-full bg-rose" />
+                  Terminated
+                </span>
+                <span className="mx-1 h-3 w-px bg-hair" />
                 <span className="flex items-center gap-1.5">
                   <i className="size-1.5 rounded-full bg-rose" />
                   Overdue
