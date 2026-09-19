@@ -203,9 +203,35 @@ function ContractDetail() {
   return (
     <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
       <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
-        <Button asChild variant="ghost" size="sm" className="-ml-3 mb-3 text-subtle">
-          <Link to="/"><ArrowLeft />Buy Contract Balances</Link>
-        </Button>
+        <div className="mb-3 flex items-center justify-between gap-4">
+          <Button asChild variant="ghost" size="sm" className="-ml-3 text-subtle">
+            <Link to="/"><ArrowLeft />Buy Contract Balances</Link>
+          </Button>
+          {isRemovable && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-rose/40 text-rose hover:bg-rose-soft/60 hover:text-rose"
+                onClick={() => setDialogAction("terminate")}
+              >
+                <AlertTriangle className="size-4" />
+                Terminate
+              </Button>
+              {canCancel && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-hair text-subtle hover:bg-table-head"
+                  onClick={() => setDialogAction("cancel")}
+                >
+                  <Ban className="size-4" />
+                  Cancel
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
 
         <header className="rounded-md border border-hair bg-panel shadow-sm">
           <div className="p-5">
