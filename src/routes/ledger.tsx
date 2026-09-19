@@ -287,7 +287,7 @@ function LedgerPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1180px] text-left">
+            <table className="w-full min-w-[1040px] text-left">
               <thead>
                 <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle">
                   <th className="px-4 py-2 font-medium">Date</th>
