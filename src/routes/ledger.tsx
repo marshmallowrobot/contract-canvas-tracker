@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronLeft, ChevronRight, Funnel, X } from "lucide-react";
+import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Split, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { numberFmt, type RinCode } from "@/lib/contracts-data";
+import { numberFmt, type AssignmentType, type RinCode } from "@/lib/contracts-data";
 import {
   CLIENT_ID,
   CLIENT_NAME,
