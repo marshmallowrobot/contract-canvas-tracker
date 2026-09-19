@@ -232,30 +232,6 @@ function ContractDetail() {
               <div className="mt-1 text-sm text-subtle">
                 Deal #{contract.dealNumber} · {contract.dueDate ? `due ${contract.dueDate}` : "no due date"}
               </div>
-              {isRemovable && (
-                <div className="mt-3 flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-rose/40 text-rose hover:bg-rose-soft/60 hover:text-rose"
-                    onClick={() => setDialogAction("terminate")}
-                  >
-                    <AlertTriangle className="size-4" />
-                    Terminate
-                  </Button>
-                  {canCancel && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-hair text-subtle hover:bg-table-head"
-                      onClick={() => setDialogAction("cancel")}
-                    >
-                      <Ban className="size-4" />
-                      Cancel
-                    </Button>
-                  )}
-                </div>
-              )}
             </div>
             <div className="flex gap-3">
               <div className="min-w-[140px] rounded-md border border-hair bg-table-head px-5 py-4 text-right">
