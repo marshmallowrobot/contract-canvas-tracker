@@ -161,9 +161,14 @@ function ContractBalances() {
   return (
     <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
       <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
-        <header className="mb-6">
-          <h1 className="font-display text-2xl font-bold">Buy Contract Balances</h1>
-          <p className="mt-1 text-sm text-subtle">RIN obligations and applied buy transactions</p>
+        <header className="mb-6 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-bold">Buy Contract Balances</h1>
+            <p className="mt-1 text-sm text-subtle">RIN obligations and applied buy transactions</p>
+          </div>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/ledger">Client Ledger</Link>
+          </Button>
         </header>
 
         <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Contract summary">
