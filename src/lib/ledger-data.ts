@@ -394,10 +394,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100022",
+    notes: "Restores quantity from rejected TX-91140 buy (EMTS rejected).",
     timestamp: "2026-02-14",
     clientId: CLIENT_ID,
     buyContractId: null,
@@ -424,9 +421,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
-    notes: null,
-  },
-];
+    notes: "Contract written off — counterparty breach.",
 
 export const ledgerDateFmt = new Intl.DateTimeFormat("en-US", {
   month: "short",
