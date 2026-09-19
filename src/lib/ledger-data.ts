@@ -9,7 +9,8 @@ export type LedgerItemType =
   | "reconciled_buy"
   | "unreconciled_buy"
   | "contract_cancellation"
-  | "contract_termination";
+  | "contract_termination"
+  | "automated_correction";
 
 export type QapServiceType = "q_rin" | "unverified";
 
@@ -42,6 +43,7 @@ export const ledgerItemTypeMeta: Record<
   unreconciled_buy: { label: "Unreconciled Buy", chip: "bg-ice-soft text-ice", dot: "bg-ice" },
   contract_cancellation: { label: "Contract Cancellation", chip: "bg-amber-soft text-amber", dot: "bg-amber" },
   contract_termination: { label: "Contract Termination", chip: "bg-rose-soft text-rose", dot: "bg-rose" },
+  automated_correction: { label: "Automated Correction", chip: "bg-selected text-primary", dot: "bg-primary" },
 };
 
 export const qapServiceTypeLabel: Record<QapServiceType, string> = {
@@ -52,7 +54,17 @@ export const qapServiceTypeLabel: Record<QapServiceType, string> = {
 export const CLIENT_ID = "CL-1042";
 export const CLIENT_NAME = "Evergreen Fuels Group";
 
-/** Sample ledger rows, oldest first. */
+/** Sample ledger rows, oldest first.
+ *
+ * Fuel fields (fuelCode, fuelYear, assignmentType, qapServiceType) are only
+ * populated for reconciled buys, unreconciled buys, and automated corrections
+ * — and when present, all four are set together. Starting balances,
+ * cancellations, and terminations carry no fuel info.
+ *
+ * Unreconciled buys have both buyContractId and sourceSystemContractId null.
+ *
+ * Notes are system-generated; only the "Final settlement" row keeps one.
+ */
 export const ledgerItems: LedgerItem[] = [
   {
     ledgerItemId: "LI-100001",
@@ -64,10 +76,10 @@ export const ledgerItems: LedgerItem[] = [
     quantity: 51000,
     transactionId: null,
     fuelCode: null,
-    fuelYear: 2025,
+    fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
-    notes: "Opening obligation on new buy contract.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100002",
@@ -82,7 +94,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: "22,600 gal renewable diesel receipt.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100003",
@@ -97,7 +109,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: "15,200 gal biodiesel receipt.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100004",
@@ -112,7 +124,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "separated",
     qapServiceType: "unverified",
-    notes: "Loose RIN buy, no contract assignment yet.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100005",
@@ -127,7 +139,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "separated",
     qapServiceType: "q_rin",
-    notes: "RIN separation credit.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100006",
@@ -139,10 +151,10 @@ export const ledgerItems: LedgerItem[] = [
     quantity: 37850,
     transactionId: null,
     fuelCode: null,
-    fuelYear: 2026,
+    fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
-    notes: "Opening obligation on new buy contract.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100007",
@@ -157,7 +169,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "unverified",
-    notes: "19,800 gal ethanol receipt.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100008",
@@ -172,7 +184,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: "12,700 gal renewable diesel receipt.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100009",
@@ -184,10 +196,10 @@ export const ledgerItems: LedgerItem[] = [
     quantity: 39000,
     transactionId: null,
     fuelCode: null,
-    fuelYear: 2026,
+    fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
-    notes: "Opening obligation on new buy contract.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100010",
@@ -202,7 +214,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: "22,400 gal cellulosic receipt.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100011",
@@ -217,7 +229,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: "4,800 gal biodiesel receipt.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100012",
@@ -232,14 +244,14 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "unverified",
-    notes: "30,400 gal ULSD receipt.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100013",
     timestamp: "2025-12-29",
     clientId: CLIENT_ID,
     buyContractId: null,
-    sourceSystemContractId: "EXT-88310",
+    sourceSystemContractId: null,
     ledgerItemType: "unreconciled_buy",
     quantity: -3400,
     transactionId: "TX-90655",
@@ -247,7 +259,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "separated",
     qapServiceType: "unverified",
-    notes: "Buy received from client feed, contract match pending.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100014",
@@ -262,7 +274,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "separated",
     qapServiceType: "q_rin",
-    notes: "42,000 gal ethanol receipt.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100015",
@@ -274,10 +286,10 @@ export const ledgerItems: LedgerItem[] = [
     quantity: 11200,
     transactionId: null,
     fuelCode: null,
-    fuelYear: 2026,
+    fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
-    notes: "Opening obligation on new buy contract.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100016",
@@ -292,7 +304,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: "RIN separation credit.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100017",
@@ -304,10 +316,10 @@ export const ledgerItems: LedgerItem[] = [
     quantity: -8400,
     transactionId: null,
     fuelCode: null,
-    fuelYear: 2026,
+    fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
-    notes: "Contract keyed in error by operations; balance zeroed out.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100018",
@@ -337,7 +349,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: "RIN separation credit.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100020",
@@ -352,7 +364,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "separated",
     qapServiceType: "unverified",
-    notes: "RIN separation credit.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100021",
@@ -367,7 +379,22 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: "14,800 gal ethanol receipt.",
+    notes: null,
+  },
+  {
+    ledgerItemId: "LI-100024",
+    timestamp: "2026-02-13",
+    clientId: CLIENT_ID,
+    buyContractId: "CT-4807",
+    sourceSystemContractId: "EXT-88044",
+    ledgerItemType: "automated_correction",
+    quantity: 4400,
+    transactionId: "TX-91140",
+    fuelCode: "D4",
+    fuelYear: 2025,
+    assignmentType: "assigned",
+    qapServiceType: "q_rin",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100022",
@@ -382,7 +409,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "assigned",
     qapServiceType: "unverified",
-    notes: "Unassigned buy awaiting reconciliation.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100023",
@@ -394,10 +421,10 @@ export const ledgerItems: LedgerItem[] = [
     quantity: -26800,
     transactionId: "TX-91200",
     fuelCode: null,
-    fuelYear: 2026,
+    fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
-    notes: "Counterparty ceased deliveries; remaining RINs written off at close-out.",
+    notes: null,
   },
 ];
 
