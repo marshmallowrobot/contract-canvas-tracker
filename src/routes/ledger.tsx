@@ -367,8 +367,9 @@ function LedgerPage() {
                 <tfoot>
                   <tr className="border-t border-hair bg-table-head text-[11px] font-bold uppercase text-subtle">
                     <td className="px-4 py-3" colSpan={8}>Totals in view</td>
-                    <td className="px-4 py-3 text-right tabular-nums text-moss">{numberFmt.format(credits)}</td>
-                    <td className="px-4 py-3 text-right tabular-nums text-rose">{numberFmt.format(debits)}</td>
+                    <td className={`px-4 py-3 text-right tabular-nums ${credits - debits >= 0 ? "text-ink" : "text-rose"}`}>
+                      {credits - debits > 0 ? `+${numberFmt.format(credits - debits)}` : numberFmt.format(credits - debits)}
+                    </td>
                     <td className="px-4 py-3 text-right tabular-nums text-ink">
                       {numberFmt.format(visibleRows[visibleRows.length - 1]?.runningBalance ?? 0)}
                     </td>
