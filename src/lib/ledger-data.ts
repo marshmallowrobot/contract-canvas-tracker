@@ -260,6 +260,9 @@ export const ledgerItems: LedgerItem[] = [
     assignmentType: "separated",
     qapServiceType: "unverified",
     notes: "Loose RIN buy — not yet matched to a buy contract.",
+  },
+  {
+    ledgerItemId: "LI-100014",
     timestamp: "2026-01-04",
     clientId: CLIENT_ID,
     buyContractId: "CT-4807",
