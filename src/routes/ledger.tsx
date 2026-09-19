@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Split, X } from "lucide-react";
+import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, MessageSquareText, Split, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   Select,
   SelectContent,
@@ -286,7 +287,7 @@ function LedgerPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1180px] text-left">
+            <table className="w-full min-w-[1040px] text-left">
               <thead>
                 <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle">
                   <th className="px-4 py-2 font-medium">Date</th>
@@ -297,8 +298,7 @@ function LedgerPage() {
                   <th className="px-4 py-2 font-medium">Fuel / year</th>
                   <th className="px-4 py-2 font-medium">Assignment</th>
                   <th className="px-4 py-2 font-medium">QAP</th>
-                  <th className="px-4 py-2 text-right font-medium">Added</th>
-                  <th className="px-4 py-2 text-right font-medium">Drawn down</th>
+                  <th className="px-4 py-2 text-right font-medium">Quantity</th>
                   <th className="px-4 py-2 text-right font-medium">Balance</th>
                 </tr>
               </thead>
@@ -307,8 +307,22 @@ function LedgerPage() {
                   <tr key={row.ledgerItemId} className="border-b border-hair last:border-0 hover:bg-table-head">
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-subtle">{formatLedgerDate(row.timestamp)}</td>
                     <td className="px-4 py-3">
-                      <div className="text-xs font-semibold">{row.ledgerItemId}</div>
-                      {row.notes && <div className="mt-0.5 max-w-[260px] text-[11px] text-subtle">{row.notes}</div>}
+                      <div className="flex items-center gap-1.5">
+                        <div className="text-xs font-semibold">{row.ledgerItemId}</div>
+                        {row.notes && (
+                          <HoverCard>
+                            <HoverCardTrigger asChild>
+                              <button type="button" aria-label={`Note for ${row.ledgerItemId}`} className="text-subtle hover:text-primary">
+                                <MessageSquareText className="size-3.5" />
+                              </button>
+                            </HoverCardTrigger>
+                            <HoverCardContent align="start" side="top" className="w-72 max-w-[280px] border-hair bg-panel p-3">
+                              <div className="text-[10px] font-bold uppercase text-subtle">Note</div>
+                              <div className="mt-1 text-xs text-ink">{row.notes}</div>
+                            </HoverCardContent>
+                          </HoverCard>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3"><TypePill type={row.ledgerItemType} /></td>
                     <td className="px-4 py-3">
@@ -340,11 +354,8 @@ function LedgerPage() {
                     <td className="px-4 py-3 text-xs text-subtle">
                       {row.qapServiceType ? qapServiceTypeLabel[row.qapServiceType] : "—"}
                     </td>
-                    <td className="px-4 py-3 text-right text-xs font-semibold tabular-nums text-moss">
-                      {row.quantity > 0 ? numberFmt.format(row.quantity) : ""}
-                    </td>
-                    <td className="px-4 py-3 text-right text-xs font-semibold tabular-nums text-rose">
-                      {row.quantity < 0 ? numberFmt.format(Math.abs(row.quantity)) : ""}
+                    <td className={`px-4 py-3 text-right text-xs font-bold tabular-nums ${row.quantity >= 0 ? "text-ink" : "text-rose"}`}>
+                      {row.quantity > 0 ? `+${numberFmt.format(row.quantity)}` : numberFmt.format(row.quantity)}
                     </td>
                     <td className="px-4 py-3 text-right text-xs font-bold tabular-nums text-ink">
                       {numberFmt.format(row.runningBalance)}
@@ -356,8 +367,9 @@ function LedgerPage() {
                 <tfoot>
                   <tr className="border-t border-hair bg-table-head text-[11px] font-bold uppercase text-subtle">
                     <td className="px-4 py-3" colSpan={8}>Totals in view</td>
-                    <td className="px-4 py-3 text-right tabular-nums text-moss">{numberFmt.format(credits)}</td>
-                    <td className="px-4 py-3 text-right tabular-nums text-rose">{numberFmt.format(debits)}</td>
+                    <td className={`px-4 py-3 text-right tabular-nums ${credits - debits >= 0 ? "text-ink" : "text-rose"}`}>
+                      {credits - debits > 0 ? `+${numberFmt.format(credits - debits)}` : numberFmt.format(credits - debits)}
+                    </td>
                     <td className="px-4 py-3 text-right tabular-nums text-ink">
                       {numberFmt.format(visibleRows[visibleRows.length - 1]?.runningBalance ?? 0)}
                     </td>

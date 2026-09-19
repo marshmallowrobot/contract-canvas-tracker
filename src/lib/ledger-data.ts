@@ -63,7 +63,7 @@ export const CLIENT_NAME = "Evergreen Fuels Group";
  *
  * Unreconciled buys have both buyContractId and sourceSystemContractId null.
  *
- * Notes are system-generated; only the "Final settlement" row keeps one.
+ * Notes are system-generated; this prototype has no notes set.
  */
 export const ledgerItems: LedgerItem[] = [
   {
@@ -259,7 +259,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "separated",
     qapServiceType: "unverified",
-    notes: null,
+    notes: "Loose RIN buy — not yet matched to a buy contract.",
   },
   {
     ledgerItemId: "LI-100014",
@@ -319,7 +319,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
-    notes: null,
+    notes: "Contract created in error — balance zeroed out.",
   },
   {
     ledgerItemId: "LI-100018",
@@ -334,7 +334,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "separated",
     qapServiceType: "unverified",
-    notes: "Final settlement.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100019",
@@ -394,7 +394,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    notes: null,
+    notes: "Restores quantity from rejected TX-91140 buy (EMTS rejected).",
   },
   {
     ledgerItemId: "LI-100022",
@@ -424,7 +424,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
-    notes: null,
+    notes: "Contract written off — counterparty breach.",
   },
 ];
 
