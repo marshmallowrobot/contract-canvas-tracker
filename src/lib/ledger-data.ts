@@ -259,10 +259,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "separated",
     qapServiceType: "unverified",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100014",
+    notes: "Loose RIN buy — not yet matched to a buy contract.",
     timestamp: "2026-01-04",
     clientId: CLIENT_ID,
     buyContractId: "CT-4807",
