@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronLeft, ChevronRight, Funnel, X } from "lucide-react";
+import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Split, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { numberFmt, type RinCode } from "@/lib/contracts-data";
+import { numberFmt, type AssignmentType, type RinCode } from "@/lib/contracts-data";
 import {
   CLIENT_ID,
   CLIENT_NAME,
@@ -44,6 +44,16 @@ const rinCodeClass: Record<RinCode, string> = {
   D6: "bg-rin-d6 text-rin-on-color",
   D7: "bg-rin-d7 text-rin-on-color",
 };
+
+function AssignmentMark({ type }: { type: AssignmentType }) {
+  const assigned = type === "assigned";
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-sm border px-2 py-1 text-[10px] font-bold uppercase ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-subtle"}`}>
+      {assigned ? "Assigned" : "Separated"}
+      {assigned ? <ArrowUp className="size-3" strokeWidth={2.2} /> : <Split className="size-3" strokeWidth={2.2} />}
+    </span>
+  );
+}
 
 function TypePill({ type }: { type: LedgerItemType }) {
   const meta = ledgerItemTypeMeta[type];
@@ -324,8 +334,8 @@ function LedgerPage() {
                         <span className="text-xs text-subtle">{row.fuelYear ?? "—"}</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-xs text-subtle">
-                      {row.assignmentType ? (row.assignmentType === "assigned" ? "Assigned" : "Separated") : "—"}
+                    <td className="px-4 py-3">
+                      {row.assignmentType ? <AssignmentMark type={row.assignmentType} /> : <span className="text-xs text-subtle">—</span>}
                     </td>
                     <td className="px-4 py-3 text-xs text-subtle">
                       {row.qapServiceType ? qapServiceTypeLabel[row.qapServiceType] : "—"}
