@@ -348,7 +348,9 @@ function LedgerPage() {
                     <td className="px-4 py-3" colSpan={8}>Totals in view</td>
                     <td className="px-4 py-3 text-right tabular-nums text-moss">{numberFmt.format(credits)}</td>
                     <td className="px-4 py-3 text-right tabular-nums text-rose">{numberFmt.format(debits)}</td>
-                    <td className="px-4 py-3 text-right tabular-nums text-ink">{numberFmt.format(closingBalance)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums text-ink">
+                      {numberFmt.format(visibleRows[visibleRows.length - 1]?.runningBalance ?? 0)}
+                    </td>
                   </tr>
                 </tfoot>
               )}
