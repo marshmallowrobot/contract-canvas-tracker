@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Split } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowUp, Ban, ChevronLeft, ChevronRight, Split } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
   buyTxStatusMeta,
