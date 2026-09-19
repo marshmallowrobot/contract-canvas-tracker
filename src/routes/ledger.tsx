@@ -307,8 +307,22 @@ function LedgerPage() {
                   <tr key={row.ledgerItemId} className="border-b border-hair last:border-0 hover:bg-table-head">
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-subtle">{formatLedgerDate(row.timestamp)}</td>
                     <td className="px-4 py-3">
-                      <div className="text-xs font-semibold">{row.ledgerItemId}</div>
-                      {row.notes && <div className="mt-0.5 max-w-[260px] text-[11px] text-subtle">{row.notes}</div>}
+                      <div className="flex items-center gap-1.5">
+                        <div className="text-xs font-semibold">{row.ledgerItemId}</div>
+                        {row.notes && (
+                          <HoverCard>
+                            <HoverCardTrigger asChild>
+                              <button type="button" aria-label={`Note for ${row.ledgerItemId}`} className="text-subtle hover:text-primary">
+                                <MessageSquareText className="size-3.5" />
+                              </button>
+                            </HoverCardTrigger>
+                            <HoverCardContent align="start" side="top" className="w-72 max-w-[280px] border-hair bg-panel p-3">
+                              <div className="text-[10px] font-bold uppercase text-subtle">Note</div>
+                              <div className="mt-1 text-xs text-ink">{row.notes}</div>
+                            </HoverCardContent>
+                          </HoverCard>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3"><TypePill type={row.ledgerItemType} /></td>
                     <td className="px-4 py-3">
@@ -340,11 +354,8 @@ function LedgerPage() {
                     <td className="px-4 py-3 text-xs text-subtle">
                       {row.qapServiceType ? qapServiceTypeLabel[row.qapServiceType] : "—"}
                     </td>
-                    <td className="px-4 py-3 text-right text-xs font-semibold tabular-nums text-moss">
-                      {row.quantity > 0 ? numberFmt.format(row.quantity) : ""}
-                    </td>
-                    <td className="px-4 py-3 text-right text-xs font-semibold tabular-nums text-rose">
-                      {row.quantity < 0 ? numberFmt.format(Math.abs(row.quantity)) : ""}
+                    <td className={`px-4 py-3 text-right text-xs font-bold tabular-nums ${row.quantity >= 0 ? "text-ink" : "text-rose"}`}>
+                      {row.quantity > 0 ? `+${numberFmt.format(row.quantity)}` : numberFmt.format(row.quantity)}
                     </td>
                     <td className="px-4 py-3 text-right text-xs font-bold tabular-nums text-ink">
                       {numberFmt.format(row.runningBalance)}
