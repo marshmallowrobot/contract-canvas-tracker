@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LedgerRouteImport } from './routes/ledger'
 import { Route as ContractsContractIdRouteImport } from './routes/contracts.$contractId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LedgerRoute = LedgerRouteImport.update({
+  id: '/ledger',
+  path: '/ledger',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContractsContractIdRoute = ContractsContractIdRouteImport.update({
@@ -25,27 +31,31 @@ const ContractsContractIdRoute = ContractsContractIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ledger': typeof LedgerRoute
   '/contracts/$contractId': typeof ContractsContractIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ledger': typeof LedgerRoute
   '/contracts/$contractId': typeof ContractsContractIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ledger': typeof LedgerRoute
   '/contracts/$contractId': typeof ContractsContractIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contracts/$contractId'
+  fullPaths: '/' | '/ledger' | '/contracts/$contractId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contracts/$contractId'
-  id: '__root__' | '/' | '/contracts/$contractId'
+  to: '/' | '/ledger' | '/contracts/$contractId'
+  id: '__root__' | '/' | '/ledger' | '/contracts/$contractId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LedgerRoute: typeof LedgerRoute
   ContractsContractIdRoute: typeof ContractsContractIdRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ledger': {
+      id: '/ledger'
+      path: '/ledger'
+      fullPath: '/ledger'
+      preLoaderRoute: typeof LedgerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contracts/$contractId': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LedgerRoute: LedgerRoute,
   ContractsContractIdRoute: ContractsContractIdRoute,
 }
 export const routeTree = rootRouteImport
