@@ -188,6 +188,9 @@ const TRANSACTIONS_PER_PAGE = 50;
 function ContractDetail() {
   const { contract } = Route.useLoaderData();
   const [page, setPage] = useState(1);
+  const [dialogAction, setDialogAction] = useState<RemovalAction | null>(null);
+  const canCancel = contract.transactions.length === 0;
+  const isRemovable = contract.contractStatus === "open";
   const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
   const startingRins = contract.outstandingRins + appliedRins;
   const pageCount = Math.max(1, Math.ceil(contract.transactions.length / TRANSACTIONS_PER_PAGE));
