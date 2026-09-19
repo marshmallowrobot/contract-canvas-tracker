@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Split } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowUp, Ban, ChevronLeft, ChevronRight, Split } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
   buyTxStatusMeta,
@@ -88,11 +97,100 @@ function TxStatusText({ status }: { status: BuyTransactionStatus }) {
   );
 }
 
+type RemovalAction = "terminate" | "cancel";
+
+const removalMeta: Record<
+  RemovalAction,
+  { title: string; description: string; confirmLabel: string; tone: string }
+> = {
+  terminate: {
+    title: "Terminate contract",
+    description:
+      "Terminating zeroes out the remaining RIN balance and closes this contract. The counterparty will no longer be able to draw against it.",
+    confirmLabel: "Terminate contract",
+    tone: "bg-rose text-white hover:bg-rose/90",
+  },
+  cancel: {
+    title: "Cancel contract",
+    description:
+      "Cancelling removes a contract that was created in error and has never had any buy transactions applied. The starting balance is discarded.",
+    confirmLabel: "Cancel contract",
+    tone: "bg-ink text-white hover:bg-ink/90",
+  },
+};
+
+function RemovalDialog({
+  action,
+  open,
+  onOpenChange,
+}: {
+  action: RemovalAction;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const [note, setNote] = useState("");
+  const meta = removalMeta[action];
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md border-hair bg-panel p-6">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 font-display text-lg font-bold text-ink">
+            {action === "terminate" ? (
+              <AlertTriangle className="size-5 text-rose" />
+            ) : (
+              <Ban className="size-5 text-ink" />
+            )}
+            {meta.title}
+          </DialogTitle>
+          <DialogDescription className="text-[13px] leading-relaxed text-subtle">
+            {meta.description}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-1.5">
+          <label htmlFor="removal-note" className="text-[10px] font-bold uppercase text-subtle">
+            Notes
+          </label>
+          <Textarea
+            id="removal-note"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Add a note explaining why this contract is being removed…"
+            className="min-h-[96px] resize-none border-hair bg-canvas text-[13px] text-ink placeholder:text-subtle/60 focus-visible:ring-primary/40"
+          />
+        </div>
+        <DialogFooter className="gap-2 sm:gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-hair text-subtle hover:bg-table-head"
+            onClick={() => onOpenChange(false)}
+          >
+            Dismiss
+          </Button>
+          <Button
+            size="sm"
+            className={meta.tone}
+            onClick={() => {
+              onOpenChange(false);
+              setNote("");
+            }}
+          >
+            {meta.confirmLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 const TRANSACTIONS_PER_PAGE = 50;
 
 function ContractDetail() {
   const { contract } = Route.useLoaderData();
   const [page, setPage] = useState(1);
+  const [dialogAction, setDialogAction] = useState<RemovalAction | null>(null);
+  const canCancel = contract.transactions.length === 0;
+  const isRemovable = contract.contractStatus === "open";
   const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
   const startingRins = contract.outstandingRins + appliedRins;
   const pageCount = Math.max(1, Math.ceil(contract.transactions.length / TRANSACTIONS_PER_PAGE));
@@ -134,6 +232,30 @@ function ContractDetail() {
               <div className="mt-1 text-sm text-subtle">
                 Deal #{contract.dealNumber} · {contract.dueDate ? `due ${contract.dueDate}` : "no due date"}
               </div>
+              {isRemovable && (
+                <div className="mt-3 flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-rose/40 text-rose hover:bg-rose-soft/60 hover:text-rose"
+                    onClick={() => setDialogAction("terminate")}
+                  >
+                    <AlertTriangle className="size-4" />
+                    Terminate
+                  </Button>
+                  {canCancel && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-hair text-subtle hover:bg-table-head"
+                      onClick={() => setDialogAction("cancel")}
+                    >
+                      <Ban className="size-4" />
+                      Cancel
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex gap-3">
               <div className="min-w-[140px] rounded-md border border-hair bg-table-head px-5 py-4 text-right">
@@ -253,6 +375,12 @@ function ContractDetail() {
             </div>
           </div>
         </section>
+
+        <RemovalDialog
+          action={dialogAction ?? "terminate"}
+          open={dialogAction !== null}
+          onOpenChange={(o) => !o && setDialogAction(null)}
+        />
       </main>
     </div>
   );

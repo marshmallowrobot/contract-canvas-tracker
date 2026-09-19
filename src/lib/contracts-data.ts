@@ -583,6 +583,22 @@ export const contracts: Contract[] = [
       },
     ],
   },
+  {
+    contractId: "CT-4730",
+    dealNumber: "D-2076",
+    counterparty: "Northgate Biofuels",
+    dueDate: "May 09",
+    dueNote: "85d",
+    status: "ontime",
+    contractStatus: "open",
+    ptd: ["PTD 6301"],
+    billOfLading: ["BOL 71310"],
+    invoices: ["INV 2370"],
+    outstandingBalance: 96000,
+    contractValue: 96000,
+    outstandingRins: 4800,
+    transactions: [],
+  },
 ];
 
 export const numberFmt = new Intl.NumberFormat("en-US");
