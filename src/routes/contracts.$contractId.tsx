@@ -97,6 +97,92 @@ function TxStatusText({ status }: { status: BuyTransactionStatus }) {
   );
 }
 
+type RemovalAction = "terminate" | "cancel";
+
+const removalMeta: Record<
+  RemovalAction,
+  { title: string; description: string; confirmLabel: string; tone: string }
+> = {
+  terminate: {
+    title: "Terminate contract",
+    description:
+      "Terminating zeroes out the remaining RIN balance and closes this contract. The counterparty will no longer be able to draw against it.",
+    confirmLabel: "Terminate contract",
+    tone: "bg-rose text-white hover:bg-rose/90",
+  },
+  cancel: {
+    title: "Cancel contract",
+    description:
+      "Cancelling removes a contract that was created in error and has never had any buy transactions applied. The starting balance is discarded.",
+    confirmLabel: "Cancel contract",
+    tone: "bg-ink text-white hover:bg-ink/90",
+  },
+};
+
+function RemovalDialog({
+  action,
+  open,
+  onOpenChange,
+}: {
+  action: RemovalAction;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const [note, setNote] = useState("");
+  const meta = removalMeta[action];
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md border-hair bg-panel p-6">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 font-display text-lg font-bold text-ink">
+            {action === "terminate" ? (
+              <AlertTriangle className="size-5 text-rose" />
+            ) : (
+              <Ban className="size-5 text-ink" />
+            )}
+            {meta.title}
+          </DialogTitle>
+          <DialogDescription className="text-[13px] leading-relaxed text-subtle">
+            {meta.description}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-1.5">
+          <label htmlFor="removal-note" className="text-[10px] font-bold uppercase text-subtle">
+            Notes
+          </label>
+          <Textarea
+            id="removal-note"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Add a note explaining why this contract is being removed…"
+            className="min-h-[96px] resize-none border-hair bg-canvas text-[13px] text-ink placeholder:text-subtle/60 focus-visible:ring-primary/40"
+          />
+        </div>
+        <DialogFooter className="gap-2 sm:gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-hair text-subtle hover:bg-table-head"
+            onClick={() => onOpenChange(false)}
+          >
+            Dismiss
+          </Button>
+          <Button
+            size="sm"
+            className={meta.tone}
+            onClick={() => {
+              onOpenChange(false);
+              setNote("");
+            }}
+          >
+            {meta.confirmLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 const TRANSACTIONS_PER_PAGE = 50;
 
 function ContractDetail() {
