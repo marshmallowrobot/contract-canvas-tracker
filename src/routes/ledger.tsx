@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Split, X } from "lucide-react";
+import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, MessageSquareText, Split, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   Select,
   SelectContent,
@@ -297,8 +298,7 @@ function LedgerPage() {
                   <th className="px-4 py-2 font-medium">Fuel / year</th>
                   <th className="px-4 py-2 font-medium">Assignment</th>
                   <th className="px-4 py-2 font-medium">QAP</th>
-                  <th className="px-4 py-2 text-right font-medium">Added</th>
-                  <th className="px-4 py-2 text-right font-medium">Drawn down</th>
+                  <th className="px-4 py-2 text-right font-medium">Quantity</th>
                   <th className="px-4 py-2 text-right font-medium">Balance</th>
                 </tr>
               </thead>
