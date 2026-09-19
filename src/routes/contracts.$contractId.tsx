@@ -375,6 +375,12 @@ function ContractDetail() {
             </div>
           </div>
         </section>
+
+        <RemovalDialog
+          action={dialogAction ?? "terminate"}
+          open={dialogAction !== null}
+          onOpenChange={(o) => !o && setDialogAction(null)}
+        />
       </main>
     </div>
   );
