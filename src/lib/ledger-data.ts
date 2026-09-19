@@ -63,7 +63,7 @@ export const CLIENT_NAME = "Evergreen Fuels Group";
  *
  * Unreconciled buys have both buyContractId and sourceSystemContractId null.
  *
- * Notes are system-generated; only the "Final settlement" row keeps one.
+ * Notes are system-generated; this prototype has no notes set.
  */
 export const ledgerItems: LedgerItem[] = [
   {
@@ -334,7 +334,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "separated",
     qapServiceType: "unverified",
-    notes: "Final settlement.",
+    notes: null,
   },
   {
     ledgerItemId: "LI-100019",
