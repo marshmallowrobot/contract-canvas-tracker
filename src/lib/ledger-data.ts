@@ -320,6 +320,9 @@ export const ledgerItems: LedgerItem[] = [
     assignmentType: null,
     qapServiceType: null,
     notes: "Contract created in error — balance zeroed out.",
+  },
+  {
+    ledgerItemId: "LI-100018",
     timestamp: "2026-01-27",
     clientId: CLIENT_ID,
     buyContractId: "CT-4744",
