@@ -347,18 +347,16 @@ function LedgerPage() {
                         <div>
                           <div className="flex items-center gap-2">
                             <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[row.fuelCode]}`}>{row.fuelCode}</span>
-                            <span className="text-[11px] font-semibold text-subtle">{row.fuelYear ?? ""}</span>
+                            <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{row.fuelYear}</span>
+                            {row.assignmentType && <AssignmentMark type={row.assignmentType} />}
                           </div>
                           {row.qapServiceType && (
                             <div className="mt-1 text-[11px] text-subtle">{qapServiceTypeLabel[row.qapServiceType]}</div>
                           )}
                         </div>
                       ) : (
-                        <span className="text-xs text-subtle">{row.fuelYear ?? "—"}</span>
+                        <span className="text-xs text-subtle">—</span>
                       )}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      {row.assignmentType ? <AssignmentMark type={row.assignmentType} /> : <span className="text-xs text-subtle">—</span>}
                     </td>
                     <td className={`px-5 py-3.5 text-right text-xs font-bold tabular-nums ${row.quantity >= 0 ? "text-ink" : "text-rose"}`}>
                       {row.quantity > 0 ? `+${numberFmt.format(row.quantity)}` : numberFmt.format(row.quantity)}
