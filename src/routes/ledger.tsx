@@ -134,7 +134,7 @@ function LedgerPage() {
 
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
-  const closingBalance = rows.length ? rows[rows.length - 1]!.runningBalance : 0;
+
 
   const clearFilters = () => {
     setContractFilter("");
