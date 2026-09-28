@@ -55,7 +55,7 @@ export type Contract = {
 export const contracts: Contract[] = [
   {
     contractId: "CT-4821",
-    dealNumber: "D-2204",
+    dealNumber: "EVERG26TP0002",
     counterparty: "Evergreen Refinery",
     dueDate: "Feb 09",
     dueNote: "14d late",
@@ -240,7 +240,7 @@ export const contracts: Contract[] = [
   },
   {
     contractId: "CT-4807",
-    dealNumber: "D-2188",
+    dealNumber: "PETCO26TP0007",
     counterparty: "PetroCore Logistics",
     dueDate: "Feb 22",
     dueNote: "9d",
@@ -299,7 +299,7 @@ export const contracts: Contract[] = [
   },
   {
     contractId: "CT-4799",
-    dealNumber: "D-2170",
+    dealNumber: "NORTH26TP0011",
     counterparty: "Northline Terminals",
     dueDate: "Mar 02",
     dueNote: "17d",
@@ -344,7 +344,7 @@ export const contracts: Contract[] = [
   },
   {
     contractId: "CT-4788",
-    dealNumber: "D-2151",
+    dealNumber: "BLUEHBOR26TP0014",
     counterparty: "BlueHarbor Refining",
     dueDate: null,
     dueNote: "No due date",
@@ -389,7 +389,7 @@ export const contracts: Contract[] = [
   },
   {
     contractId: "CT-4776",
-    dealNumber: "D-2139",
+    dealNumber: "CASCAD26TP0018",
     counterparty: "Cascade Renewables",
     dueDate: "Feb 04",
     dueNote: "written down",
@@ -450,7 +450,7 @@ export const contracts: Contract[] = [
   },
   {
     contractId: "CT-4762",
-    dealNumber: "D-2124",
+    dealNumber: "HIGHPT26TP0022",
     counterparty: "Highpoint Aviation Fuels",
     dueDate: "Apr 03",
     dueNote: "49d",
@@ -521,7 +521,7 @@ export const contracts: Contract[] = [
   },
   {
     contractId: "CT-4750",
-    dealNumber: "D-2110",
+    dealNumber: "GULFSTAR26TP0026",
     counterparty: "Gulfstar Bunkering",
     dueDate: "Apr 18",
     dueNote: "64d",
@@ -566,7 +566,7 @@ export const contracts: Contract[] = [
   },
   {
     contractId: "CT-4744",
-    dealNumber: "D-2098",
+    dealNumber: "MERIDN26TP0031",
     counterparty: "Meridian Fuels",
     dueDate: "Jan 30",
     dueNote: "settled",
@@ -611,7 +611,7 @@ export const contracts: Contract[] = [
   },
   {
     contractId: "CT-4730",
-    dealNumber: "D-2076",
+    dealNumber: "NGATE26TP0035",
     counterparty: "Northgate Biofuels",
     dueDate: "May 09",
     dueNote: "85d",
