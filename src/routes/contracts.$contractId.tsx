@@ -61,11 +61,36 @@ export const Route = createFileRoute("/contracts/$contractId")({
   ),
 });
 
+const FIELD_PREVIEW_COUNT = 5;
+
 function Field({ label, values }: { label: string; values: string[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? values : values.slice(0, FIELD_PREVIEW_COUNT);
+  const hiddenCount = values.length - FIELD_PREVIEW_COUNT;
   return (
     <div>
       <div className="text-[10px] font-bold uppercase text-subtle">{label}</div>
-      <div className="mt-1 text-sm font-medium text-ink">{values.join(", ") || "—"}</div>
+      <div className="mt-1 text-sm font-medium text-ink">
+        {visible.join(", ") || "—"}
+        {hiddenCount > 0 && !expanded && (
+          <button
+            type="button"
+            onClick={() => setExpanded(true)}
+            className="ml-1.5 text-xs font-semibold text-primary hover:underline"
+          >
+            +{hiddenCount} more
+          </button>
+        )}
+        {expanded && hiddenCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            className="ml-1.5 text-xs font-semibold text-subtle hover:underline"
+          >
+            Show less
+          </button>
+        )}
+      </div>
     </div>
   );
 }
