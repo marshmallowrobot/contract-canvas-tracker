@@ -219,6 +219,8 @@ function ContractDetail() {
   const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
   const startingRins = contract.outstandingRins + appliedRins;
   const overdue = contract.status === "overdue";
+  const dueSoon = contract.status === "soon";
+  const dueTint = overdue ? "text-rose" : dueSoon ? "text-amber" : "";
   const pageCount = Math.max(1, Math.ceil(contract.transactions.length / TRANSACTIONS_PER_PAGE));
   const pageStart = (page - 1) * TRANSACTIONS_PER_PAGE;
   const sortedTransactions = [...contract.transactions].sort((a, b) => Date.parse(`${b.date}, 2026`) - Date.parse(`${a.date}, 2026`));
@@ -284,8 +286,8 @@ function ContractDetail() {
               <div className="mt-1 text-sm text-subtle">
                 Deal #{contract.dealNumber} ·{" "}
                 {contract.dueDate ? (
-                  overdue ? (
-                    <span className="font-semibold text-rose">
+                  overdue || dueSoon ? (
+                    <span className={`font-semibold ${dueTint}`}>
                       due {contract.dueDate} · {contract.dueNote}
                     </span>
                   ) : (
@@ -305,13 +307,13 @@ function ContractDetail() {
               </div>
               <div
                 className={`min-w-[160px] rounded-md border px-5 py-4 text-right ${
-                  overdue ? "border-rose/40 bg-rose-soft/40" : "border-hair bg-table-head"
+                  overdue ? "border-rose/40 bg-rose-soft/40" : dueSoon ? "border-amber/40 bg-amber-soft/40" : "border-hair bg-table-head"
                 }`}
               >
-                <div className={`text-xs font-semibold ${overdue ? "text-rose" : "text-subtle"}`}>
+                <div className={`text-xs font-semibold ${dueTint || "text-subtle"}`}>
                   Outstanding RINs
                 </div>
-                <div className={`mt-1 font-display text-2xl font-bold tabular-nums ${overdue ? "text-rose" : "text-primary"}`}>
+                <div className={`mt-1 font-display text-2xl font-bold tabular-nums ${overdue ? "text-rose" : dueSoon ? "text-amber" : "text-primary"}`}>
                   {numberFmt.format(contract.outstandingRins)}
                 </div>
               </div>

@@ -284,7 +284,7 @@ function ContractBalances() {
                   </div>
                   <div className="text-sm font-medium">{contract.counterparty}</div>
                   {identifiers(contract)}
-                  <div><div className="text-sm font-medium">{contract.dueDate ?? "—"}</div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : "text-subtle"}`}>{contract.dueDate ? contract.dueNote : "No due date"}</div></div>
+                  <div><div className={`text-sm font-medium ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : ""}`}><span className={contract.status === "overdue" || contract.status === "soon" ? "font-semibold" : undefined}>{contract.dueDate ?? "—"}</span></div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : "text-subtle"}`}>{contract.dueDate ? contract.dueNote : "No due date"}</div></div>
                   <div className="text-right text-base font-bold tabular-nums text-primary">{numberFmt.format(contract.outstandingRins)}</div>
                 </Link>
               ))}
