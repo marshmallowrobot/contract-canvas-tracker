@@ -298,7 +298,6 @@ function LedgerPage() {
                   <th className="px-5 py-2.5 font-medium">Contract</th>
                   <th className="px-5 py-2.5 font-medium">Transaction</th>
                   <th className="px-5 py-2.5 font-medium">Fuel</th>
-                  <th className="px-5 py-2.5 font-medium">Assignment</th>
                   <th className="px-5 py-2.5 text-right font-medium">Quantity</th>
                   <th className="px-5 py-2.5 text-right font-medium">Balance</th>
                 </tr>
