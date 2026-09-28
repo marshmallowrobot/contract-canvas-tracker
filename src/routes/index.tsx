@@ -252,7 +252,7 @@ function ContractBalances() {
           </div>
           <div className="overflow-x-auto">
             <div className="min-w-[760px]">
-              <div className="grid grid-cols-[180px_200px_100px_120px_120px_120px] items-center gap-3 border-b border-hair bg-table-head px-5 py-2 text-[10px] font-bold uppercase text-subtle">
+              <div className="grid grid-cols-[180px_170px_150px_120px_120px_120px] items-center gap-3 border-b border-hair bg-table-head px-5 py-2 text-[10px] font-bold uppercase text-subtle">
                 <SortHeader label="Contract" field="contractId" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <SortHeader label="Trading Partner" field="counterparty" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <span>Deal</span>
@@ -269,14 +269,14 @@ function ContractBalances() {
                   key={contract.contractId}
                   to="/contracts/$contractId"
                   params={{ contractId: contract.contractId }}
-                  className="grid w-full grid-cols-[180px_200px_100px_120px_120px_120px] items-center gap-3 border-b border-hair px-5 py-3 text-left transition-colors last:border-0 hover:bg-table-head"
+                  className="grid w-full grid-cols-[180px_170px_150px_120px_120px_120px] items-center gap-3 border-b border-hair px-5 py-3 text-left transition-colors last:border-0 hover:bg-table-head"
                 >
                   <div>
                     <div className="flex items-center gap-2"><span className="text-sm font-semibold">{contract.contractId}</span><StatusPill status={contract.contractStatus} /></div>
                   </div>
                   <div className="text-sm font-medium">{contract.counterparty}</div>
                   <div className="text-xs text-subtle">{contract.dealNumber}</div>
-                  <div className="text-sm font-medium">{completedCount} buys</div>
+                  <div className="text-sm font-medium">{completedCount} {completedCount === 1 ? "buy" : "buys"}</div>
                   <div><div className={`text-sm font-medium ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : ""}`}><span className={contract.status === "overdue" || contract.status === "soon" ? "font-semibold" : undefined}>{contract.dueDate ?? "—"}</span></div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : "text-subtle"}`}>{contract.dueDate ? (contract.contractStatus === "terminated" ? "" : contract.dueNote) : "No due date"}</div></div>
                   <div className="text-right text-base font-bold tabular-nums text-primary">{numberFmt.format(contract.outstandingRins)}</div>
                 </Link>
