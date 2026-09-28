@@ -252,7 +252,7 @@ function LedgerPage() {
                       value={transactionFilter}
                       onChange={(event) => setTransactionFilter(event.target.value)}
                       aria-label="Filter by transaction ID"
-                      placeholder="e.g. TX-91002"
+                      placeholder="e.g. 91002"
                       className={inputClass}
                     />
                   </label>
