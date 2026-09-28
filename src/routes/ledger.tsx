@@ -154,15 +154,9 @@ function LedgerPage() {
 
         <header className="mb-6">
           <h1 className="font-display text-2xl font-bold">Client Ledger</h1>
-          <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} · Client {CLIENT_ID} · all RIN ledger entries</p>
+          <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} · EPA ID: 48217</p>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Ledger summary">
-          <StatCard label="Closing RIN balance" value={numberFmt.format(closingBalance)} note="All entries to date" tone="text-primary" />
-          <StatCard label="RINs added" value={`+${numberFmt.format(credits)}`} note="Starting balances & corrections" />
-          <StatCard label="RINs drawn down" value={`−${numberFmt.format(debits)}`} note="Buys, cancellations, write-offs" tone="text-rose" />
-          <StatCard label="Ledger entries" value={numberFmt.format(visibleRows.length)} note={`of ${rows.length} total`} />
-        </section>
 
         <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
           <div className="border-b border-hair px-5 py-3">
