@@ -264,7 +264,7 @@ function ContractBalances() {
             <div className="min-w-[760px]">
               <div className="grid grid-cols-[190px_220px_minmax(180px,1fr)_120px_125px] items-center gap-3 border-b border-hair bg-table-head px-5 py-2 text-[10px] font-bold uppercase text-subtle">
                 <SortHeader label="Contract" field="contractId" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
-                <SortHeader label="Counterparty" field="counterparty" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
+                <SortHeader label="Trading Partner" field="counterparty" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <span>Identifiers</span>
                 <SortHeader label="Due date" field="dueDate" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <div className="flex justify-end">
@@ -284,7 +284,7 @@ function ContractBalances() {
                   </div>
                   <div className="text-sm font-medium">{contract.counterparty}</div>
                   {identifiers(contract)}
-                  <div><div className={`text-sm font-medium ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : ""}`}><span className={contract.status === "overdue" || contract.status === "soon" ? "font-semibold" : undefined}>{contract.dueDate ?? "—"}</span></div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : "text-subtle"}`}>{contract.dueDate ? contract.dueNote : "No due date"}</div></div>
+                  <div><div className={`text-sm font-medium ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : ""}`}><span className={contract.status === "overdue" || contract.status === "soon" ? "font-semibold" : undefined}>{contract.dueDate ?? "—"}</span></div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : "text-subtle"}`}>{contract.dueDate ? (contract.contractStatus === "terminated" ? "" : contract.dueNote) : "No due date"}</div></div>
                   <div className="text-right text-base font-bold tabular-nums text-primary">{numberFmt.format(contract.outstandingRins)}</div>
                 </Link>
               ))}
