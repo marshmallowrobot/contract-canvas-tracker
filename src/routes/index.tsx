@@ -262,23 +262,27 @@ function ContractBalances() {
                   <SortHeader label="RIN balance" field="rinBalance" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 </div>
               </div>
-              {pageContracts.map((contract) => (
+              {pageContracts.map((contract) => {
+                const failedCount = contract.transactions.filter((t) => t.txStatus === "failed").length;
+                return (
                 <Link
                   key={contract.contractId}
                   to="/contracts/$contractId"
                   params={{ contractId: contract.contractId }}
-                  className="grid w-full grid-cols-[190px_220px_minmax(180px,1fr)_120px_125px] items-center gap-3 border-b border-hair px-5 py-3 text-left transition-colors last:border-0 hover:bg-table-head"
+                  className="grid w-full grid-cols-[180px_200px_100px_120px_120px_120px] items-center gap-3 border-b border-hair px-5 py-3 text-left transition-colors last:border-0 hover:bg-table-head"
                 >
                   <div>
                     <div className="flex items-center gap-2"><span className="text-sm font-semibold">{contract.contractId}</span><StatusPill status={contract.contractStatus} /></div>
                     <div className="mt-1 text-xs text-subtle">Deal {contract.dealNumber}</div>
                   </div>
                   <div className="text-sm font-medium">{contract.counterparty}</div>
-                  {identifiers(contract)}
+                  <div className="text-xs text-subtle">{contract.dealNumber}</div>
+                  <div className="text-sm font-medium">{contract.transactions.length} buys{failedCount > 0 && <span className="text-rose"> · {failedCount} failed</span>}</div>
                   <div><div className={`text-sm font-medium ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : ""}`}><span className={contract.status === "overdue" || contract.status === "soon" ? "font-semibold" : undefined}>{contract.dueDate ?? "—"}</span></div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : "text-subtle"}`}>{contract.dueDate ? (contract.contractStatus === "terminated" ? "" : contract.dueNote) : "No due date"}</div></div>
                   <div className="text-right text-base font-bold tabular-nums text-primary">{numberFmt.format(contract.outstandingRins)}</div>
                 </Link>
-              ))}
+                );
+              })}
               {!visibleContracts.length && (
                 <div className="px-5 py-12 text-center">
                   <div className="text-sm font-semibold">No matching contracts</div>
