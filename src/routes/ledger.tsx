@@ -154,7 +154,7 @@ function LedgerPage() {
 
         <header className="mb-6">
           <h1 className="font-display text-2xl font-bold">Client Ledger</h1>
-          <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} · EPA ID: 48217</p>
+          <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} ({EPA_ID})</p>
         </header>
 
 
