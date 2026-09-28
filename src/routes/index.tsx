@@ -88,7 +88,7 @@ function StatCard({ label, value, note, tone }: { label: string; value: string; 
 
 
 function ContractBalances() {
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("open");
   const [counterpartyFilter, setCounterpartyFilter] = useState("all");
   const [contractFilter, setContractFilter] = useState("");
   const [dealFilter, setDealFilter] = useState("");
