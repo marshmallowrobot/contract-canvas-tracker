@@ -269,7 +269,7 @@ function ContractBalances() {
                   key={contract.contractId}
                   to="/contracts/$contractId"
                   params={{ contractId: contract.contractId }}
-                  className="grid w-full grid-cols-[180px_200px_100px_120px_120px_120px] items-center gap-3 border-b border-hair px-5 py-3 text-left transition-colors last:border-0 hover:bg-table-head"
+                  className="grid w-full grid-cols-[180px_170px_150px_120px_120px_120px] items-center gap-3 border-b border-hair px-5 py-3 text-left transition-colors last:border-0 hover:bg-table-head"
                 >
                   <div>
                     <div className="flex items-center gap-2"><span className="text-sm font-semibold">{contract.contractId}</span><StatusPill status={contract.contractStatus} /></div>
