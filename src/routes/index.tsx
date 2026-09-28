@@ -149,6 +149,7 @@ function ContractBalances() {
     setStatusFilter("all");
     setCounterpartyFilter("all");
     setContractFilter("");
+    setDealFilter("");
   };
 
   return (
@@ -211,7 +212,7 @@ function ContractBalances() {
                 >
                   <X className="size-4" />
                 </button>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                   <label className="block">
                     <span className="text-[11px] font-bold uppercase text-ink">Status</span>
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -241,6 +242,16 @@ function ContractBalances() {
                       onChange={(event) => setContractFilter(event.target.value)}
                       aria-label="Filter by contract ID"
                       placeholder="Filter by contract ID"
+                      className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] font-bold uppercase text-ink">Deal Number</span>
+                    <input
+                      value={dealFilter}
+                      onChange={(event) => setDealFilter(event.target.value)}
+                      aria-label="Filter by deal number"
+                      placeholder="Filter by deal number"
                       className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20"
                     />
                   </label>
