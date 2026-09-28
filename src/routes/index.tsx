@@ -124,11 +124,11 @@ function ContractBalances() {
         const comparison = a[sortKey].localeCompare(b[sortKey], undefined, { numeric: true });
         return sortDirection === "asc" ? comparison : -comparison;
       });
-  }, [contractFilter, counterpartyFilter, sortDirection, sortKey, statusFilter]);
-  const activeFilterCount = (statusFilter !== "all" ? 1 : 0) + (counterpartyFilter !== "all" ? 1 : 0) + (contractFilter.trim() !== "" ? 1 : 0);
+  }, [contractFilter, counterpartyFilter, dealFilter, sortDirection, sortKey, statusFilter]);
+  const activeFilterCount = (statusFilter !== "all" ? 1 : 0) + (counterpartyFilter !== "all" ? 1 : 0) + (contractFilter.trim() !== "" ? 1 : 0) + (dealFilter.trim() !== "" ? 1 : 0);
 
   // Reset to first page whenever the result set or page size changes.
-  useEffect(() => { setPage(1); }, [statusFilter, counterpartyFilter, contractFilter, sortKey, sortDirection, pageSize]);
+  useEffect(() => { setPage(1); }, [statusFilter, counterpartyFilter, contractFilter, dealFilter, sortKey, sortDirection, pageSize]);
 
   const totalPages = Math.max(Math.ceil(visibleContracts.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
