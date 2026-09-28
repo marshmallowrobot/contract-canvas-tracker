@@ -91,6 +91,7 @@ function ContractBalances() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [counterpartyFilter, setCounterpartyFilter] = useState("all");
   const [contractFilter, setContractFilter] = useState("");
+  const [dealFilter, setDealFilter] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("contractId");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
@@ -102,10 +103,12 @@ function ContractBalances() {
   );
   const visibleContracts = useMemo(() => {
     const normalizedId = contractFilter.trim().toLowerCase();
+    const normalizedDeal = dealFilter.trim().toLowerCase();
     return contracts
       .filter((contract) => statusFilter === "all" || contract.contractStatus === statusFilter)
       .filter((contract) => counterpartyFilter === "all" || contract.counterparty === counterpartyFilter)
       .filter((contract) => !normalizedId || contract.contractId.toLowerCase().includes(normalizedId))
+      .filter((contract) => !normalizedDeal || contract.dealNumber.toLowerCase().includes(normalizedDeal))
       .sort((a, b) => {
         if (sortKey === "dueDate") {
           if (!a.dueDate && !b.dueDate) return 0;
@@ -121,11 +124,11 @@ function ContractBalances() {
         const comparison = a[sortKey].localeCompare(b[sortKey], undefined, { numeric: true });
         return sortDirection === "asc" ? comparison : -comparison;
       });
-  }, [contractFilter, counterpartyFilter, sortDirection, sortKey, statusFilter]);
-  const activeFilterCount = (statusFilter !== "all" ? 1 : 0) + (counterpartyFilter !== "all" ? 1 : 0) + (contractFilter.trim() !== "" ? 1 : 0);
+  }, [contractFilter, counterpartyFilter, dealFilter, sortDirection, sortKey, statusFilter]);
+  const activeFilterCount = (statusFilter !== "all" ? 1 : 0) + (counterpartyFilter !== "all" ? 1 : 0) + (contractFilter.trim() !== "" ? 1 : 0) + (dealFilter.trim() !== "" ? 1 : 0);
 
   // Reset to first page whenever the result set or page size changes.
-  useEffect(() => { setPage(1); }, [statusFilter, counterpartyFilter, contractFilter, sortKey, sortDirection, pageSize]);
+  useEffect(() => { setPage(1); }, [statusFilter, counterpartyFilter, contractFilter, dealFilter, sortKey, sortDirection, pageSize]);
 
   const totalPages = Math.max(Math.ceil(visibleContracts.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
@@ -146,6 +149,7 @@ function ContractBalances() {
     setStatusFilter("all");
     setCounterpartyFilter("all");
     setContractFilter("");
+    setDealFilter("");
   };
 
   return (
@@ -208,7 +212,7 @@ function ContractBalances() {
                 >
                   <X className="size-4" />
                 </button>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                   <label className="block">
                     <span className="text-[11px] font-bold uppercase text-ink">Status</span>
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -238,6 +242,16 @@ function ContractBalances() {
                       onChange={(event) => setContractFilter(event.target.value)}
                       aria-label="Filter by contract ID"
                       placeholder="Filter by contract ID"
+                      className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] font-bold uppercase text-ink">Deal Number</span>
+                    <input
+                      value={dealFilter}
+                      onChange={(event) => setDealFilter(event.target.value)}
+                      aria-label="Filter by deal number"
+                      placeholder="Filter by deal number"
                       className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20"
                     />
                   </label>
