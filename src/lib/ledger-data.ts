@@ -52,7 +52,9 @@ export const qapServiceTypeLabel: Record<QapServiceType, string> = {
 };
 
 export const CLIENT_ID = "CL-1042";
+export const EPA_ID = "48217";
 export const CLIENT_NAME = "Evergreen Fuels Group";
+
 
 /** Sample ledger rows, oldest first.
  *

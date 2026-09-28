@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { getContract, numberFmt, type AssignmentType, type RinCode } from "@/lib/contracts-data";
 import {
-  CLIENT_ID,
+  EPA_ID,
   CLIENT_NAME,
   formatLedgerDate,
   ledgerItemTypeMeta,
@@ -134,7 +134,7 @@ function LedgerPage() {
 
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
-  const closingBalance = rows.length ? rows[rows.length - 1]!.runningBalance : 0;
+
 
   const clearFilters = () => {
     setContractFilter("");
@@ -154,7 +154,7 @@ function LedgerPage() {
 
         <header className="mb-6">
           <h1 className="font-display text-2xl font-bold">Client Ledger</h1>
-          <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} · EPA ID: 48217</p>
+          <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} ({EPA_ID})</p>
         </header>
 
 
