@@ -91,6 +91,7 @@ function ContractBalances() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [counterpartyFilter, setCounterpartyFilter] = useState("all");
   const [contractFilter, setContractFilter] = useState("");
+  const [dealFilter, setDealFilter] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("contractId");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
@@ -102,10 +103,12 @@ function ContractBalances() {
   );
   const visibleContracts = useMemo(() => {
     const normalizedId = contractFilter.trim().toLowerCase();
+    const normalizedDeal = dealFilter.trim().toLowerCase();
     return contracts
       .filter((contract) => statusFilter === "all" || contract.contractStatus === statusFilter)
       .filter((contract) => counterpartyFilter === "all" || contract.counterparty === counterpartyFilter)
       .filter((contract) => !normalizedId || contract.contractId.toLowerCase().includes(normalizedId))
+      .filter((contract) => !normalizedDeal || contract.dealNumber.toLowerCase().includes(normalizedDeal))
       .sort((a, b) => {
         if (sortKey === "dueDate") {
           if (!a.dueDate && !b.dueDate) return 0;
