@@ -135,8 +135,17 @@ function LedgerPage() {
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
 
+  /** With filters active, anchor the slice: the running balance of the last
+   * row hidden just before the first visible one (0 when the slice starts
+   * at the very beginning of the ledger). */
+  const openingBalance = useMemo(() => {
+    if (activeFilterCount === 0 || visibleRows.length === 0) return null;
+    const firstIndex = rows.findIndex((row) => row.ledgerItemId === visibleRows[0]!.ledgerItemId);
+    return firstIndex > 0 ? rows[firstIndex - 1]!.runningBalance : 0;
+  }, [activeFilterCount, rows, visibleRows]);
 
   const clearFilters = () => {
+
     setContractFilter("");
     setExternalFilter("");
     setTypeFilter("all");
@@ -273,7 +282,15 @@ function LedgerPage() {
             )}
           </div>
 
+          {openingBalance !== null && (
+            <div className="flex items-center justify-between border-b border-hair bg-canvas px-5 py-2 text-xs">
+              <span className="text-subtle">Balance before this view</span>
+              <span className="font-bold tabular-nums text-ink">{numberFmt.format(openingBalance)}</span>
+            </div>
+          )}
+
           <div className="overflow-x-auto">
+
             <table className="w-full min-w-[840px] text-left">
               <thead>
                 <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle">
