@@ -273,7 +273,6 @@ function ContractBalances() {
                 >
                   <div>
                     <div className="flex items-center gap-2"><span className="text-sm font-semibold">{contract.contractId}</span><StatusPill status={contract.contractStatus} /></div>
-                    <div className="mt-1 text-xs text-subtle">Deal {contract.dealNumber}</div>
                   </div>
                   <div className="text-sm font-medium">{contract.counterparty}</div>
                   <div className="text-xs text-subtle">{contract.dealNumber}</div>
