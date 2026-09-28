@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { numberFmt, type AssignmentType, type RinCode } from "@/lib/contracts-data";
+import { getContract, numberFmt, type AssignmentType, type RinCode } from "@/lib/contracts-data";
 import {
   CLIENT_ID,
   CLIENT_NAME,
@@ -287,26 +287,27 @@ function LedgerPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1040px] text-left">
+            <table className="w-full min-w-[920px] text-left">
               <thead>
                 <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle">
-                  <th className="px-4 py-2 font-medium">Date</th>
-                  <th className="px-4 py-2 font-medium">Ledger item</th>
-                  <th className="px-4 py-2 font-medium">Type</th>
-                  <th className="px-4 py-2 font-medium">Contract</th>
-                  <th className="px-4 py-2 font-medium">Transaction</th>
-                  <th className="px-4 py-2 font-medium">Fuel / year</th>
-                  <th className="px-4 py-2 font-medium">Assignment</th>
-                  <th className="px-4 py-2 font-medium">QAP</th>
-                  <th className="px-4 py-2 text-right font-medium">Quantity</th>
-                  <th className="px-4 py-2 text-right font-medium">Balance</th>
+                  <th className="px-5 py-2.5 font-medium">Ledger item</th>
+                  <th className="px-5 py-2.5 font-medium">Type</th>
+                  <th className="px-5 py-2.5 font-medium">Contract</th>
+                  <th className="px-5 py-2.5 font-medium">Transaction</th>
+                  <th className="px-5 py-2.5 font-medium">Fuel</th>
+                  <th className="px-5 py-2.5 font-medium">Assignment</th>
+                  <th className="px-5 py-2.5 text-right font-medium">Quantity</th>
+                  <th className="px-5 py-2.5 text-right font-medium">Balance</th>
                 </tr>
               </thead>
               <tbody>
-                {pageRows.map((row) => (
+                {pageRows.map((row) => {
+                  const dealNumber = row.buyContractId
+                    ? getContract(row.buyContractId)?.dealNumber ?? null
+                    : null;
+                  return (
                   <tr key={row.ledgerItemId} className="border-b border-hair last:border-0 hover:bg-table-head">
-                    <td className="whitespace-nowrap px-4 py-3 text-xs text-subtle">{formatLedgerDate(row.timestamp)}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
                         <div className="text-xs font-semibold">{row.ledgerItemId}</div>
                         {row.notes && (
@@ -323,9 +324,10 @@ function LedgerPage() {
                           </HoverCard>
                         )}
                       </div>
+                      <div className="mt-0.5 text-[11px] text-subtle">{formatLedgerDate(row.timestamp)}</div>
                     </td>
-                    <td className="px-4 py-3"><TypePill type={row.ledgerItemType} /></td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5"><TypePill type={row.ledgerItemType} /></td>
+                    <td className="whitespace-nowrap px-5 py-3.5">
                       <div className="text-xs font-semibold">
                         {row.buyContractId ? (
                           <Link to="/contracts/$contractId" params={{ contractId: row.buyContractId }} className="text-primary hover:underline">
@@ -335,38 +337,41 @@ function LedgerPage() {
                           <span className="text-subtle">Unassigned</span>
                         )}
                       </div>
-                      <div className="mt-0.5 text-[11px] text-subtle">{row.sourceSystemContractId ?? "—"}</div>
+                      <div className="mt-0.5 text-[11px] text-subtle">{dealNumber ?? "—"}</div>
                     </td>
-                    <td className="px-4 py-3 text-xs text-subtle">{row.transactionId ?? "—"}</td>
-                    <td className="px-4 py-3">
+                    <td className="whitespace-nowrap px-5 py-3.5 text-xs text-subtle">{row.transactionId ?? "—"}</td>
+                    <td className="px-5 py-3.5">
                       {row.fuelCode ? (
-                        <div className="flex items-center gap-2">
-                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[row.fuelCode]}`}>{row.fuelCode}</span>
-                          <span className="text-[11px] font-semibold text-subtle">{row.fuelYear ?? ""}</span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[row.fuelCode]}`}>{row.fuelCode}</span>
+                            <span className="text-[11px] font-semibold text-subtle">{row.fuelYear ?? ""}</span>
+                          </div>
+                          {row.qapServiceType && (
+                            <div className="mt-1 text-[11px] text-subtle">{qapServiceTypeLabel[row.qapServiceType]}</div>
+                          )}
                         </div>
                       ) : (
                         <span className="text-xs text-subtle">{row.fuelYear ?? "—"}</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       {row.assignmentType ? <AssignmentMark type={row.assignmentType} /> : <span className="text-xs text-subtle">—</span>}
                     </td>
-                    <td className="px-4 py-3 text-xs text-subtle">
-                      {row.qapServiceType ? qapServiceTypeLabel[row.qapServiceType] : "—"}
-                    </td>
-                    <td className={`px-4 py-3 text-right text-xs font-bold tabular-nums ${row.quantity >= 0 ? "text-ink" : "text-rose"}`}>
+                    <td className={`px-5 py-3.5 text-right text-xs font-bold tabular-nums ${row.quantity >= 0 ? "text-ink" : "text-rose"}`}>
                       {row.quantity > 0 ? `+${numberFmt.format(row.quantity)}` : numberFmt.format(row.quantity)}
                     </td>
-                    <td className="px-4 py-3 text-right text-xs font-bold tabular-nums text-ink">
+                    <td className="px-5 py-3.5 text-right text-xs font-bold tabular-nums text-ink">
                       {numberFmt.format(row.runningBalance)}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
               {visibleRows.length > 0 && (
                 <tfoot>
                   <tr className="border-t border-hair bg-table-head text-[11px] font-bold uppercase text-subtle">
-                    <td className="px-4 py-3" colSpan={8}>Totals in view</td>
+                    <td className="px-5 py-3" colSpan={6}>Totals in view</td>
                     <td className={`px-4 py-3 text-right tabular-nums ${credits - debits >= 0 ? "text-ink" : "text-rose"}`}>
                       {credits - debits > 0 ? `+${numberFmt.format(credits - debits)}` : numberFmt.format(credits - debits)}
                     </td>
