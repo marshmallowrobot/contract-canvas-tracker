@@ -193,6 +193,7 @@ function ContractDetail() {
   const isRemovable = contract.contractStatus === "open";
   const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
   const startingRins = contract.outstandingRins + appliedRins;
+  const overdue = contract.status === "overdue";
   const pageCount = Math.max(1, Math.ceil(contract.transactions.length / TRANSACTIONS_PER_PAGE));
   const pageStart = (page - 1) * TRANSACTIONS_PER_PAGE;
   const sortedTransactions = [...contract.transactions].sort((a, b) => Date.parse(`${b.date}, 2026`) - Date.parse(`${a.date}, 2026`));
@@ -256,7 +257,18 @@ function ContractDetail() {
                 {contract.contractId}
               </h1>
               <div className="mt-1 text-sm text-subtle">
-                Deal #{contract.dealNumber} · {contract.dueDate ? `due ${contract.dueDate}` : "no due date"}
+                Deal #{contract.dealNumber} ·{" "}
+                {contract.dueDate ? (
+                  overdue ? (
+                    <span className="font-semibold text-rose">
+                      due {contract.dueDate} · {contract.dueNote}
+                    </span>
+                  ) : (
+                    `due ${contract.dueDate}`
+                  )
+                ) : (
+                  "no due date"
+                )}
               </div>
             </div>
             <div className="flex gap-3">
@@ -266,9 +278,15 @@ function ContractDetail() {
                   {numberFmt.format(startingRins)}
                 </div>
               </div>
-              <div className="min-w-[160px] rounded-md border border-hair bg-table-head px-5 py-4 text-right">
-                <div className="text-xs font-semibold text-subtle">Outstanding RINs</div>
-                <div className="mt-1 font-display text-2xl font-bold tabular-nums text-primary">
+              <div
+                className={`min-w-[160px] rounded-md border px-5 py-4 text-right ${
+                  overdue ? "border-rose/40 bg-rose-soft/40" : "border-hair bg-table-head"
+                }`}
+              >
+                <div className={`text-xs font-semibold ${overdue ? "text-rose" : "text-subtle"}`}>
+                  Outstanding RINs
+                </div>
+                <div className={`mt-1 font-display text-2xl font-bold tabular-nums ${overdue ? "text-rose" : "text-primary"}`}>
                   {numberFmt.format(contract.outstandingRins)}
                 </div>
               </div>
