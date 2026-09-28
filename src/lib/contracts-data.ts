@@ -256,7 +256,7 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Jan 04",
-        reference: "91002",
+        reference: "23891002",
         description: "42,000 gal ethanol receipt",
         rinCode: "D7",
         vintageYear: 2026,
@@ -270,7 +270,7 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Jan 26",
-        reference: "91088",
+        reference: "23891088",
         description: "RIN separation credit",
         rinCode: "D5",
         vintageYear: 2026,
@@ -284,7 +284,7 @@ export const contracts: Contract[] = [
       {
         id: "t3",
         date: "Feb 11",
-        reference: "91140",
+        reference: "23891140",
         description: "14,800 gal ethanol receipt",
         rinCode: "D4",
         vintageYear: 2025,
@@ -329,7 +329,7 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Feb 02",
-        reference: "91121",
+        reference: "23891121",
         description: "RIN separation credit",
         rinCode: "D5",
         vintageYear: 2025,
@@ -374,7 +374,7 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Feb 06",
-        reference: "91130",
+        reference: "23891130",
         description: "RIN separation credit",
         rinCode: "D7",
         vintageYear: 2026,
@@ -435,7 +435,7 @@ export const contracts: Contract[] = [
       {
         id: "t3",
         date: "Feb 19",
-        reference: "91200",
+        reference: "23891200",
         description: "Remaining balance write-down at termination",
         rinCode: "D6",
         vintageYear: 2026,
@@ -506,7 +506,7 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Feb 09",
-        reference: "91136",
+        reference: "23891136",
         description: "RIN separation credit",
         rinCode: "D3",
         vintageYear: 2025,
@@ -537,7 +537,7 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Jan 22",
-        reference: "91040",
+        reference: "23891040",
         description: "48,000 gal HFO receipt",
         rinCode: "D7",
         vintageYear: 2026,
@@ -551,7 +551,7 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Feb 12",
-        reference: "91148",
+        reference: "23891148",
         description: "RIN separation credit",
         rinCode: "D5",
         vintageYear: 2026,
@@ -596,7 +596,7 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Jan 27",
-        reference: "91095",
+        reference: "23891095",
         description: "Final settlement",
         rinCode: "D6",
         vintageYear: 2026,
