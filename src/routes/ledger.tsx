@@ -18,7 +18,6 @@ import {
   formatLedgerDate,
   ledgerItemTypeMeta,
   ledgerItems,
-  qapServiceTypeLabel,
   type LedgerItemType,
 } from "@/lib/ledger-data";
 
