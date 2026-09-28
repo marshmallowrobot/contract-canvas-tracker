@@ -86,16 +86,6 @@ function StatCard({ label, value, note, tone }: { label: string; value: string; 
   );
 }
 
-function identifiers(contract: Contract) {
-  const firstPtd = contract.ptd[0];
-  const remainingPtd = Math.max(contract.ptd.length - 1, 0);
-  return (
-    <div className="space-y-1 text-xs text-subtle">
-      <div className="font-medium text-ink">{firstPtd ?? "No PTD"}{remainingPtd ? ` +${remainingPtd}` : ""}</div>
-      <div>{contract.billOfLading.length} B/L · {contract.invoices.length} invoices</div>
-    </div>
-  );
-}
 
 function ContractBalances() {
   const [statusFilter, setStatusFilter] = useState("all");
@@ -262,10 +252,11 @@ function ContractBalances() {
           </div>
           <div className="overflow-x-auto">
             <div className="min-w-[760px]">
-              <div className="grid grid-cols-[190px_220px_minmax(180px,1fr)_120px_125px] items-center gap-3 border-b border-hair bg-table-head px-5 py-2 text-[10px] font-bold uppercase text-subtle">
+              <div className="grid grid-cols-[180px_200px_100px_120px_120px_120px] items-center gap-3 border-b border-hair bg-table-head px-5 py-2 text-[10px] font-bold uppercase text-subtle">
                 <SortHeader label="Contract" field="contractId" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <SortHeader label="Trading Partner" field="counterparty" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
-                <span>Identifiers</span>
+                <span>Deal</span>
+                <span>Buys</span>
                 <SortHeader label="Due date" field="dueDate" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <div className="flex justify-end">
                   <SortHeader label="RIN balance" field="rinBalance" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
