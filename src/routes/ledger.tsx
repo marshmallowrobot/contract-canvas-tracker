@@ -18,7 +18,6 @@ import {
   formatLedgerDate,
   ledgerItemTypeMeta,
   ledgerItems,
-  qapServiceTypeLabel,
   type LedgerItemType,
 } from "@/lib/ledger-data";
 
@@ -52,9 +51,9 @@ function AssignmentMark({ type }: { type: AssignmentType }) {
     <span
       title={assigned ? "Assigned" : "Separated"}
       aria-label={assigned ? "Assigned" : "Separated"}
-      className={`inline-flex size-7 items-center justify-center rounded-sm border ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}
+      className={`inline-flex size-5 items-center justify-center rounded-sm border ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}
     >
-      {assigned ? <ArrowUp className="size-3.5" strokeWidth={2.4} /> : <Split className="size-3.5" strokeWidth={2.4} />}
+      {assigned ? <ArrowUp className="size-3" strokeWidth={2.6} /> : <Split className="size-3" strokeWidth={2.6} />}
     </span>
   );
 }
@@ -344,15 +343,10 @@ function LedgerPage() {
                     <td className="whitespace-nowrap px-5 py-3.5 text-xs text-subtle">{row.transactionId ?? "—"}</td>
                     <td className="px-5 py-3.5">
                       {row.fuelCode ? (
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[row.fuelCode]}`}>{row.fuelCode}</span>
-                            <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{row.fuelYear}</span>
-                            {row.assignmentType && <AssignmentMark type={row.assignmentType} />}
-                          </div>
-                          {row.qapServiceType && (
-                            <div className="mt-1 text-[11px] text-subtle">{qapServiceTypeLabel[row.qapServiceType]}</div>
-                          )}
+                        <div className="flex items-center gap-2">
+                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[row.fuelCode]}`}>{row.fuelCode}</span>
+                          <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{row.fuelYear}</span>
+                          {row.assignmentType && <AssignmentMark type={row.assignmentType} />}
                         </div>
                       ) : (
                         <span className="text-xs text-subtle">—</span>
