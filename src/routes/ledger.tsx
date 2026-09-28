@@ -49,9 +49,12 @@ const rinCodeClass: Record<RinCode, string> = {
 function AssignmentMark({ type }: { type: AssignmentType }) {
   const assigned = type === "assigned";
   return (
-    <span className={`inline-flex items-center gap-1 rounded-sm border px-2 py-1 text-[10px] font-bold uppercase ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-subtle"}`}>
-      {assigned ? "Assigned" : "Separated"}
-      {assigned ? <ArrowUp className="size-3" strokeWidth={2.2} /> : <Split className="size-3" strokeWidth={2.2} />}
+    <span
+      title={assigned ? "Assigned" : "Separated"}
+      aria-label={assigned ? "Assigned" : "Separated"}
+      className={`inline-flex size-7 items-center justify-center rounded-sm border ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}
+    >
+      {assigned ? <ArrowUp className="size-3.5" strokeWidth={2.4} /> : <Split className="size-3.5" strokeWidth={2.4} />}
     </span>
   );
 }
