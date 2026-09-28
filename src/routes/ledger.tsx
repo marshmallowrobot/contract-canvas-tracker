@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { getContract, numberFmt, type AssignmentType, type RinCode } from "@/lib/contracts-data";
 import {
-  CLIENT_ID,
+  EPA_ID,
   CLIENT_NAME,
   formatLedgerDate,
   ledgerItemTypeMeta,
