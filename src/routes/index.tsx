@@ -232,11 +232,11 @@ function ContractBalances() {
                     </Select>
                   </label>
                   <label className="block">
-                    <span className="text-[11px] font-bold uppercase text-ink">Counterparty</span>
+                    <span className="text-[11px] font-bold uppercase text-ink">Trading Partner</span>
                     <Select value={counterpartyFilter} onValueChange={setCounterpartyFilter}>
-                      <SelectTrigger aria-label="Filter by counterparty" className="mt-1 bg-panel"><SelectValue placeholder="All counterparties" /></SelectTrigger>
+                      <SelectTrigger aria-label="Filter by trading partner" className="mt-1 bg-panel"><SelectValue placeholder="All trading partners" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All counterparties</SelectItem>
+                        <SelectItem value="all">All trading partners</SelectItem>
                         {counterparties.map((counterparty) => <SelectItem key={counterparty} value={counterparty}>{counterparty}</SelectItem>)}
                       </SelectContent>
                     </Select>
