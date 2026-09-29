@@ -129,7 +129,7 @@ function contractEntries(): Draft[] {
       };
       out.push({ ...base, ...fuel, timestamp: t.iso, ledgerItemType: "reconciled_buy", quantity: -t.rinApplied, transactionId: t.transactionId, createdBy: user(ti + 1) });
       if (t.txStatus === "failed") {
-        out.push({ ...base, ...fuel, timestamp: addDays(t.iso, 2), ledgerItemType: "automated_correction", quantity: t.rinApplied, transactionId: null, createdBy: "System" });
+        out.push({ ...base, ...fuel, timestamp: addDays(t.iso, 2), ledgerItemType: "automated_correction", quantity: t.rinApplied, transactionId: t.transactionId, createdBy: "System" });
       }
     });
 
