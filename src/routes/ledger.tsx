@@ -259,7 +259,7 @@ function LedgerPage() {
                       value={contractFilter}
                       onChange={(event) => setContractFilter(event.target.value)}
                       aria-label="Filter by buy contract ID"
-                      placeholder="e.g. CT-4821"
+                      placeholder="Exact match, e.g. CT-4821"
                       className={inputClass}
                     />
                   </label>
@@ -269,7 +269,7 @@ function LedgerPage() {
                       value={dealFilter}
                       onChange={(event) => setDealFilter(event.target.value)}
                       aria-label="Filter by deal number"
-                      placeholder="e.g. CONTI26TP0002"
+                      placeholder="Exact match, e.g. CONTI26TP0002"
                       className={inputClass}
                     />
                   </label>
