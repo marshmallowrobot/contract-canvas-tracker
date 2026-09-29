@@ -87,6 +87,7 @@ function LedgerPage() {
   const [ledgerItemFilter, setLedgerItemFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [assignmentFilter, setAssignmentFilter] = useState("all");
   const [dateSort, setDateSort] = useState<SortDirection>("desc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
   const [page, setPage] = useState(1);
@@ -137,6 +138,10 @@ function LedgerPage() {
         if (dealNumber.toLowerCase() !== deal) return false;
       }
       if (typeFilter !== "all" && row.ledgerItemType !== typeFilter) return false;
+      if (assignmentFilter !== "all") {
+        const wanted = assignmentFilter === "assigned" ? "assigned" : "separated";
+        if (row.assignmentType !== wanted) return false;
+      }
       if (transaction && !(row.transactionId ?? "").toLowerCase().includes(transaction)) return false;
       if (ledgerItem && !row.ledgerItemId.toLowerCase().includes(ledgerItem)) return false;
       if (fromDate && row.timestamp < fromDate) return false;
