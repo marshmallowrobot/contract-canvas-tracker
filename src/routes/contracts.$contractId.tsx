@@ -358,8 +358,8 @@ function ContractDetail() {
             <thead>
               <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle">
                 <th className="px-4 py-2 font-medium">Date</th>
-                <th className="px-4 py-2 font-medium">Reference</th>
-                <th className="px-4 py-2 font-medium">Detail</th>
+                <th className="px-4 py-2 font-medium">Transaction Id</th>
+                <th className="px-4 py-2 font-medium">PTD Number</th>
                 <th className="px-4 py-2 font-medium">Fuel</th>
                 <th className="px-4 py-2 font-medium">Status</th>
                 <th className="px-4 py-2 text-right font-medium">RINs</th>
@@ -370,8 +370,8 @@ function ContractDetail() {
               {visibleTransactions.map((t) => (
                 <tr key={t.id} className="border-b border-hair last:border-0">
                   <td className="px-4 py-3 text-xs text-subtle">{t.date}</td>
-                  <td className="px-4 py-3 text-xs font-semibold">{t.reference}</td>
-                  <td className="px-4 py-2.5 text-[13px] text-subtle">{t.description}</td>
+                  <td className="px-4 py-3 text-xs font-semibold tabular-nums">{t.transactionId}</td>
+                  <td className="px-4 py-2.5 text-[13px] text-subtle">{t.ptdNumber}</td>
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-2">
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[t.rinCode]}`}>{t.rinCode}</span>
