@@ -194,3 +194,10 @@ const unreconciledBuys: Draft[] = [
 export const ledgerItems: LedgerItem[] = [...contractEntries(), ...unreconciledBuys]
   .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
   .map((d, i) => ({ ...d, ledgerItemId: `LI-${100001 + i}`, clientId: CLIENT_ID }));
+
+/** Formats an ISO date (YYYY-MM-DD) as e.g. "Dec 02, 2025". */
+export function formatLedgerDate(iso: string): string {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
+    month: "short", day: "2-digit", year: "numeric", timeZone: "UTC",
+  });
+}
