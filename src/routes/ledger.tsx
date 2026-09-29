@@ -102,6 +102,29 @@ function LedgerPage() {
     });
   }, []);
 
+  /** Filtering by contract or deal number is a special case: the Balance
+   * column then shows that contract's own running balance instead of the
+   * client-wide one. */
+  const contractScopeActive = Boolean(contractFilter.trim() || dealFilter.trim());
+
+  const scopedBalances = useMemo(() => {
+    if (!contractScopeActive) return new Map<string, number>();
+    const contract = contractFilter.trim().toLowerCase();
+    const deal = dealFilter.trim().toLowerCase();
+    let balance = 0;
+    const map = new Map<string, number>();
+    for (const row of rows) {
+      const inScope =
+        (contract && (row.buyContractId ?? "unassigned").toLowerCase().includes(contract)) ||
+        (deal && (row.buyContractId ? (getContract(row.buyContractId)?.dealNumber ?? "").toLowerCase().includes(deal) : false));
+      if (inScope) {
+        balance += row.quantity;
+        map.set(row.ledgerItemId, balance);
+      }
+    }
+    return map;
+  }, [contractScopeActive, contractFilter, dealFilter, rows]);
+
   const visibleRows = useMemo(() => {
     const contract = contractFilter.trim().toLowerCase();
     const deal = dealFilter.trim().toLowerCase();
@@ -150,12 +173,21 @@ function LedgerPage() {
 
   /** With filters active, anchor the slice: the running balance of the last
    * row hidden just before the first visible one (0 when the slice starts
-   * at the very beginning of the ledger). */
+   * at the very beginning of the ledger). Only meaningful when the Balance
+   * column is shown — unfiltered, or scoped to a contract/deal. */
   const openingBalance = useMemo(() => {
     if (activeFilterCount === 0 || visibleRows.length === 0) return null;
     const firstIndex = rows.findIndex((row) => row.ledgerItemId === visibleRows[0]!.ledgerItemId);
+    if (contractScopeActive) {
+      const prior = rows.slice(0, firstIndex).filter((row) => scopedBalances.has(row.ledgerItemId));
+      return prior.length ? scopedBalances.get(prior[prior.length - 1]!.ledgerItemId)! : 0;
+    }
     return firstIndex > 0 ? rows[firstIndex - 1]!.runningBalance : 0;
-  }, [activeFilterCount, rows, visibleRows]);
+  }, [activeFilterCount, contractScopeActive, rows, scopedBalances, visibleRows]);
+
+  /** Balance column: shown unfiltered (client-wide) or when scoped to a
+   * contract/deal (that contract's balance); hidden for any other filter. */
+  const showBalance = activeFilterCount === 0 || contractScopeActive;
 
   const clearFilters = () => {
     setContractFilter("");
@@ -305,7 +337,7 @@ function LedgerPage() {
             )}
           </div>
 
-          {openingBalance !== null && (
+          {showBalance && openingBalance !== null && (
             <div className="flex items-center justify-between border-b border-hair bg-canvas px-5 py-2 text-xs">
               <span className="text-subtle">Balance before this view</span>
               <span className="font-bold tabular-nums text-ink">{numberFmt.format(openingBalance)}</span>
@@ -334,7 +366,7 @@ function LedgerPage() {
                   <th className="px-5 py-2.5 font-medium">Transaction</th>
                   <th className="px-5 py-2.5 font-medium">Fuel</th>
                   <th className="px-5 py-2.5 text-right font-medium">Quantity</th>
-                  <th className="px-5 py-2.5 text-right font-medium">Balance</th>
+                  {showBalance && <th className="px-5 py-2.5 text-right font-medium">Balance</th>}
                 </tr>
               </thead>
               <tbody>
@@ -394,9 +426,11 @@ function LedgerPage() {
                     <td className={`px-5 py-3.5 text-right text-xs font-bold tabular-nums ${row.quantity >= 0 ? "text-ink" : "text-rose"}`}>
                       {row.quantity > 0 ? `+${numberFmt.format(row.quantity)}` : numberFmt.format(row.quantity)}
                     </td>
-                    <td className="px-5 py-3.5 text-right text-xs font-bold tabular-nums text-ink">
-                      {numberFmt.format(row.runningBalance)}
-                    </td>
+                    {showBalance && (
+                      <td className="px-5 py-3.5 text-right text-xs font-bold tabular-nums text-ink">
+                        {numberFmt.format(contractScopeActive ? scopedBalances.get(row.ledgerItemId) ?? row.runningBalance : row.runningBalance)}
+                      </td>
+                    )}
                   </tr>
                   );
                 })}
@@ -408,9 +442,15 @@ function LedgerPage() {
                     <td className={`px-4 py-3 text-right tabular-nums ${credits - debits >= 0 ? "text-ink" : "text-rose"}`}>
                       {credits - debits > 0 ? `+${numberFmt.format(credits - debits)}` : numberFmt.format(credits - debits)}
                     </td>
-                    <td className="px-4 py-3 text-right tabular-nums text-ink">
-                      {numberFmt.format(visibleRows[visibleRows.length - 1]?.runningBalance ?? 0)}
-                    </td>
+                    {showBalance && (
+                      <td className="px-4 py-3 text-right tabular-nums text-ink">
+                        {numberFmt.format(
+                          contractScopeActive
+                            ? scopedBalances.get(visibleRows[visibleRows.length - 1]!.ledgerItemId) ?? 0
+                            : visibleRows[visibleRows.length - 1]?.runningBalance ?? 0,
+                        )}
+                      </td>
+                    )}
                   </tr>
                 </tfoot>
               )}
