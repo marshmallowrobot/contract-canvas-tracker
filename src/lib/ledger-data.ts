@@ -27,8 +27,8 @@ export type LedgerItem = {
   /** Signed RIN quantity (+ increases the balance, - decreases it). */
   quantity: number;
   transactionId: string | null;
-  /** Who or what generated this entry. System entries name the process;
-   * user-created entries carry a user id. */
+  /** Only Automated Corrections are system-generated. Every other entry is
+   * initiated by a user and carries that user's id. */
   createdBy: string;
   fuelCode: RinCode | null;
   fuelYear: number | null;
