@@ -342,7 +342,10 @@ function LedgerPage() {
                       </div>
                       <div className="mt-0.5 text-[11px] text-subtle">{dealNumber ?? "—"}</div>
                     </td>
-                    <td className="whitespace-nowrap px-5 py-3.5 text-xs text-subtle">{row.transactionId ?? "—"}</td>
+                    <td className="whitespace-nowrap px-5 py-3.5 text-xs text-subtle">
+                      {row.transactionId ?? "—"}
+                      <div className="mt-0.5 text-[11px]">{row.createdBy}</div>
+                    </td>
                     <td className="px-5 py-3.5">
                       {row.fuelCode ? (
                         <div className="flex items-center gap-2">
