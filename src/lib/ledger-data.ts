@@ -28,7 +28,7 @@ export type LedgerItem = {
   quantity: number;
   transactionId: string | null;
   /** Only Automated Corrections are system-generated. Every other entry is
-   * initiated by a user and carries that user's id. */
+   * initiated by a user; only the user's name is displayed. */
   createdBy: string;
   fuelCode: RinCode | null;
   fuelYear: number | null;
