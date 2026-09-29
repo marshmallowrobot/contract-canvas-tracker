@@ -5,7 +5,6 @@ export type CandidateContract = {
   dealNumber: string;
   partner: string;
   dueDate: string | null;
-  expectedRins: number;
   outstandingRins: number;
   matchedOn: string;
 };
@@ -44,7 +43,7 @@ export const pendingBuys: PendingBuy[] = [
   { id: "PB-80221", contractId: null, dealNumber: null, partner: "Bluewater Trading", received: "Sep 26, 2026", dueDate: null, invoice: "INV-70459", expectedRins: null, rins: 2850, fuel: "D6", year: 2025, assignment: "separated", qap: "Unverified", ptd: "PTD 1558052", bol: "BOL-871285", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
   { id: "PB-80222", contractId: null, dealNumber: null, partner: "Evergreen Refinery", received: "Sep 29, 2026", dueDate: null, invoice: "INV-70466", expectedRins: null, rins: 6400, fuel: "D6", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558058", bol: "BOL-871292", match: "needs-review", reason: "This buy's PTD number appears on 2 imported buy contracts. Choose which contract the buy applies to.",
     candidateContracts: [
-      { contractId: "CT-4917", dealNumber: "EVERG26TP0031", partner: "Evergreen Refinery", dueDate: "Nov 2, 2026", expectedRins: 6400, outstandingRins: 6400, matchedOn: "PTD 1558058" },
-      { contractId: "CT-4918", dealNumber: "EVERG26TP0032", partner: "Evergreen Refinery", dueDate: "Nov 14, 2026", expectedRins: 9800, outstandingRins: 9800, matchedOn: "PTD 1558058" },
+      { contractId: "CT-4917", dealNumber: "EVERG26TP0031", partner: "Evergreen Refinery", dueDate: "Nov 2, 2026", outstandingRins: 6400, matchedOn: "PTD 1558058" },
+      { contractId: "CT-4918", dealNumber: "EVERG26TP0032", partner: "Evergreen Refinery", dueDate: "Nov 14, 2026", outstandingRins: 9800, matchedOn: "PTD 1558058" },
     ] },
 ];
