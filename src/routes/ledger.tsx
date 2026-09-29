@@ -337,7 +337,7 @@ function LedgerPage() {
             )}
           </div>
 
-          {openingBalance !== null && (
+          {showBalance && openingBalance !== null && (
             <div className="flex items-center justify-between border-b border-hair bg-canvas px-5 py-2 text-xs">
               <span className="text-subtle">Balance before this view</span>
               <span className="font-bold tabular-nums text-ink">{numberFmt.format(openingBalance)}</span>
@@ -366,7 +366,7 @@ function LedgerPage() {
                   <th className="px-5 py-2.5 font-medium">Transaction</th>
                   <th className="px-5 py-2.5 font-medium">Fuel</th>
                   <th className="px-5 py-2.5 text-right font-medium">Quantity</th>
-                  <th className="px-5 py-2.5 text-right font-medium">Balance</th>
+                  {showBalance && <th className="px-5 py-2.5 text-right font-medium">Balance</th>}
                 </tr>
               </thead>
               <tbody>
@@ -426,9 +426,11 @@ function LedgerPage() {
                     <td className={`px-5 py-3.5 text-right text-xs font-bold tabular-nums ${row.quantity >= 0 ? "text-ink" : "text-rose"}`}>
                       {row.quantity > 0 ? `+${numberFmt.format(row.quantity)}` : numberFmt.format(row.quantity)}
                     </td>
-                    <td className="px-5 py-3.5 text-right text-xs font-bold tabular-nums text-ink">
-                      {numberFmt.format(row.runningBalance)}
-                    </td>
+                    {showBalance && (
+                      <td className="px-5 py-3.5 text-right text-xs font-bold tabular-nums text-ink">
+                        {numberFmt.format(contractScopeActive ? scopedBalances.get(row.ledgerItemId) ?? row.runningBalance : row.runningBalance)}
+                      </td>
+                    )}
                   </tr>
                   );
                 })}
@@ -440,9 +442,15 @@ function LedgerPage() {
                     <td className={`px-4 py-3 text-right tabular-nums ${credits - debits >= 0 ? "text-ink" : "text-rose"}`}>
                       {credits - debits > 0 ? `+${numberFmt.format(credits - debits)}` : numberFmt.format(credits - debits)}
                     </td>
-                    <td className="px-4 py-3 text-right tabular-nums text-ink">
-                      {numberFmt.format(visibleRows[visibleRows.length - 1]?.runningBalance ?? 0)}
-                    </td>
+                    {showBalance && (
+                      <td className="px-4 py-3 text-right tabular-nums text-ink">
+                        {numberFmt.format(
+                          contractScopeActive
+                            ? scopedBalances.get(visibleRows[visibleRows.length - 1]!.ledgerItemId) ?? 0
+                            : visibleRows[visibleRows.length - 1]?.runningBalance ?? 0,
+                        )}
+                      </td>
+                    )}
                   </tr>
                 </tfoot>
               )}
