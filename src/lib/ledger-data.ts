@@ -1,4 +1,4 @@
-import type { AssignmentType, RinCode } from "./contracts-data";
+import { contracts, type AssignmentType, type RinCode } from "./contracts-data";
 
 /**
  * Business event that created a ledger row.
@@ -59,70 +59,95 @@ export const EPA_ID = "48217";
 export const CLIENT_NAME = "Evergreen Fuels Group";
 
 
-/** Sample ledger rows, oldest first.
- *
- * Fuel fields (fuelCode, fuelYear, assignmentType, qapServiceType) are only
- * populated for reconciled buys, unreconciled buys, and automated corrections
- * — and when present, all four are set together. Starting balances,
- * cancellations, and terminations carry no fuel info.
- *
- * Unreconciled buys have both buyContractId and sourceSystemContractId null.
- *
- * Notes are system-generated; this prototype has no notes set.
+/**
+ * Ledger rows are derived from the contract sample data so every contract and
+ * buy transaction is represented consistently:
+ *  - every contract opens with a Starting Balance
+ *  - every buy transaction (completed or failed) posts a Reconciled Buy, since
+ *    entries are created optimistically before EMTS processes the buy
+ *  - every failed transaction also gets a system Automated Correction that
+ *    restores the quantity
+ *  - cancelled contracts get a Contract Cancellation offsetting the Starting Balance
+ *  - terminated contracts get a Contract Termination offsetting the remaining balance
+ *  - settled contracts need no extra entry (their balance is already 0)
+ * Unreconciled Buys have no contract and are listed separately below.
  */
-export const ledgerItems: LedgerItem[] = [
+const USERS = ["M. Alvarez", "D. Okafor"];
+
+const MONTHS: Record<string, string> = {
+  Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
+  Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12",
+};
+
+/** Prototype dates omit the year: Aug–Dec = 2025, Jan–Jul = 2026. */
+function toIso(date: string): string {
+  const [mon, day] = date.split(" ");
+  const m = MONTHS[mon];
+  const year = Number(m) >= 8 ? 2025 : 2026;
+  return `${year}-${m}-${day.padStart(2, "0")}`;
+}
+
+function addDays(iso: string, days: number): string {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Opening date for contracts with no transactions. */
+const OPENED_WITHOUT_TX: Record<string, string> = {
+  "CT-4730": "2026-02-02",
+  "CT-4718": "2026-01-20",
+};
+
+type Draft = Omit<LedgerItem, "ledgerItemId" | "clientId">;
+
+const noFuel = { fuelCode: null, fuelYear: null, assignmentType: null, qapServiceType: null } as const;
+
+function contractEntries(): Draft[] {
+  const out: Draft[] = [];
+  contracts.forEach((c, ci) => {
+    const user = (n: number) => USERS[(ci + n) % USERS.length];
+    const base = { buyContractId: c.contractId, sourceSystemContractId: c.dealNumber, notes: null };
+    const txs = [...c.transactions]
+      .map((t) => ({ ...t, iso: toIso(t.date) }))
+      .sort((a, b) => a.iso.localeCompare(b.iso));
+    const completed = txs.filter((t) => t.txStatus === "completed").reduce((s, t) => s + t.rinApplied, 0);
+    const starting =
+      c.contractStatus === "cancelled"
+        ? c.cancelledRins ?? 0
+        : c.outstandingRins + completed + (c.writtenDownRins ?? 0);
+    const opened = txs.length ? addDays(txs[0].iso, -3) : OPENED_WITHOUT_TX[c.contractId] ?? "2026-01-01";
+
+    out.push({ ...base, ...noFuel, timestamp: opened, ledgerItemType: "starting_balance", quantity: starting, transactionId: null, createdBy: user(0) });
+
+    txs.forEach((t, ti) => {
+      const fuel = {
+        fuelCode: t.rinCode,
+        fuelYear: t.vintageYear,
+        assignmentType: t.assignmentType,
+        qapServiceType: (ti % 3 === 2 ? "unverified" : "q_rin") as QapServiceType,
+      };
+      out.push({ ...base, ...fuel, timestamp: t.iso, ledgerItemType: "reconciled_buy", quantity: -t.rinApplied, transactionId: t.transactionId, createdBy: user(ti + 1) });
+      if (t.txStatus === "failed") {
+        out.push({ ...base, ...fuel, timestamp: addDays(t.iso, 2), ledgerItemType: "automated_correction", quantity: t.rinApplied, transactionId: null, createdBy: "System" });
+      }
+    });
+
+    const last = txs.length ? txs[txs.length - 1].iso : opened;
+    if (c.contractStatus === "cancelled") {
+      out.push({ ...base, ...noFuel, timestamp: addDays(last, 5), ledgerItemType: "contract_cancellation", quantity: -starting, transactionId: null, createdBy: user(1) });
+    }
+    if (c.contractStatus === "terminated" && c.writtenDownRins) {
+      out.push({ ...base, ...noFuel, timestamp: addDays(last, 7), ledgerItemType: "contract_termination", quantity: -c.writtenDownRins, transactionId: null, createdBy: user(1) });
+    }
+  });
+  return out;
+}
+
+/** Loose RIN buys not tied to any contract (added to the Unassigned pool). */
+const unreconciledBuys: Draft[] = [
   {
-    ledgerItemId: "LI-100001",
-    timestamp: "2025-10-01",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4821",
-    sourceSystemContractId: "EXT-88120",
-    ledgerItemType: "starting_balance",
-    createdBy: "M. Alvarez",
-    quantity: 51000,
-    transactionId: null,
-    fuelCode: null,
-    fuelYear: null,
-    assignmentType: null,
-    qapServiceType: null,
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100002",
-    timestamp: "2025-10-03",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4821",
-    sourceSystemContractId: "EXT-88120",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "D. Okafor",
-    quantity: -4800,
-    transactionId: "23890318",
-    fuelCode: "D4",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100003",
-    timestamp: "2025-10-14",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4821",
-    sourceSystemContractId: "EXT-88120",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "M. Alvarez",
-    quantity: -3200,
-    transactionId: "23890362",
-    fuelCode: "D5",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100004",
     timestamp: "2025-10-22",
-    clientId: CLIENT_ID,
     buyContractId: null,
     sourceSystemContractId: null,
     ledgerItemType: "unreconciled_buy",
@@ -136,137 +161,7 @@ export const ledgerItems: LedgerItem[] = [
     notes: null,
   },
   {
-    ledgerItemId: "LI-100005",
-    timestamp: "2025-10-28",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4821",
-    sourceSystemContractId: "EXT-88120",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "M. Alvarez",
-    quantity: -2900,
-    transactionId: "23890407",
-    fuelCode: "D6",
-    fuelYear: 2025,
-    assignmentType: "separated",
-    qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100006",
-    timestamp: "2025-11-01",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4807",
-    sourceSystemContractId: "EXT-88044",
-    ledgerItemType: "starting_balance",
-    createdBy: "D. Okafor",
-    quantity: 37850,
-    transactionId: null,
-    fuelCode: null,
-    fuelYear: null,
-    assignmentType: null,
-    qapServiceType: null,
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100007",
-    timestamp: "2025-11-06",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4821",
-    sourceSystemContractId: "EXT-88120",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "M. Alvarez",
-    quantity: -4200,
-    transactionId: "23890451",
-    fuelCode: "D6",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "unverified",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100008",
-    timestamp: "2025-11-22",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4821",
-    sourceSystemContractId: "EXT-88120",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "D. Okafor",
-    quantity: -2700,
-    transactionId: "23890548",
-    fuelCode: "D4",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100009",
-    timestamp: "2025-12-01",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4776",
-    sourceSystemContractId: "EXT-87901",
-    ledgerItemType: "starting_balance",
-    createdBy: "M. Alvarez",
-    quantity: 39000,
-    transactionId: null,
-    fuelCode: null,
-    fuelYear: null,
-    assignmentType: null,
-    qapServiceType: null,
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100010",
-    timestamp: "2025-12-02",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4776",
-    sourceSystemContractId: "EXT-87901",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "D. Okafor",
-    quantity: -6100,
-    transactionId: "23890410",
-    fuelCode: "D5",
-    fuelYear: 2026,
-    assignmentType: "assigned",
-    qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100011",
-    timestamp: "2025-12-09",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4821",
-    sourceSystemContractId: "EXT-88120",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "M. Alvarez",
-    quantity: -1000,
-    transactionId: "23890658",
-    fuelCode: "D5",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100012",
-    timestamp: "2025-12-18",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4821",
-    sourceSystemContractId: "EXT-88120",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "D. Okafor",
-    quantity: -6200,
-    transactionId: "23890701",
-    fuelCode: "D4",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "unverified",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100013",
     timestamp: "2025-12-29",
-    clientId: CLIENT_ID,
     buyContractId: null,
     sourceSystemContractId: null,
     ledgerItemType: "unreconciled_buy",
@@ -277,156 +172,10 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2026,
     assignmentType: "separated",
     qapServiceType: "unverified",
-    notes: "Loose RIN buy — not yet matched to a buy contract.",
-  },
-  {
-    ledgerItemId: "LI-100014",
-    timestamp: "2026-01-04",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4807",
-    sourceSystemContractId: "EXT-88044",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "D. Okafor",
-    quantity: -9800,
-    transactionId: "23891002",
-    fuelCode: "D7",
-    fuelYear: 2026,
-    assignmentType: "separated",
-    qapServiceType: "q_rin",
     notes: null,
   },
   {
-    ledgerItemId: "LI-100015",
-    timestamp: "2026-01-12",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4744",
-    sourceSystemContractId: "EXT-87755",
-    ledgerItemType: "starting_balance",
-    createdBy: "M. Alvarez",
-    quantity: 11200,
-    transactionId: null,
-    fuelCode: null,
-    fuelYear: null,
-    assignmentType: null,
-    qapServiceType: null,
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100016",
-    timestamp: "2026-01-18",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4776",
-    sourceSystemContractId: "EXT-87901",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "D. Okafor",
-    quantity: -6100,
-    transactionId: "23890798",
-    fuelCode: "D4",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100017",
-    timestamp: "2026-01-23",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4762",
-    sourceSystemContractId: "EXT-88201",
-    ledgerItemType: "contract_cancellation",
-    createdBy: "M. Alvarez",
-    quantity: -8400,
-    transactionId: null,
-    fuelCode: null,
-    fuelYear: null,
-    assignmentType: null,
-    qapServiceType: null,
-    notes: "Contract created in error — balance zeroed out.",
-  },
-  {
-    ledgerItemId: "LI-100018",
-    timestamp: "2026-01-27",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4744",
-    sourceSystemContractId: "EXT-87755",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "D. Okafor",
-    quantity: -5600,
-    transactionId: "23891095",
-    fuelCode: "D6",
-    fuelYear: 2026,
-    assignmentType: "separated",
-    qapServiceType: "unverified",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100019",
-    timestamp: "2026-02-02",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4799",
-    sourceSystemContractId: "EXT-88155",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "M. Alvarez",
-    quantity: -11800,
-    transactionId: "23891121",
-    fuelCode: "D5",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100020",
-    timestamp: "2026-02-06",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4788",
-    sourceSystemContractId: "EXT-88099",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "D. Okafor",
-    quantity: -8600,
-    transactionId: "23891130",
-    fuelCode: "D7",
-    fuelYear: 2026,
-    assignmentType: "separated",
-    qapServiceType: "unverified",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100021",
-    timestamp: "2026-02-11",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4807",
-    sourceSystemContractId: "EXT-88044",
-    ledgerItemType: "reconciled_buy",
-    createdBy: "M. Alvarez",
-    quantity: -4400,
-    transactionId: "23891140",
-    fuelCode: "D4",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "q_rin",
-    notes: null,
-  },
-  {
-    ledgerItemId: "LI-100024",
-    timestamp: "2026-02-13",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4807",
-    sourceSystemContractId: "EXT-88044",
-    ledgerItemType: "automated_correction",
-    quantity: 4400,
-    transactionId: null,
-    fuelCode: "D4",
-    fuelYear: 2025,
-    assignmentType: "assigned",
-    qapServiceType: "q_rin",
-    createdBy: "System",
-    notes: "Restores quantity from rejected 91140 buy (EMTS rejected).",
-  },
-  {
-    ledgerItemId: "LI-100022",
     timestamp: "2026-02-14",
-    clientId: CLIENT_ID,
     buyContractId: null,
     sourceSystemContractId: null,
     ledgerItemType: "unreconciled_buy",
@@ -439,31 +188,9 @@ export const ledgerItems: LedgerItem[] = [
     qapServiceType: "unverified",
     notes: null,
   },
-  {
-    ledgerItemId: "LI-100023",
-    timestamp: "2026-02-19",
-    clientId: CLIENT_ID,
-    buyContractId: "CT-4776",
-    sourceSystemContractId: "EXT-87901",
-    ledgerItemType: "contract_termination",
-    quantity: -26800,
-    transactionId: null,
-    fuelCode: null,
-    fuelYear: null,
-    assignmentType: null,
-    qapServiceType: null,
-    createdBy: "D. Okafor",
-    notes: "Contract written off — counterparty breach.",
-  },
 ];
 
-export const ledgerDateFmt = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "2-digit",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
-export function formatLedgerDate(timestamp: string) {
-  return ledgerDateFmt.format(new Date(`${timestamp}T00:00:00Z`));
-}
+/** All ledger rows, oldest first, with sequential ledger item IDs. */
+export const ledgerItems: LedgerItem[] = [...contractEntries(), ...unreconciledBuys]
+  .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+  .map((d, i) => ({ ...d, ledgerItemId: `LI-${100001 + i}`, clientId: CLIENT_ID }));

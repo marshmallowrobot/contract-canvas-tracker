@@ -50,6 +50,10 @@ export type Contract = {
   outstandingBalance: number;
   contractValue: number;
   outstandingRins: number;
+  /** Cancelled contracts only: RINs the contract was opened with before it was cancelled. */
+  cancelledRins?: number;
+  /** Terminated contracts only: remaining RINs written down at termination. */
+  writtenDownRins?: number;
   transactions: BuyTransaction[];
 };
 
@@ -396,6 +400,7 @@ export const contracts: Contract[] = [
     dueNote: "written down",
     status: "settled",
     contractStatus: "terminated",
+    writtenDownRins: 26800,
     terminationNote:
       "Counterparty ceased deliveries; remaining 26,800 RINs written down at close-out.",
     ptd: ["PTD 0208", "PTD 0219"],
@@ -634,6 +639,7 @@ export const contracts: Contract[] = [
     dueNote: "52d",
     status: "ontime",
     contractStatus: "cancelled",
+    cancelledRins: 6000,
     terminationNote:
       "Contract created in error; canceled before any buy transactions were applied.",
     ptd: ["PTD 6410"],
