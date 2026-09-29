@@ -4,11 +4,12 @@ export type DueStatus = "overdue" | "soon" | "ontime" | "settled";
  * Lifecycle status of a contract, independent of its due timing.
  *  - open       : still being drawn against
  *  - settled    : outstanding balance naturally reached 0
- *  - terminated : closed out by the user — either created by mistake,
- *                  or the remaining balance was written down because no
- *                  further transactions are expected
+ *  - terminated : closed out by the user — remaining balance written down
+ *                  because no further transactions are expected
+ *  - cancelled  : removed by the user — created in error, no transactions
+ *                  were ever applied
  */
-export type ContractStatus = "open" | "settled" | "terminated";
+export type ContractStatus = "open" | "settled" | "terminated" | "cancelled";
 export type RinCode = "D3" | "D4" | "D5" | "D6" | "D7";
 export type AssignmentType = "assigned" | "separated";
 
@@ -625,6 +626,24 @@ export const contracts: Contract[] = [
     outstandingRins: 4800,
     transactions: [],
   },
+  {
+    contractId: "CT-4718",
+    dealNumber: "VANTA26TP0039",
+    counterparty: "Vantage Fuel Trading",
+    dueDate: "Mar 27",
+    dueNote: "52d",
+    status: "ontime",
+    contractStatus: "cancelled",
+    terminationNote:
+      "Contract created in error; canceled before any buy transactions were applied.",
+    ptd: ["PTD 6410"],
+    billOfLading: ["BOL 71402"],
+    invoices: ["INV 2381"],
+    outstandingBalance: 0,
+    contractValue: 120000,
+    outstandingRins: 0,
+    transactions: [],
+  },
 ];
 
 export const numberFmt = new Intl.NumberFormat("en-US");
@@ -677,6 +696,11 @@ export const contractStatusMeta: Record<
     label: "Terminated",
     dot: "bg-rose",
     chip: "bg-rose-soft text-rose",
+  },
+  cancelled: {
+    label: "Canceled",
+    dot: "bg-subtle",
+    chip: "bg-table-head text-subtle",
   },
 };
 
