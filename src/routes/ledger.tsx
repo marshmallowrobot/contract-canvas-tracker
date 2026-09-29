@@ -232,12 +232,12 @@ function LedgerPage() {
                     />
                   </label>
                   <label className="block">
-                    <FilterLabel>External Contract ID</FilterLabel>
+                    <FilterLabel>Deal Number</FilterLabel>
                     <input
-                      value={externalFilter}
-                      onChange={(event) => setExternalFilter(event.target.value)}
-                      aria-label="Filter by external contract ID"
-                      placeholder="e.g. EXT-88120"
+                      value={dealFilter}
+                      onChange={(event) => setDealFilter(event.target.value)}
+                      aria-label="Filter by deal number"
+                      placeholder="e.g. CONTI26TP0002"
                       className={inputClass}
                     />
                   </label>
@@ -262,6 +262,16 @@ function LedgerPage() {
                       onChange={(event) => setTransactionFilter(event.target.value)}
                       aria-label="Filter by transaction ID"
                       placeholder="e.g. 91002"
+                      className={inputClass}
+                    />
+                  </label>
+                  <label className="block">
+                    <FilterLabel>Ledger Item ID</FilterLabel>
+                    <input
+                      value={ledgerItemFilter}
+                      onChange={(event) => setLedgerItemFilter(event.target.value)}
+                      aria-label="Filter by ledger item ID"
+                      placeholder="e.g. LI-100001"
                       className={inputClass}
                     />
                   </label>
