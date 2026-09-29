@@ -464,6 +464,18 @@ function LedgerPage() {
             )}
           </div>
 
+          {contractScopeActive && overflowNotes.length > 0 && (
+            <div className="border-t border-hair bg-table-head px-5 py-3 text-xs text-subtle">
+              {overflowNotes.map((note) => (
+                <p key={note.transactionId}>
+                  Buy transaction {note.transactionId} over-fulfilled this contract. The overflow of{" "}
+                  {numberFmt.format(note.quantity)} RINs was posted to the Unassigned pool and is not
+                  part of this contract's balance.
+                </p>
+              ))}
+            </div>
+          )}
+
           <div className="flex flex-col gap-3 border-t border-hair px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-xs text-subtle">
               {visibleRows.length === 0
