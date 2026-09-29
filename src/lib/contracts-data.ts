@@ -22,8 +22,8 @@ export type BuyTransactionStatus = "completed" | "failed";
 export type BuyTransaction = {
   id: string;
   date: string;
-  reference: string;
-  description: string;
+  transactionId: string;
+  ptdNumber: string;
   rinCode: RinCode;
   vintageYear: number;
   assignmentType: AssignmentType;
@@ -71,8 +71,8 @@ export const contracts: Contract[] = [
       {
         id: "t-7",
         date: "Oct 03",
-        reference: "23890318",
-        description: "22,600 gal renewable diesel receipt",
+        transactionId: "23890318",
+        ptdNumber: "PTD 0912",
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -85,8 +85,8 @@ export const contracts: Contract[] = [
       {
         id: "t-6",
         date: "Oct 14",
-        reference: "23890362",
-        description: "15,200 gal biodiesel receipt",
+        transactionId: "23890362",
+        ptdNumber: "PTD 1140",
         rinCode: "D5",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -99,8 +99,8 @@ export const contracts: Contract[] = [
       {
         id: "t-5",
         date: "Oct 28",
-        reference: "23890407",
-        description: "RIN separation credit",
+        transactionId: "23890407",
+        ptdNumber: "PTD 1188",
         rinCode: "D6",
         vintageYear: 2025,
         assignmentType: "separated",
@@ -113,8 +113,8 @@ export const contracts: Contract[] = [
       {
         id: "t-4",
         date: "Nov 06",
-        reference: "23890451",
-        description: "19,800 gal ethanol receipt",
+        transactionId: "23890451",
+        ptdNumber: "PTD 1204",
         rinCode: "D6",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -127,8 +127,8 @@ export const contracts: Contract[] = [
       {
         id: "t-3",
         date: "Nov 15",
-        reference: "23890503",
-        description: "9,400 gal cellulosic diesel receipt",
+        transactionId: "23890503",
+        ptdNumber: "PTD 0912",
         rinCode: "D3",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -141,8 +141,8 @@ export const contracts: Contract[] = [
       {
         id: "t-2",
         date: "Nov 22",
-        reference: "23890548",
-        description: "12,700 gal renewable diesel receipt",
+        transactionId: "23890548",
+        ptdNumber: "PTD 1140",
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -155,8 +155,8 @@ export const contracts: Contract[] = [
       {
         id: "t-1",
         date: "Dec 02",
-        reference: "23890610",
-        description: "RIN separation credit",
+        transactionId: "23890610",
+        ptdNumber: "PTD 1188",
         rinCode: "D7",
         vintageYear: 2025,
         assignmentType: "separated",
@@ -169,8 +169,8 @@ export const contracts: Contract[] = [
       {
         id: "t0",
         date: "Dec 09",
-        reference: "23890658",
-        description: "4,800 gal biodiesel receipt",
+        transactionId: "23890658",
+        ptdNumber: "PTD 1204",
         rinCode: "D5",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -183,8 +183,8 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Dec 18",
-        reference: "23890701",
-        description: "30,400 gal ULSD receipt",
+        transactionId: "23890701",
+        ptdNumber: "PTD 0912",
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -197,8 +197,8 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Jan 12",
-        reference: "23890770",
-        description: "RIN separation credit",
+        transactionId: "23890770",
+        ptdNumber: "PTD 1140",
         rinCode: "D6",
         vintageYear: 2026,
         assignmentType: "separated",
@@ -211,8 +211,8 @@ export const contracts: Contract[] = [
       {
         id: "t3",
         date: "Jan 29",
-        reference: "23890812",
-        description: "13,500 gal biodiesel receipt",
+        transactionId: "23890812",
+        ptdNumber: "PTD 1188",
         rinCode: "D5",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -225,8 +225,8 @@ export const contracts: Contract[] = [
       {
         id: "t4",
         date: "Feb 14",
-        reference: "23890841",
-        description: "18,200 gal biodiesel receipt",
+        transactionId: "23890841",
+        ptdNumber: "PTD 1204",
         rinCode: "D3",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -256,8 +256,8 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Jan 04",
-        reference: "23891002",
-        description: "42,000 gal ethanol receipt",
+        transactionId: "23891002",
+        ptdNumber: "PTD 0733",
         rinCode: "D7",
         vintageYear: 2026,
         assignmentType: "separated",
@@ -270,8 +270,8 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Jan 26",
-        reference: "23891088",
-        description: "RIN separation credit",
+        transactionId: "23891088",
+        ptdNumber: "PTD 0891",
         rinCode: "D5",
         vintageYear: 2026,
         assignmentType: "assigned",
@@ -284,8 +284,8 @@ export const contracts: Contract[] = [
       {
         id: "t3",
         date: "Feb 11",
-        reference: "23891140",
-        description: "14,800 gal ethanol receipt",
+        transactionId: "23891140",
+        ptdNumber: "PTD 0733",
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -315,8 +315,8 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Dec 29",
-        reference: "23890655",
-        description: "51,200 gal ethanol receipt",
+        transactionId: "23890655",
+        ptdNumber: "PTD 0450",
         rinCode: "D6",
         vintageYear: 2026,
         assignmentType: "separated",
@@ -329,8 +329,8 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Feb 02",
-        reference: "23891121",
-        description: "RIN separation credit",
+        transactionId: "23891121",
+        ptdNumber: "PTD 0455",
         rinCode: "D5",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -360,8 +360,8 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Jan 08",
-        reference: "23890910",
-        description: "62,000 gal ULSD receipt",
+        transactionId: "23890910",
+        ptdNumber: "PTD 0311",
         rinCode: "D3",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -374,8 +374,8 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Feb 06",
-        reference: "23891130",
-        description: "RIN separation credit",
+        transactionId: "23891130",
+        ptdNumber: "PTD 0311",
         rinCode: "D7",
         vintageYear: 2026,
         assignmentType: "separated",
@@ -407,8 +407,8 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Dec 02",
-        reference: "23890410",
-        description: "22,400 gal cellulosic receipt",
+        transactionId: "23890410",
+        ptdNumber: "PTD 0208",
         rinCode: "D5",
         vintageYear: 2026,
         assignmentType: "assigned",
@@ -421,8 +421,8 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Jan 18",
-        reference: "23890798",
-        description: "RIN separation credit",
+        transactionId: "23890798",
+        ptdNumber: "PTD 0219",
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -435,8 +435,8 @@ export const contracts: Contract[] = [
       {
         id: "t3",
         date: "Feb 19",
-        reference: "23891200",
-        description: "Remaining balance write-down at termination",
+        transactionId: "23891200",
+        ptdNumber: "PTD 0208",
         rinCode: "D6",
         vintageYear: 2026,
         assignmentType: "separated",
@@ -492,8 +492,8 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Jan 15",
-        reference: "23890980",
-        description: "88,000 gal SAF blend receipt",
+        transactionId: "23890980",
+        ptdNumber: "PTD 6010",
         rinCode: "D5",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -506,8 +506,8 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Feb 09",
-        reference: "23891136",
-        description: "RIN separation credit",
+        transactionId: "23891136",
+        ptdNumber: "PTD 6011",
         rinCode: "D3",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -537,8 +537,8 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Jan 22",
-        reference: "23891040",
-        description: "48,000 gal HFO receipt",
+        transactionId: "23891040",
+        ptdNumber: "PTD 6201",
         rinCode: "D7",
         vintageYear: 2026,
         assignmentType: "separated",
@@ -551,8 +551,8 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Feb 12",
-        reference: "23891148",
-        description: "RIN separation credit",
+        transactionId: "23891148",
+        ptdNumber: "PTD 6208",
         rinCode: "D5",
         vintageYear: 2026,
         assignmentType: "assigned",
@@ -582,8 +582,8 @@ export const contracts: Contract[] = [
       {
         id: "t1",
         date: "Dec 11",
-        reference: "23890520",
-        description: "36,000 gal advanced receipt",
+        transactionId: "23890520",
+        ptdNumber: "PTD 5810",
         rinCode: "D4",
         vintageYear: 2025,
         assignmentType: "assigned",
@@ -596,8 +596,8 @@ export const contracts: Contract[] = [
       {
         id: "t2",
         date: "Jan 27",
-        reference: "23891095",
-        description: "Final settlement",
+        transactionId: "23891095",
+        ptdNumber: "PTD 5810",
         rinCode: "D6",
         vintageYear: 2026,
         assignmentType: "separated",
