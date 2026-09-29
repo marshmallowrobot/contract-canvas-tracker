@@ -81,7 +81,7 @@ const inputClass =
 function LedgerPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [contractFilter, setContractFilter] = useState("");
-  const [dealFilter, setDealFilter] = useState("");
+  const [unassignedOnly, setUnassignedOnly] = useState(false);
   const [typeFilter, setTypeFilter] = useState("all");
   const [transactionFilter, setTransactionFilter] = useState("");
   const [ledgerItemFilter, setLedgerItemFilter] = useState("");
