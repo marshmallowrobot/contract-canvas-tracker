@@ -226,7 +226,7 @@ function ContractDetail() {
   const dueTint = overdue ? "text-rose" : dueSoon ? "text-amber" : "";
   const pageCount = Math.max(1, Math.ceil(contract.transactions.length / TRANSACTIONS_PER_PAGE));
   const pageStart = (page - 1) * TRANSACTIONS_PER_PAGE;
-  const sortedTransactions = [...contract.transactions].sort((a, b) => Date.parse(`${b.date}, 2026`) - Date.parse(`${a.date}, 2026`));
+  const sortedTransactions = [...contract.transactions].sort((a, b) => Date.parse(`${a.date}, 2026`) - Date.parse(`${b.date}, 2026`));
   const visibleTransactions = sortedTransactions.slice(pageStart, pageStart + TRANSACTIONS_PER_PAGE);
   const rangeStart = contract.transactions.length === 0 ? 0 : pageStart + 1;
   const rangeEnd = Math.min(pageStart + TRANSACTIONS_PER_PAGE, contract.transactions.length);
