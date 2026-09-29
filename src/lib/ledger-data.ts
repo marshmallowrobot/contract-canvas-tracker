@@ -420,7 +420,7 @@ export const ledgerItems: LedgerItem[] = [
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
-    createdBy: "System · Auto-correction",
+    createdBy: "System",
     notes: "Restores quantity from rejected 91140 buy (EMTS rejected).",
   },
   {
