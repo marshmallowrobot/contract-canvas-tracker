@@ -132,6 +132,7 @@ function LedgerPage() {
     const transaction = transactionFilter.trim().toLowerCase();
     const ledgerItem = ledgerItemFilter.trim().toLowerCase();
     return rows.filter((row) => {
+      if (unassignedOnly && row.buyContractId !== null) return false;
       if (contract && (row.buyContractId ?? "").toLowerCase() !== contract) return false;
       if (deal) {
         const dealNumber = row.buyContractId ? getContract(row.buyContractId)?.dealNumber ?? "" : "";
@@ -144,7 +145,7 @@ function LedgerPage() {
       if (toDate && row.timestamp > toDate) return false;
       return true;
     });
-  }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
+  }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter, unassignedOnly]);
 
   const activeFilterCount =
     (contractFilter.trim() ? 1 : 0) +
@@ -153,11 +154,12 @@ function LedgerPage() {
     (transactionFilter.trim() ? 1 : 0) +
     (ledgerItemFilter.trim() ? 1 : 0) +
     (fromDate ? 1 : 0) +
-    (toDate ? 1 : 0);
+    (toDate ? 1 : 0) +
+    (unassignedOnly ? 1 : 0);
 
   useEffect(() => {
     setPage(1);
-  }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
+  }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize, unassignedOnly]);
 
   const totalPages = Math.max(Math.ceil(visibleRows.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
@@ -198,6 +200,7 @@ function LedgerPage() {
     setLedgerItemFilter("");
     setFromDate("");
     setToDate("");
+    setUnassignedOnly(false);
   };
 
   return (
