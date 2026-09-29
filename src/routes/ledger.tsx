@@ -102,6 +102,29 @@ function LedgerPage() {
     });
   }, []);
 
+  /** Filtering by contract or deal number is a special case: the Balance
+   * column then shows that contract's own running balance instead of the
+   * client-wide one. */
+  const contractScopeActive = Boolean(contractFilter.trim() || dealFilter.trim());
+
+  const scopedBalances = useMemo(() => {
+    if (!contractScopeActive) return new Map<string, number>();
+    const contract = contractFilter.trim().toLowerCase();
+    const deal = dealFilter.trim().toLowerCase();
+    let balance = 0;
+    const map = new Map<string, number>();
+    for (const row of rows) {
+      const inScope =
+        (contract && (row.buyContractId ?? "unassigned").toLowerCase().includes(contract)) ||
+        (deal && (row.buyContractId ? (getContract(row.buyContractId)?.dealNumber ?? "").toLowerCase().includes(deal) : false));
+      if (inScope) {
+        balance += row.quantity;
+        map.set(row.ledgerItemId, balance);
+      }
+    }
+    return map;
+  }, [contractScopeActive, contractFilter, dealFilter, rows]);
+
   const visibleRows = useMemo(() => {
     const contract = contractFilter.trim().toLowerCase();
     const deal = dealFilter.trim().toLowerCase();
