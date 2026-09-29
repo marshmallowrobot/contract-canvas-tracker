@@ -171,20 +171,6 @@ function LedgerPage() {
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
 
-  /** With filters active, anchor the slice: the running balance of the last
-   * row hidden just before the first visible one (0 when the slice starts
-   * at the very beginning of the ledger). Only meaningful when the Balance
-   * column is shown — unfiltered, or scoped to a contract/deal. */
-  const openingBalance = useMemo(() => {
-    if (activeFilterCount === 0 || visibleRows.length === 0) return null;
-    const firstIndex = rows.findIndex((row) => row.ledgerItemId === visibleRows[0]!.ledgerItemId);
-    if (contractScopeActive) {
-      const prior = rows.slice(0, firstIndex).filter((row) => scopedBalances.has(row.ledgerItemId));
-      return prior.length ? scopedBalances.get(prior[prior.length - 1]!.ledgerItemId)! : 0;
-    }
-    return firstIndex > 0 ? rows[firstIndex - 1]!.runningBalance : 0;
-  }, [activeFilterCount, contractScopeActive, rows, scopedBalances, visibleRows]);
-
   /** Balance column: shown unfiltered (client-wide) or when scoped to a
    * contract/deal (that contract's balance); hidden for any other filter. */
   const showBalance = activeFilterCount === 0 || contractScopeActive;
