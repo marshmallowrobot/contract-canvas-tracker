@@ -1,9 +1,20 @@
 import type { AssignmentType, RinCode } from "./contracts-data";
 
+export type CandidateContract = {
+  contractId: string;
+  dealNumber: string;
+  partner: string;
+  dueDate: string | null;
+  expectedRins: number;
+  outstandingRins: number;
+  matchedOn: string;
+};
+
 export type PendingBuy = {
   id: string;
   contractId: string | null;
   dealNumber: string | null;
+  candidateContracts?: CandidateContract[];
   partner: string;
   received: string;
   dueDate: string | null;
