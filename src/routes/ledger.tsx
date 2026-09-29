@@ -81,7 +81,6 @@ const inputClass =
 function LedgerPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [contractFilter, setContractFilter] = useState("");
-  const [unassignedOnly, setUnassignedOnly] = useState(false);
   const [dealFilter, setDealFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [transactionFilter, setTransactionFilter] = useState("");
@@ -132,7 +131,6 @@ function LedgerPage() {
     const transaction = transactionFilter.trim().toLowerCase();
     const ledgerItem = ledgerItemFilter.trim().toLowerCase();
     return rows.filter((row) => {
-      if (unassignedOnly && row.buyContractId !== null) return false;
       if (contract && (row.buyContractId ?? "").toLowerCase() !== contract) return false;
       if (deal) {
         const dealNumber = row.buyContractId ? getContract(row.buyContractId)?.dealNumber ?? "" : "";
@@ -145,7 +143,7 @@ function LedgerPage() {
       if (toDate && row.timestamp > toDate) return false;
       return true;
     });
-  }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter, unassignedOnly]);
+  }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
 
   const activeFilterCount =
     (contractFilter.trim() ? 1 : 0) +
@@ -154,12 +152,11 @@ function LedgerPage() {
     (transactionFilter.trim() ? 1 : 0) +
     (ledgerItemFilter.trim() ? 1 : 0) +
     (fromDate ? 1 : 0) +
-    (toDate ? 1 : 0) +
-    (unassignedOnly ? 1 : 0);
+    (toDate ? 1 : 0);
 
   useEffect(() => {
     setPage(1);
-  }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize, unassignedOnly]);
+  }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
 
   const totalPages = Math.max(Math.ceil(visibleRows.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
@@ -200,7 +197,6 @@ function LedgerPage() {
     setLedgerItemFilter("");
     setFromDate("");
     setToDate("");
-    setUnassignedOnly(false);
   };
 
   return (
@@ -262,32 +258,19 @@ function LedgerPage() {
                     <input
                       value={contractFilter}
                       onChange={(event) => setContractFilter(event.target.value)}
-                      disabled={unassignedOnly}
                       aria-label="Filter by buy contract ID"
                       placeholder="Exact match, e.g. CT-4821"
-                      className={`${inputClass} disabled:cursor-not-allowed disabled:opacity-50`}
+                      className={inputClass}
                     />
-                    <label className="mt-2 flex items-center gap-2 text-xs text-ink">
-                      <input
-                        type="checkbox"
-                        checked={unassignedOnly}
-                        disabled={Boolean(contractFilter.trim() || dealFilter.trim())}
-                        onChange={(event) => setUnassignedOnly(event.target.checked)}
-                        aria-label="Show only unassigned contract items"
-                        className="size-3.5 accent-primary"
-                      />
-                      Unassigned contracts only
-                    </label>
                   </label>
                   <label className="block">
                     <FilterLabel>Deal Number</FilterLabel>
                     <input
                       value={dealFilter}
                       onChange={(event) => setDealFilter(event.target.value)}
-                      disabled={unassignedOnly}
                       aria-label="Filter by deal number"
                       placeholder="Exact match, e.g. CONTI26TP0002"
-                      className={`${inputClass} disabled:cursor-not-allowed disabled:opacity-50`}
+                      className={inputClass}
                     />
                   </label>
                   <label className="block">
