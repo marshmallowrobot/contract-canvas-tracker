@@ -81,8 +81,8 @@ const MONTHS: Record<string, string> = {
 
 /** Prototype dates omit the year: Aug–Dec = 2025, Jan–Jul = 2026. */
 function toIso(date: string): string {
-  const [mon, day] = date.split(" ");
-  const m = MONTHS[mon];
+  const [mon = "", day = "01"] = date.split(" ");
+  const m = MONTHS[mon] ?? "01";
   const year = Number(m) >= 8 ? 2025 : 2026;
   return `${year}-${m}-${day.padStart(2, "0")}`;
 }
@@ -106,7 +106,7 @@ const noFuel = { fuelCode: null, fuelYear: null, assignmentType: null, qapServic
 function contractEntries(): Draft[] {
   const out: Draft[] = [];
   contracts.forEach((c, ci) => {
-    const user = (n: number) => USERS[(ci + n) % USERS.length];
+    const user = (n: number) => USERS[(ci + n) % USERS.length]!;
     const base = { buyContractId: c.contractId, sourceSystemContractId: c.dealNumber, notes: null };
     const txs = [...c.transactions]
       .map((t) => ({ ...t, iso: toIso(t.date) }))
@@ -116,7 +116,7 @@ function contractEntries(): Draft[] {
       c.contractStatus === "cancelled"
         ? c.cancelledRins ?? 0
         : c.outstandingRins + completed + (c.writtenDownRins ?? 0);
-    const opened = txs.length ? addDays(txs[0].iso, -3) : OPENED_WITHOUT_TX[c.contractId] ?? "2026-01-01";
+    const opened = txs.length ? addDays(txs[0]!.iso, -3) : OPENED_WITHOUT_TX[c.contractId] ?? "2026-01-01";
 
     out.push({ ...base, ...noFuel, timestamp: opened, ledgerItemType: "starting_balance", quantity: starting, transactionId: null, createdBy: user(0) });
 
@@ -133,7 +133,7 @@ function contractEntries(): Draft[] {
       }
     });
 
-    const last = txs.length ? txs[txs.length - 1].iso : opened;
+    const last = txs.length ? txs[txs.length - 1]!.iso : opened;
     if (c.contractStatus === "cancelled") {
       out.push({ ...base, ...noFuel, timestamp: addDays(last, 5), ledgerItemType: "contract_cancellation", quantity: -starting, transactionId: null, createdBy: user(1) });
     }
