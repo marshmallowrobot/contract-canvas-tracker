@@ -106,9 +106,12 @@ const rinCodeClass: Record<RinCode, string> = {
 function AssignmentMark({ type }: { type: AssignmentType }) {
   const assigned = type === "assigned";
   return (
-    <span className={`inline-flex items-center gap-1 rounded-sm border px-2 py-1 text-[10px] font-bold uppercase ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-subtle"}`}>
-      {assigned ? "Assigned" : "Separated"}
-      {assigned ? <ArrowUp className="size-3" strokeWidth={2.2} /> : <Split className="size-3" strokeWidth={2.2} />}
+    <span
+      title={assigned ? "Assigned" : "Separated"}
+      aria-label={assigned ? "Assigned" : "Separated"}
+      className={`inline-flex size-5 items-center justify-center rounded-sm border ${assigned ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}
+    >
+      {assigned ? <ArrowUp className="size-3" strokeWidth={2.6} /> : <Split className="size-3" strokeWidth={2.6} />}
     </span>
   );
 }
@@ -357,8 +360,7 @@ function ContractDetail() {
                 <th className="px-4 py-2 font-medium">Date</th>
                 <th className="px-4 py-2 font-medium">Reference</th>
                 <th className="px-4 py-2 font-medium">Detail</th>
-                <th className="px-4 py-2 font-medium">RIN / year</th>
-                <th className="px-4 py-2 font-medium">Assignment</th>
+                <th className="px-4 py-2 font-medium">Fuel</th>
                 <th className="px-4 py-2 font-medium">Status</th>
                 <th className="px-4 py-2 text-right font-medium">RINs</th>
                 <th className="px-4 py-2 text-right font-medium">RIN balance</th>
@@ -373,10 +375,10 @@ function ContractDetail() {
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-2">
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[t.rinCode]}`}>{t.rinCode}</span>
-                      <span className="text-[11px] font-semibold text-subtle">{t.vintageYear}</span>
+                      <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{t.vintageYear}</span>
+                      <AssignmentMark type={t.assignmentType} />
                     </div>
                   </td>
-                  <td className="px-4 py-2.5"><AssignmentMark type={t.assignmentType} /></td>
                   <td className="px-4 py-2.5"><TxStatusText status={t.txStatus} /></td>
                   <td className="px-4 py-2.5 text-right text-xs font-bold tabular-nums text-primary">
                     {numberFmt.format(t.rinApplied)}
