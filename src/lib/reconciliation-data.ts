@@ -21,6 +21,8 @@ export type PendingBuy = {
   invoice: string;
   expectedRins: number | null;
   rins: number;
+  gallons: number;
+  price: string;
   fuel: RinCode;
   year: number;
   assignment: AssignmentType;
