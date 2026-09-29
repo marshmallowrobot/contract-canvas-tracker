@@ -23,7 +23,7 @@ import {
 
 export const Route = createFileRoute("/ledger")({
   validateSearch: (search: Record<string, unknown>) => ({
-    contract: typeof search.contract === "string" ? search.contract : undefined,
+    contract: typeof search["contract"] === "string" ? search["contract"] : undefined,
   }),
   head: () => ({
     meta: [
