@@ -107,11 +107,11 @@ function ReconciliationPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-5 py-2">Pending buy</th><th className="px-3 py-2">Trading partner</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">PTD</th><th className="px-3 py-2 text-right">Incoming RINs</th><th className="px-5 py-2">Match</th></tr>
+              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-5 py-2">Pending buy</th><th className="px-3 py-2">Trading partner</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">PTD</th><th className="px-3 py-2 text-right">RINs / Gal</th><th className="px-3 py-2 text-right">Price</th><th className="px-5 py-2">Match</th></tr>
             </thead>
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
               <td className="px-5 py-3"><div className="font-semibold">{buy.id}</div><div className="mt-0.5 text-[11px] text-subtle">{buy.received}</div>{buy.contractId && <div className="mt-0.5 text-[11px] font-semibold text-primary">{buy.contractId} · {buy.dealNumber}</div>}</td>
-              <td className="max-w-44 px-3 py-3 text-xs font-medium">{buy.partner}</td><td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-right font-semibold tabular-nums">{numberFmt.format(buy.rins)}</td>
+              <td className="max-w-44 px-3 py-3 text-xs font-medium">{buy.partner}</td><td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td><td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
               <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
