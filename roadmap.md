@@ -23,3 +23,4 @@
 - [x] Add 50/100 per-page paging to the contract list
 - [x] Add who/what created each ledger entry under the Transaction column
 - [x] Clear transaction IDs from terminations, corrections, cancellations, and starting balances
+- [x] Add RIN Buy Reconciliation page with separate pending-buy prototype data and a page-only review interaction
