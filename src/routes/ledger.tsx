@@ -24,9 +24,9 @@ import {
 export const Route = createFileRoute("/ledger")({
   head: () => ({
     meta: [
-      { title: "Client Ledger — Verdant Ledger" },
+      { title: "RIN Balance Ledger — Verdant Ledger" },
       { name: "description", content: "Chronological RIN ledger entries with running balance for a client." },
-      { property: "og:title", content: "Client Ledger — Verdant Ledger" },
+      { property: "og:title", content: "RIN Balance Ledger — Verdant Ledger" },
       { property: "og:description", content: "Chronological RIN ledger entries with running balance for a client." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -175,7 +175,7 @@ function LedgerPage() {
         </Button>
 
         <header className="mb-6">
-          <h1 className="font-display text-2xl font-bold">Client Ledger</h1>
+          <h1 className="font-display text-2xl font-bold">RIN Balance Ledger</h1>
           <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} ({EPA_ID})</p>
         </header>
 
