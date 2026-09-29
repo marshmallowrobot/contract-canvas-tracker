@@ -219,10 +219,11 @@ function ContractBalances() {
                       <SelectTrigger aria-label="Filter by status" className="mt-1 bg-panel"><SelectValue placeholder="All statuses" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
-                        <SelectItem value="open">Open</SelectItem>
-                        <SelectItem value="settled">Settled</SelectItem>
-                        <SelectItem value="terminated">Terminated</SelectItem>
-                      </SelectContent>
+                          <SelectItem value="open">Open</SelectItem>
+                          <SelectItem value="settled">Settled</SelectItem>
+                          <SelectItem value="terminated">Terminated</SelectItem>
+                          <SelectItem value="cancelled">Canceled</SelectItem>
+                        </SelectContent>
                     </Select>
                   </label>
                   <label className="block">
@@ -291,7 +292,7 @@ function ContractBalances() {
                   <div className="text-sm font-medium">{contract.counterparty}</div>
                   <div className="text-xs text-subtle">{contract.dealNumber}</div>
                   <div className="text-sm font-medium">{completedCount} {completedCount === 1 ? "buy" : "buys"}</div>
-                  <div><div className={`text-sm font-medium ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : ""}`}><span className={contract.status === "overdue" || contract.status === "soon" ? "font-semibold" : undefined}>{contract.dueDate ?? "—"}</span></div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : "text-subtle"}`}>{contract.dueDate ? (contract.contractStatus === "terminated" ? "terminated" : contract.contractStatus === "settled" ? "settled" : contract.dueNote) : "No due date"}</div></div>
+                  <div><div className={`text-sm font-medium ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : ""}`}><span className={contract.status === "overdue" || contract.status === "soon" ? "font-semibold" : undefined}>{contract.dueDate ?? "—"}</span></div><div className={`mt-1 text-xs ${contract.status === "overdue" ? "text-rose" : contract.status === "soon" ? "text-amber" : "text-subtle"}`}>{contract.dueDate ? (contract.contractStatus === "terminated" ? "terminated" : contract.contractStatus === "cancelled" ? "canceled" : contract.contractStatus === "settled" ? "settled" : contract.dueNote) : "No due date"}</div></div>
                   <div className="text-right text-base font-bold tabular-nums text-primary">{numberFmt.format(contract.outstandingRins)}</div>
                 </Link>
                 );

@@ -342,11 +342,25 @@ function ContractDetail() {
           </div>
 
           {contract.terminationNote && (
-            <div className="flex items-start gap-3 border-t border-rose/30 bg-rose-soft/40 px-5 py-4">
-              <i className="mt-0.5 size-1.5 shrink-0 rounded-full bg-rose" />
+            <div
+              className={`flex items-start gap-3 border-t px-5 py-4 ${
+                contract.contractStatus === "cancelled"
+                  ? "border-hair bg-table-head"
+                  : "border-rose/30 bg-rose-soft/40"
+              }`}
+            >
+              <i
+                className={`mt-0.5 size-1.5 shrink-0 rounded-full ${
+                  contract.contractStatus === "cancelled" ? "bg-subtle" : "bg-rose"
+                }`}
+              />
               <div>
-                <div className="text-[10px] font-bold uppercase text-rose">
-                  Termination note
+                <div
+                  className={`text-[10px] font-bold uppercase ${
+                    contract.contractStatus === "cancelled" ? "text-subtle" : "text-rose"
+                  }`}
+                >
+                  {contract.contractStatus === "cancelled" ? "Cancellation note" : "Termination note"}
                 </div>
                 <div className="mt-1 text-[13px] text-ink/80">
                   {contract.terminationNote}
