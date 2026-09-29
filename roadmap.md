@@ -21,3 +21,5 @@
 - [x] Remove Export button from Contract Balances header (prototype scope)
 - [x] Make contract row click open the detail page (remove selection sidecar)
 - [x] Add 50/100 per-page paging to the contract list
+- [x] Add who/what created each ledger entry under the Transaction column
+- [x] Clear transaction IDs from terminations, corrections, cancellations, and starting balances
