@@ -1,9 +1,20 @@
 import type { AssignmentType, RinCode } from "./contracts-data";
 
+export type CandidateContract = {
+  contractId: string;
+  dealNumber: string;
+  partner: string;
+  dueDate: string | null;
+  expectedRins: number;
+  outstandingRins: number;
+  matchedOn: string;
+};
+
 export type PendingBuy = {
   id: string;
   contractId: string | null;
   dealNumber: string | null;
+  candidateContracts?: CandidateContract[];
   partner: string;
   received: string;
   dueDate: string | null;
@@ -30,4 +41,9 @@ export const pendingBuys: PendingBuy[] = [
   { id: "PB-80219", contractId: "CT-4913", dealNumber: "EVERG26TP0027", partner: "Meridian Fuels", received: "Sep 27, 2026", dueDate: "Oct 24, 2026", invoice: "INV-70448", expectedRins: 15000, rins: 15000, fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558040", bol: "BOL-871266", match: "matched", reason: "Contract, trading partner, and RIN quantity align." },
   { id: "PB-80220", contractId: "CT-4915", dealNumber: "EVERG26TP0029", partner: "Cedar Peak Energy", received: "Sep 26, 2026", dueDate: "Oct 28, 2026", invoice: "INV-70453", expectedRins: 6200, rins: 6200, fuel: "D7", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558047", bol: "BOL-871278", match: "matched", reason: "Contract, trading partner, and RIN quantity align." },
   { id: "PB-80221", contractId: null, dealNumber: null, partner: "Bluewater Trading", received: "Sep 26, 2026", dueDate: null, invoice: "INV-70459", expectedRins: null, rins: 2850, fuel: "D6", year: 2025, assignment: "separated", qap: "Unverified", ptd: "PTD 1558052", bol: "BOL-871285", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
+  { id: "PB-80222", contractId: null, dealNumber: null, partner: "Evergreen Refinery", received: "Sep 29, 2026", dueDate: null, invoice: "INV-70466", expectedRins: null, rins: 6400, fuel: "D6", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558058", bol: "BOL-871292", match: "needs-review", reason: "This buy's PTD number appears on 2 imported buy contracts. Choose which contract the buy applies to.",
+    candidateContracts: [
+      { contractId: "CT-4917", dealNumber: "EVERG26TP0031", partner: "Evergreen Refinery", dueDate: "Nov 2, 2026", expectedRins: 6400, outstandingRins: 6400, matchedOn: "PTD 1558058" },
+      { contractId: "CT-4918", dealNumber: "EVERG26TP0032", partner: "Evergreen Refinery", dueDate: "Nov 14, 2026", expectedRins: 9800, outstandingRins: 9800, matchedOn: "PTD 1558058" },
+    ] },
 ];
