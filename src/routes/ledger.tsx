@@ -149,6 +149,23 @@ function LedgerPage() {
     });
   }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
 
+  /** In a contract-scoped view, note any buy that over-fulfilled the contract:
+   * the overflow posts to the Unassigned pool, not this contract's balance. */
+  const overflowNotes = useMemo(() => {
+    if (!contractScopeActive) return [];
+    const scopeTxIds = new Set(
+      visibleRows.filter((r) => r.transactionId).map((r) => r.transactionId!),
+    );
+    return ledgerItems
+      .filter(
+        (r) =>
+          r.ledgerItemType === "unreconciled_buy" &&
+          r.transactionId !== null &&
+          scopeTxIds.has(r.transactionId),
+      )
+      .map((r) => ({ transactionId: r.transactionId!, quantity: r.quantity }));
+  }, [contractScopeActive, visibleRows]);
+
   const activeFilterCount =
     (contractFilter.trim() ? 1 : 0) +
     (dealFilter.trim() ? 1 : 0) +
