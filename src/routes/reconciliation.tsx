@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { numberFmt, type RinCode } from "@/lib/contracts-data";
+import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
 import { pendingBuys, type PendingBuy } from "@/lib/reconciliation-data";
+
+const openContracts = contracts.filter((contract) => contract.contractStatus === "open");
 
 export const Route = createFileRoute("/reconciliation")({
   head: () => ({ meta: [
@@ -47,8 +49,10 @@ function ReconciliationPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [fuel, setFuel] = useState("all");
   const [selected, setSelected] = useState<PendingBuy | null>(null);
+  /** Selection lives only while the review panel is open; closing the panel discards it. */
   const [chosenContract, setChosenContract] = useState<string | null>(null);
-  const openReview = (buy: PendingBuy) => { setSelected(buy); setChosenContract(buy.candidateContracts?.[0]?.contractId ?? null); };
+  const openReview = (buy: PendingBuy) => { setSelected(buy); setChosenContract(null); };
+  const closeReview = () => { setSelected(null); setChosenContract(null); };
   const counts = {
     matched: pendingBuys.filter((buy) => buy.match === "matched").length,
     "needs-review": pendingBuys.filter((buy) => buy.match === "needs-review").length,
@@ -117,32 +121,86 @@ function ReconciliationPage() {
       </section>
     </main>
 
-    <Sheet open={selected !== null} onOpenChange={(open) => { if (!open) setSelected(null); }}>
+    <Sheet open={selected !== null} onOpenChange={(open) => { if (!open) closeReview(); }}>
       <SheetContent side="right" className="w-full overflow-y-auto bg-canvas p-0 sm:max-w-[560px]">
         {selected && <>
           <SheetHeader className="border-b border-hair bg-panel px-6 py-5 text-left"><SheetTitle className="font-display text-xl text-ink">Review {selected.id}</SheetTitle><SheetDescription>{selected.partner} · Received {selected.received}</SheetDescription></SheetHeader>
           <div className="space-y-5 p-6">
             <div className={`rounded-md border p-4 ${selected.match === "matched" ? "border-assigned-border bg-moss-soft" : "border-amber bg-amber-soft"}`}><div className={`text-sm font-bold ${selected.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[selected.match]}</div><p className="mt-1 text-xs leading-relaxed text-ink">{selected.reason}</p></div>
-            {selected.candidateContracts ? <section>
-              <h3 className="mb-1 font-display text-sm font-bold">Choose a contract</h3>
-              <p className="mb-3 text-xs text-subtle">This buy matches {selected.candidateContracts.length} imported contracts. Select the one it applies to.</p>
-              <div className="space-y-2" role="radiogroup" aria-label="Candidate contracts">
-                {selected.candidateContracts.map((candidate) => <button key={candidate.contractId} type="button" role="radio" aria-checked={chosenContract === candidate.contractId} onClick={() => setChosenContract(candidate.contractId)}
-                  className={`flex w-full items-start gap-3 rounded-md border p-4 text-left shadow-sm transition-colors ${chosenContract === candidate.contractId ? "border-primary bg-selected" : "border-hair bg-panel hover:border-primary/50"}`}>
-                  <span aria-hidden="true" className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${chosenContract === candidate.contractId ? "border-primary bg-primary" : "border-subtle"}`}>
-                    {chosenContract === candidate.contractId && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
-                  </span>
-                  <span className="flex-1">
-                    <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{candidate.contractId}</span><span className="text-xs font-semibold text-primary">{candidate.dealNumber}</span></span>
-                    <span className="mt-1 block text-xs text-subtle">{candidate.partner} · Due {candidate.dueDate ?? "—"}</span>
-                    <span className="mt-1 block text-xs text-subtle">Expected {numberFmt.format(candidate.expectedRins)} RINs · Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
-                    <span className="mt-1 block text-[11px] font-semibold text-amber">Matched on {candidate.matchedOn}</span>
-                  </span>
-                </button>)}
-              </div>
-            </section> : <section><h3 className="mb-3 font-display text-sm font-bold">Imported buy contract</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel p-4"><Detail label="Contract ID" value={selected.contractId ?? "No match"} /><Detail label="Deal number" value={selected.dealNumber ?? "—"} /><Detail label="Trading partner" value={selected.partner} /><Detail label="Due date" value={selected.dueDate ?? "—"} /><Detail label="Invoice" value={selected.invoice} /><Detail label="Expected RINs" value={selected.expectedRins === null ? "—" : numberFmt.format(selected.expectedRins)} /></dl></section>}
             <section><h3 className="mb-3 font-display text-sm font-bold">Incoming RIN buy</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel p-4"><Detail label="Pending buy" value={selected.id} /><Detail label="RIN quantity" value={numberFmt.format(selected.rins)} /><Detail label="Fuel / year" value={`${selected.fuel} · ${selected.year}`} /><Detail label="Assignment" value={selected.assignment === "assigned" ? "Assigned" : "Separated"} /><Detail label="QAP service" value={selected.qap} /><Detail label="PTD number" value={selected.ptd} /><Detail label="Bill of lading" value={selected.bol} /><Detail label="Received" value={selected.received} /></dl></section>
-            <div className="border-t border-hair pt-4"><Button variant="outline" onClick={() => setSelected(null)}>Back to pending buys</Button></div>
+
+            <section>
+              <h3 className="mb-1 font-display text-sm font-bold">Apply this buy to a contract</h3>
+              <p className="mb-3 text-xs text-subtle">Choose one option below. Your choice is not saved if you close this panel.</p>
+              <div className="space-y-4" role="radiogroup" aria-label="Contract selection">
+
+                {(selected.candidateContracts?.length || selected.contractId) && <div>
+                  <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">
+                    {selected.candidateContracts?.length ? `Matching contracts (${selected.candidateContracts.length})` : "Matching contract"}
+                  </div>
+                  <div className="space-y-2">
+                    {(selected.candidateContracts ?? []).map((candidate) => <button key={candidate.contractId} type="button" role="radio" aria-checked={chosenContract === candidate.contractId} onClick={() => setChosenContract(candidate.contractId)}
+                      className={`flex w-full items-start gap-3 rounded-md border p-4 text-left shadow-sm transition-colors ${chosenContract === candidate.contractId ? "border-primary bg-selected" : "border-hair bg-panel hover:border-primary/50"}`}>
+                      <span aria-hidden="true" className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${chosenContract === candidate.contractId ? "border-primary bg-primary" : "border-subtle"}`}>
+                        {chosenContract === candidate.contractId && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
+                      </span>
+                      <span className="flex-1">
+                        <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{candidate.contractId}</span><span className="text-xs font-semibold text-primary">{candidate.dealNumber}</span></span>
+                        <span className="mt-1 block text-xs text-subtle">{candidate.partner} · Due {candidate.dueDate ?? "—"}</span>
+                        <span className="mt-1 block text-xs text-subtle">Expected {numberFmt.format(candidate.expectedRins)} RINs · Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
+                        <span className="mt-1 block text-[11px] font-semibold text-amber">Matched on {candidate.matchedOn}</span>
+                      </span>
+                    </button>)}
+                    {!selected.candidateContracts?.length && selected.contractId && (() => {
+                      const match = openContracts.find((contract) => contract.contractId === selected.contractId);
+                      return <button type="button" role="radio" aria-checked={chosenContract === selected.contractId} onClick={() => setChosenContract(selected.contractId)}
+                        className={`flex w-full items-start gap-3 rounded-md border p-4 text-left shadow-sm transition-colors ${chosenContract === selected.contractId ? "border-primary bg-selected" : "border-hair bg-panel hover:border-primary/50"}`}>
+                        <span aria-hidden="true" className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${chosenContract === selected.contractId ? "border-primary bg-primary" : "border-subtle"}`}>
+                          {chosenContract === selected.contractId && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
+                        </span>
+                        <span className="flex-1">
+                          <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{selected.contractId}</span><span className="text-xs font-semibold text-primary">{selected.dealNumber}</span></span>
+                          <span className="mt-1 block text-xs text-subtle">{selected.partner} · Due {selected.dueDate ?? "—"}</span>
+                          {match && <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(match.outstandingRins)} RINs</span>}
+                          <span className="mt-1 block text-[11px] font-semibold text-moss">Matched on contract, partner, and quantity</span>
+                        </span>
+                      </button>;
+                    })()}
+                  </div>
+                </div>}
+
+                <div>
+                  <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Choose any open contract</div>
+                  <Select value={chosenContract && !selected.candidateContracts?.some((c) => c.contractId === chosenContract) && chosenContract !== selected.contractId ? chosenContract : ""} onValueChange={(value) => setChosenContract(value)}>
+                    <SelectTrigger aria-label="Choose from all open contracts" className="w-full bg-panel"><SelectValue placeholder="Select an open contract…" /></SelectTrigger>
+                    <SelectContent>
+                      {openContracts.map((contract) => <SelectItem key={contract.contractId} value={contract.contractId}>
+                        {contract.contractId} · {contract.dealNumber} · {contract.counterparty}
+                      </SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Or leave unassigned</div>
+                  <button type="button" role="radio" aria-checked={chosenContract === "unreconciled"} onClick={() => setChosenContract("unreconciled")}
+                    className={`flex w-full items-start gap-3 rounded-md border p-4 text-left shadow-sm transition-colors ${chosenContract === "unreconciled" ? "border-primary bg-selected" : "border-hair bg-panel hover:border-primary/50"}`}>
+                    <span aria-hidden="true" className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${chosenContract === "unreconciled" ? "border-primary bg-primary" : "border-subtle"}`}>
+                      {chosenContract === "unreconciled" && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
+                    </span>
+                    <span className="flex-1">
+                      <span className="text-sm font-bold text-ink">Approve as Unreconciled Buy</span>
+                      <span className="mt-1 block text-xs text-subtle">The {numberFmt.format(selected.rins)} RINs are added to the Unassigned pool instead of a contract.</span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <div className="flex items-center justify-between gap-3 border-t border-hair pt-4">
+              <Button variant="outline" onClick={closeReview}>Back to pending buys</Button>
+              <Button disabled={chosenContract === null}>{chosenContract === "unreconciled" ? "Approve as Unreconciled" : chosenContract ? `Approve for ${chosenContract}` : "Approve"}</Button>
+            </div>
           </div>
         </>}
       </SheetContent>
