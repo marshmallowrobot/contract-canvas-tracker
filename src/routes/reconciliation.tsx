@@ -121,7 +121,24 @@ function ReconciliationPage() {
           <SheetHeader className="border-b border-hair bg-panel px-6 py-5 text-left"><SheetTitle className="font-display text-xl text-ink">Review {selected.id}</SheetTitle><SheetDescription>{selected.partner} · Received {selected.received}</SheetDescription></SheetHeader>
           <div className="space-y-5 p-6">
             <div className={`rounded-md border p-4 ${selected.match === "matched" ? "border-assigned-border bg-moss-soft" : "border-amber bg-amber-soft"}`}><div className={`text-sm font-bold ${selected.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[selected.match]}</div><p className="mt-1 text-xs leading-relaxed text-ink">{selected.reason}</p></div>
-            <section><h3 className="mb-3 font-display text-sm font-bold">Imported buy contract</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel p-4"><Detail label="Contract ID" value={selected.contractId ?? "No match"} /><Detail label="Deal number" value={selected.dealNumber ?? "—"} /><Detail label="Trading partner" value={selected.partner} /><Detail label="Due date" value={selected.dueDate ?? "—"} /><Detail label="Invoice" value={selected.invoice} /><Detail label="Expected RINs" value={selected.expectedRins === null ? "—" : numberFmt.format(selected.expectedRins)} /></dl></section>
+            {selected.candidateContracts ? <section>
+              <h3 className="mb-1 font-display text-sm font-bold">Choose a contract</h3>
+              <p className="mb-3 text-xs text-subtle">This buy matches {selected.candidateContracts.length} imported contracts. Select the one it applies to.</p>
+              <div className="space-y-2" role="radiogroup" aria-label="Candidate contracts">
+                {selected.candidateContracts.map((candidate) => <button key={candidate.contractId} type="button" role="radio" aria-checked={chosenContract === candidate.contractId} onClick={() => setChosenContract(candidate.contractId)}
+                  className={`flex w-full items-start gap-3 rounded-md border p-4 text-left shadow-sm transition-colors ${chosenContract === candidate.contractId ? "border-primary bg-selected" : "border-hair bg-panel hover:border-primary/50"}`}>
+                  <span aria-hidden="true" className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${chosenContract === candidate.contractId ? "border-primary bg-primary" : "border-subtle"}`}>
+                    {chosenContract === candidate.contractId && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
+                  </span>
+                  <span className="flex-1">
+                    <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{candidate.contractId}</span><span className="text-xs font-semibold text-primary">{candidate.dealNumber}</span></span>
+                    <span className="mt-1 block text-xs text-subtle">{candidate.partner} · Due {candidate.dueDate ?? "—"}</span>
+                    <span className="mt-1 block text-xs text-subtle">Expected {numberFmt.format(candidate.expectedRins)} RINs · Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
+                    <span className="mt-1 block text-[11px] font-semibold text-amber">Matched on {candidate.matchedOn}</span>
+                  </span>
+                </button>)}
+              </div>
+            </section> : <section><h3 className="mb-3 font-display text-sm font-bold">Imported buy contract</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel p-4"><Detail label="Contract ID" value={selected.contractId ?? "No match"} /><Detail label="Deal number" value={selected.dealNumber ?? "—"} /><Detail label="Trading partner" value={selected.partner} /><Detail label="Due date" value={selected.dueDate ?? "—"} /><Detail label="Invoice" value={selected.invoice} /><Detail label="Expected RINs" value={selected.expectedRins === null ? "—" : numberFmt.format(selected.expectedRins)} /></dl></section>}
             <section><h3 className="mb-3 font-display text-sm font-bold">Incoming RIN buy</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel p-4"><Detail label="Pending buy" value={selected.id} /><Detail label="RIN quantity" value={numberFmt.format(selected.rins)} /><Detail label="Fuel / year" value={`${selected.fuel} · ${selected.year}`} /><Detail label="Assignment" value={selected.assignment === "assigned" ? "Assigned" : "Separated"} /><Detail label="QAP service" value={selected.qap} /><Detail label="PTD number" value={selected.ptd} /><Detail label="Bill of lading" value={selected.bol} /><Detail label="Received" value={selected.received} /></dl></section>
             <div className="border-t border-hair pt-4"><Button variant="outline" onClick={() => setSelected(null)}>Back to pending buys</Button></div>
           </div>
