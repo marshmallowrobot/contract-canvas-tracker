@@ -414,6 +414,11 @@ function ContractDetail() {
                   <td className="px-4 py-2.5"><TxStatusText status={t.txStatus} /></td>
                   <td className="px-4 py-2.5 text-right text-xs font-bold tabular-nums text-primary">
                     {numberFmt.format(t.rinApplied)}
+                    {t.rinOverflow ? (
+                      <div className="mt-0.5 text-[10px] font-semibold text-subtle">
+                        +{numberFmt.format(t.rinOverflow)} overflow to Unassigned
+                      </div>
+                    ) : null}
                   </td>
                   <td className="px-4 py-2.5 text-right text-xs tabular-nums text-subtle">
                     {numberFmt.format(t.rinBalanceAfter)}

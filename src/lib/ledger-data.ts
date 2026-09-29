@@ -128,6 +128,10 @@ function contractEntries(): Draft[] {
         qapServiceType: (ti % 3 === 2 ? "unverified" : "q_rin") as QapServiceType,
       };
       out.push({ ...base, ...fuel, timestamp: t.iso, ledgerItemType: "reconciled_buy", quantity: -t.rinApplied, transactionId: t.transactionId, createdBy: user(ti + 1) });
+      if (t.rinOverflow) {
+        // Over-fulfilling buy: the excess goes to the Unassigned pool under the same transaction.
+        out.push({ buyContractId: null, sourceSystemContractId: null, notes: null, ...fuel, timestamp: t.iso, ledgerItemType: "unreconciled_buy", quantity: t.rinOverflow, transactionId: t.transactionId, createdBy: user(ti + 1) });
+      }
       if (t.txStatus === "failed") {
         out.push({ ...base, ...fuel, timestamp: addDays(t.iso, 2), ledgerItemType: "automated_correction", quantity: t.rinApplied, transactionId: t.transactionId, createdBy: "System" });
       }
