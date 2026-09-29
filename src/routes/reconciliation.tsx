@@ -162,7 +162,7 @@ function ReconciliationPage() {
                           <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{selected.contractId}</span><span className="text-xs font-semibold text-primary">{selected.dealNumber}</span></span>
                           <span className="mt-1 block text-xs text-subtle">{selected.partner} · Due {selected.dueDate ?? "—"}</span>
                           {match && <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(match.outstandingRins)} RINs</span>}
-                          <span className="mt-1 block text-[11px] font-semibold text-moss">Matched on contract, partner, and quantity</span>
+                          <span className="mt-1 block text-[11px] font-semibold text-moss">Matched on partner</span>
                         </span>
                       </button>;
                     })()}
