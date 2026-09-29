@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ChevronDown, ChevronRight, Filter, Search, Split, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, ChevronRight, Filter, Search, Split, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -67,13 +67,22 @@ function ReconciliationPage() {
         <div className="text-xs font-medium text-subtle">Awaiting review · No RIN balances affected</div>
       </header>
 
-      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4" aria-label="Reconciliation status">
+      <div className="mb-6" role="group" aria-label="Filter pending buys by status">
+        <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Filter by status</div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {([ ["all", pendingBuys.length, "All pending buys"], ["matched", counts.matched, "Matched"], ["needs-review", counts["needs-review"], "Needs review"], ["unmatched", counts.unmatched, "No contract match"] ] as const).map(([key, count, label]) =>
-          <Button key={key} variant="outline" onClick={() => setView(key)} aria-pressed={view === key} className={`h-auto min-h-20 flex-col items-start rounded-md border px-4 py-3 text-left shadow-sm ${view === key ? "border-primary bg-selected" : "border-hair bg-panel"}`}>
-            <span className={`font-display text-2xl font-bold tabular-nums ${key === "needs-review" || key === "unmatched" ? "text-amber" : key === "matched" ? "text-moss" : "text-ink"}`}>{count}</span>
-            <span className="text-xs font-semibold text-subtle">{label}</span>
-          </Button>
+          <button key={key} type="button" onClick={() => setView(key)} aria-pressed={view === key}
+            className={`group flex min-h-14 items-center justify-between gap-3 rounded-md border px-4 py-2.5 text-left shadow-sm transition-colors ${view === key ? "border-primary bg-selected" : "border-hair bg-panel hover:border-primary/50"}`}>
+            <span>
+              <span className="block text-xs font-semibold text-ink">{label}</span>
+              <span className={`font-display text-lg font-bold tabular-nums ${key === "needs-review" || key === "unmatched" ? "text-amber" : key === "matched" ? "text-moss" : "text-ink"}`}>{count}</span>
+            </span>
+            <span aria-hidden="true" className={`flex size-4 shrink-0 items-center justify-center rounded-full border transition-colors ${view === key ? "border-primary bg-primary" : "border-subtle group-hover:border-primary"}`}>
+              {view === key && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
+            </span>
+          </button>
         )}
+        </div>
       </div>
 
       <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
