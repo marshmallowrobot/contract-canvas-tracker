@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { numberFmt, type RinCode } from "@/lib/contracts-data";
+import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
 import { pendingBuys, type PendingBuy } from "@/lib/reconciliation-data";
+
+const openContracts = contracts.filter((contract) => contract.contractStatus === "open");
 
 export const Route = createFileRoute("/reconciliation")({
   head: () => ({ meta: [
