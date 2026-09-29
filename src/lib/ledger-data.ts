@@ -27,6 +27,9 @@ export type LedgerItem = {
   /** Signed RIN quantity (+ increases the balance, - decreases it). */
   quantity: number;
   transactionId: string | null;
+  /** Who or what generated this entry. System entries name the process;
+   * user-created entries carry a user id. */
+  createdBy: string;
   fuelCode: RinCode | null;
   fuelYear: number | null;
   assignmentType: AssignmentType | null;
@@ -391,11 +394,12 @@ export const ledgerItems: LedgerItem[] = [
     sourceSystemContractId: "EXT-88044",
     ledgerItemType: "automated_correction",
     quantity: 4400,
-    transactionId: "23891140",
+    transactionId: null,
     fuelCode: "D4",
     fuelYear: 2025,
     assignmentType: "assigned",
     qapServiceType: "q_rin",
+    createdBy: "System · Auto-correction",
     notes: "Restores quantity from rejected 91140 buy (EMTS rejected).",
   },
   {
@@ -421,11 +425,12 @@ export const ledgerItems: LedgerItem[] = [
     sourceSystemContractId: "EXT-87901",
     ledgerItemType: "contract_termination",
     quantity: -26800,
-    transactionId: "23891200",
+    transactionId: null,
     fuelCode: null,
     fuelYear: null,
     assignmentType: null,
     qapServiceType: null,
+    createdBy: "M. Alvarez · USR-4471",
     notes: "Contract written off — counterparty breach.",
   },
 ];
