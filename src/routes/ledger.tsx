@@ -295,6 +295,19 @@ function LedgerPage() {
                     </Select>
                   </label>
                   <label className="block">
+                    <FilterLabel>Assignment</FilterLabel>
+                    <Select value={assignmentFilter} onValueChange={setAssignmentFilter}>
+                      <SelectTrigger aria-label="Filter by assignment" className="mt-1 bg-panel">
+                        <SelectValue placeholder="All assignments" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All assignments</SelectItem>
+                        <SelectItem value="assigned">Assigned</SelectItem>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </label>
+                  <label className="block">
                     <FilterLabel>Transaction ID</FilterLabel>
                     <input
                       value={transactionFilter}
