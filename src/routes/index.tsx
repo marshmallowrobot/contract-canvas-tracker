@@ -161,7 +161,7 @@ function ContractBalances() {
             <p className="mt-1 text-sm text-subtle">RIN obligations and applied buy transactions</p>
           </div>
           <Button asChild variant="outline" size="sm">
-            <Link to="/ledger">Client Ledger</Link>
+            <Link to="/ledger">RIN Balance Ledger</Link>
           </Button>
         </header>
 
