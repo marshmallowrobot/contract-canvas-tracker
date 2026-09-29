@@ -18,6 +18,11 @@ import {
   type Contract,
   type ContractStatus,
 } from "@/lib/contracts-data";
+import { ledgerItems } from "@/lib/ledger-data";
+
+/** Unreconciled Buys have no contract; they accumulate in the Unassigned pool. */
+const unassignedBuys = ledgerItems.filter((item) => item.ledgerItemType === "unreconciled_buy");
+const unassignedPoolRins = unassignedBuys.reduce((sum, item) => sum + item.quantity, 0);
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -165,8 +170,9 @@ function ContractBalances() {
           </Button>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Contract summary">
-          <StatCard label="Outstanding RINs" value={numberFmt.format(summary.totalRins)} note={`${summary.openCount} open contracts`} />
+        <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-5" aria-label="Contract summary">
+          <StatCard label="RINs held — all contracts" value={numberFmt.format(summary.totalRins)} note="Across every buy contract" />
+          <StatCard label="Unassigned pool" value={numberFmt.format(unassignedPoolRins)} note={`${unassignedBuys.length} unreconciled ${unassignedBuys.length === 1 ? "buy" : "buys"}`} />
           <StatCard label="Overdue RINs" value={numberFmt.format(summary.overdueRins)} note={`${summary.overdueCount} contracts`} tone="text-rose" />
           <StatCard label="Due within 30 days" value={numberFmt.format(summary.dueSoonRins)} note={`${summary.dueSoonCount} contracts`} tone="text-amber" />
           <StatCard label="RINs applied this month" value={numberFmt.format(summary.appliedRins)} note={`${summary.appliedTxns} buy transactions`} tone="text-primary" />
