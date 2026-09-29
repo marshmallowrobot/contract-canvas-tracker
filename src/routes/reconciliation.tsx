@@ -47,6 +47,8 @@ function ReconciliationPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [fuel, setFuel] = useState("all");
   const [selected, setSelected] = useState<PendingBuy | null>(null);
+  const [chosenContract, setChosenContract] = useState<string | null>(null);
+  const openReview = (buy: PendingBuy) => { setSelected(buy); setChosenContract(buy.candidateContracts?.[0]?.contractId ?? null); };
   const counts = {
     matched: pendingBuys.filter((buy) => buy.match === "matched").length,
     "needs-review": pendingBuys.filter((buy) => buy.match === "needs-review").length,
