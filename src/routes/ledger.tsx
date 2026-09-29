@@ -148,12 +148,13 @@ function LedgerPage() {
       if (toDate && row.timestamp > toDate) return false;
       return true;
     });
-  }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
+  }, [assignmentFilter, contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
 
   const activeFilterCount =
     (contractFilter.trim() ? 1 : 0) +
     (dealFilter.trim() ? 1 : 0) +
     (typeFilter !== "all" ? 1 : 0) +
+    (assignmentFilter !== "all" ? 1 : 0) +
     (transactionFilter.trim() ? 1 : 0) +
     (ledgerItemFilter.trim() ? 1 : 0) +
     (fromDate ? 1 : 0) +
@@ -161,7 +162,7 @@ function LedgerPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
+  }, [assignmentFilter, contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
 
   const totalPages = Math.max(Math.ceil(visibleRows.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
@@ -198,6 +199,7 @@ function LedgerPage() {
     setContractFilter("");
     setDealFilter("");
     setTypeFilter("all");
+    setAssignmentFilter("all");
     setTransactionFilter("");
     setLedgerItemFilter("");
     setFromDate("");
