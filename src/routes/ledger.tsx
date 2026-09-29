@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, MessageSquareText, Split, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, MessageSquareText, Split, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,8 @@ export const Route = createFileRoute("/ledger")({
 });
 
 const PAGE_SIZE_OPTIONS = [50, 100] as const;
+
+type SortDirection = "asc" | "desc";
 
 const rinCodeClass: Record<RinCode, string> = {
   D3: "bg-rin-d3 text-rin-on-color",
@@ -79,11 +81,13 @@ const inputClass =
 function LedgerPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [contractFilter, setContractFilter] = useState("");
-  const [externalFilter, setExternalFilter] = useState("");
+  const [dealFilter, setDealFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [transactionFilter, setTransactionFilter] = useState("");
+  const [ledgerItemFilter, setLedgerItemFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [dateSort, setDateSort] = useState<SortDirection>("desc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
   const [page, setPage] = useState(1);
 
@@ -100,36 +104,45 @@ function LedgerPage() {
 
   const visibleRows = useMemo(() => {
     const contract = contractFilter.trim().toLowerCase();
-    const external = externalFilter.trim().toLowerCase();
+    const deal = dealFilter.trim().toLowerCase();
     const transaction = transactionFilter.trim().toLowerCase();
+    const ledgerItem = ledgerItemFilter.trim().toLowerCase();
     return rows.filter((row) => {
       if (contract && !(row.buyContractId ?? "unassigned").toLowerCase().includes(contract)) return false;
-      if (external && !(row.sourceSystemContractId ?? "").toLowerCase().includes(external)) return false;
+      if (deal) {
+        const dealNumber = row.buyContractId ? getContract(row.buyContractId)?.dealNumber ?? "" : "";
+        if (!dealNumber.toLowerCase().includes(deal)) return false;
+      }
       if (typeFilter !== "all" && row.ledgerItemType !== typeFilter) return false;
       if (transaction && !(row.transactionId ?? "").toLowerCase().includes(transaction)) return false;
+      if (ledgerItem && !row.ledgerItemId.toLowerCase().includes(ledgerItem)) return false;
       if (fromDate && row.timestamp < fromDate) return false;
       if (toDate && row.timestamp > toDate) return false;
       return true;
     });
-  }, [contractFilter, externalFilter, fromDate, rows, toDate, transactionFilter, typeFilter]);
+  }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
 
   const activeFilterCount =
     (contractFilter.trim() ? 1 : 0) +
-    (externalFilter.trim() ? 1 : 0) +
+    (dealFilter.trim() ? 1 : 0) +
     (typeFilter !== "all" ? 1 : 0) +
     (transactionFilter.trim() ? 1 : 0) +
+    (ledgerItemFilter.trim() ? 1 : 0) +
     (fromDate ? 1 : 0) +
     (toDate ? 1 : 0);
 
   useEffect(() => {
     setPage(1);
-  }, [contractFilter, externalFilter, typeFilter, transactionFilter, fromDate, toDate, pageSize]);
+  }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
 
   const totalPages = Math.max(Math.ceil(visibleRows.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
   const startIndex = (currentPage - 1) * pageSize;
-  // Newest first on screen; the running balance was already computed chronologically.
-  const pageRows = [...visibleRows].reverse().slice(startIndex, startIndex + pageSize);
+  // Date sort drives the on-screen order (newest first by default); the
+  // running balance was already computed chronologically.
+  const pageRows = [...visibleRows]
+    .sort((a, b) => (dateSort === "asc" ? a.timestamp.localeCompare(b.timestamp) : b.timestamp.localeCompare(a.timestamp)))
+    .slice(startIndex, startIndex + pageSize);
   const endIndex = Math.min(startIndex + pageRows.length, visibleRows.length);
 
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
@@ -145,11 +158,11 @@ function LedgerPage() {
   }, [activeFilterCount, rows, visibleRows]);
 
   const clearFilters = () => {
-
     setContractFilter("");
-    setExternalFilter("");
+    setDealFilter("");
     setTypeFilter("all");
     setTransactionFilter("");
+    setLedgerItemFilter("");
     setFromDate("");
     setToDate("");
   };
