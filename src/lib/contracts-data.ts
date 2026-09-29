@@ -29,7 +29,10 @@ export type BuyTransaction = {
   vintageYear: number;
   assignmentType: AssignmentType;
   txStatus: BuyTransactionStatus;
+  /** RINs applied to this contract (capped at the outstanding balance). */
   rinApplied: number;
+  /** Over-fulfilling buys only: RINs beyond the outstanding balance, added to the Unassigned pool. */
+  rinOverflow?: number;
   amountApplied: number;
   rinBalanceAfter: number;
   balanceAfter: number;
@@ -609,6 +612,52 @@ export const contracts: Contract[] = [
         assignmentType: "separated",
         txStatus: "completed",
         rinApplied: 5600,
+        amountApplied: 60000,
+        rinBalanceAfter: 0,
+        balanceAfter: 0,
+      },
+    ],
+  },
+  {
+    contractId: "CT-4736",
+    dealNumber: "HARBRL26TP0017",
+    counterparty: "Harbor Line Energy",
+    dueDate: "Feb 26",
+    dueNote: "settled",
+    status: "settled",
+    contractStatus: "settled",
+    ptd: ["PTD 5920", "PTD 5944"],
+    billOfLading: ["BOL 71301"],
+    invoices: ["INV 2365"],
+    outstandingBalance: 0,
+    contractValue: 150000,
+    outstandingRins: 0,
+    transactions: [
+      {
+        id: "t1",
+        date: "Jan 14",
+        transactionId: "23890967",
+        ptdNumber: "PTD 5920",
+        rinCode: "D5",
+        vintageYear: 2026,
+        assignmentType: "assigned",
+        txStatus: "completed",
+        rinApplied: 4500,
+        amountApplied: 90000,
+        rinBalanceAfter: 3000,
+        balanceAfter: 60000,
+      },
+      {
+        id: "t2",
+        date: "Feb 11",
+        transactionId: "23891162",
+        ptdNumber: "PTD 5944",
+        rinCode: "D5",
+        vintageYear: 2026,
+        assignmentType: "assigned",
+        txStatus: "completed",
+        rinApplied: 3000,
+        rinOverflow: 1200,
         amountApplied: 60000,
         rinBalanceAfter: 0,
         balanceAfter: 0,
