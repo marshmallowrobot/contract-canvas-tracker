@@ -274,7 +274,7 @@ function LedgerPage() {
                         disabled={Boolean(contractFilter.trim() || dealFilter.trim())}
                         onChange={(event) => setUnassignedOnly(event.target.checked)}
                         aria-label="Show only unassigned contract items"
-                        className="size-3.5 accent-[--color-primary]"
+                        className="size-3.5 accent-primary"
                       />
                       Unassigned contracts only
                     </label>
