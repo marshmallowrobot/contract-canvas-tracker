@@ -90,15 +90,13 @@ function ReconciliationPage() {
           <Button variant="ghost" size="icon" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="ml-auto"><X className="size-4" /></Button>
         </div>}
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1080px] border-collapse text-left text-sm">
+          <table className="w-full min-w-[820px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th colSpan={5} className="px-5 py-2">Imported buy contract</th><th colSpan={4} className="border-l border-hair px-5 py-2 text-primary">Incoming RIN buy</th><th className="px-5 py-2">Review</th></tr>
-              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-5 py-2">Contract / deal</th><th className="px-3 py-2">Trading partner</th><th className="px-3 py-2">Due date</th><th className="px-3 py-2">Invoice</th><th className="px-3 py-2 text-right">Expected RINs</th><th className="border-l border-hair px-3 py-2">Pending buy</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">PTD</th><th className="px-3 py-2 text-right">Incoming RINs</th><th className="px-5 py-2">Match</th></tr>
+              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-5 py-2">Pending buy</th><th className="px-3 py-2">Trading partner</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">PTD</th><th className="px-3 py-2 text-right">Incoming RINs</th><th className="px-5 py-2">Match</th></tr>
             </thead>
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
-              <td className="px-5 py-3"><div className="font-semibold">{buy.contractId ?? "Unassigned"}</div><div className="mt-0.5 text-[11px] text-subtle">{buy.dealNumber ?? "No contract found"}</div></td>
-              <td className="max-w-44 px-3 py-3 text-xs font-medium">{buy.partner}</td><td className="px-3 py-3 text-xs text-subtle">{buy.dueDate ?? "—"}</td><td className="px-3 py-3 text-xs">{buy.invoice}</td><td className="px-3 py-3 text-right font-semibold tabular-nums">{buy.expectedRins === null ? "—" : numberFmt.format(buy.expectedRins)}</td>
-              <td className="border-l border-hair px-3 py-3"><div className="font-semibold">{buy.id}</div><div className="mt-0.5 text-[11px] text-subtle">{buy.received}</div></td><td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-right font-semibold tabular-nums">{numberFmt.format(buy.rins)}</td>
+              <td className="px-5 py-3"><div className="font-semibold">{buy.id}</div><div className="mt-0.5 text-[11px] text-subtle">{buy.received}</div>{buy.contractId && <div className="mt-0.5 text-[11px] font-semibold text-primary">{buy.contractId} · {buy.dealNumber}</div>}</td>
+              <td className="max-w-44 px-3 py-3 text-xs font-medium">{buy.partner}</td><td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-right font-semibold tabular-nums">{numberFmt.format(buy.rins)}</td>
               <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => setSelected(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
