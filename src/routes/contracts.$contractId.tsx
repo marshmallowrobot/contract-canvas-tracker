@@ -219,14 +219,25 @@ function ContractDetail() {
   const [dialogAction, setDialogAction] = useState<RemovalAction | null>(null);
   const canCancel = contract.transactions.length === 0;
   const isRemovable = contract.contractStatus === "open";
-  const appliedRins = contract.transactions.reduce((s, t) => s + t.rinApplied, 0);
+  const appliedRins = contract.transactions.reduce((s, t) => (t.txStatus === "failed" ? s : s + t.rinApplied), 0);
   const startingRins = contract.outstandingRins + appliedRins;
   const overdue = contract.status === "overdue";
   const dueSoon = contract.status === "soon";
   const dueTint = overdue ? "text-rose" : dueSoon ? "text-amber" : "";
   const pageCount = Math.max(1, Math.ceil(contract.transactions.length / TRANSACTIONS_PER_PAGE));
   const pageStart = (page - 1) * TRANSACTIONS_PER_PAGE;
-  const sortedTransactions = [...contract.transactions].sort((a, b) => Date.parse(`${a.date}, 2026`) - Date.parse(`${b.date}, 2026`));
+  // Dates carry no year: Aug–Dec belong to 2025, Jan–Jul to 2026.
+  const txTime = (d: string) => {
+    const t = Date.parse(`${d}, 2026`);
+    return new Date(t).getMonth() >= 7 ? Date.parse(`${d}, 2025`) : t;
+  };
+  let running = startingRins;
+  const sortedTransactions = [...contract.transactions]
+    .sort((a, b) => txTime(a.date) - txTime(b.date))
+    .map((t) => {
+      if (t.txStatus !== "failed") running -= t.rinApplied;
+      return { ...t, rinBalanceAfter: running };
+    });
   const visibleTransactions = sortedTransactions.slice(pageStart, pageStart + TRANSACTIONS_PER_PAGE);
   const rangeStart = contract.transactions.length === 0 ? 0 : pageStart + 1;
   const rangeEnd = Math.min(pageStart + TRANSACTIONS_PER_PAGE, contract.transactions.length);
