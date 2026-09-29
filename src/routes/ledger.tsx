@@ -317,7 +317,18 @@ function LedgerPage() {
             <table className="w-full min-w-[840px] text-left">
               <thead>
                 <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle">
-                  <th className="px-5 py-2.5 font-medium">Ledger item</th>
+                  <th className="px-5 py-2.5 font-medium" aria-sort={dateSort === "asc" ? "ascending" : "descending"}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="-ml-2 h-7 px-2 text-[10px] font-bold uppercase text-subtle hover:text-ink"
+                      onClick={() => setDateSort((dir) => (dir === "asc" ? "desc" : "asc"))}
+                      aria-label={`Sort by date, currently ${dateSort === "asc" ? "oldest first" : "newest first"}`}
+                    >
+                      Ledger item
+                      {dateSort === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />}
+                    </Button>
+                  </th>
                   <th className="px-5 py-2.5 font-medium">Type</th>
                   <th className="px-5 py-2.5 font-medium">Contract</th>
                   <th className="px-5 py-2.5 font-medium">Transaction</th>
@@ -335,7 +346,7 @@ function LedgerPage() {
                   <tr key={row.ledgerItemId} className="border-b border-hair last:border-0 hover:bg-table-head">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
-                        <div className="text-xs font-semibold">{row.ledgerItemId}</div>
+                        <div className="text-xs font-semibold">{formatLedgerDate(row.timestamp)}</div>
                         {row.notes && (
                           <HoverCard>
                             <HoverCardTrigger asChild>
@@ -350,7 +361,7 @@ function LedgerPage() {
                           </HoverCard>
                         )}
                       </div>
-                      <div className="mt-0.5 text-[11px] text-subtle">{formatLedgerDate(row.timestamp)}</div>
+                      <div className="mt-0.5 text-[11px] text-subtle">{row.ledgerItemId}</div>
                     </td>
                     <td className="px-5 py-3.5"><TypePill type={row.ledgerItemType} /></td>
                     <td className="whitespace-nowrap px-5 py-3.5">
