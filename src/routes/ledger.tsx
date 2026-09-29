@@ -115,8 +115,8 @@ function LedgerPage() {
     const map = new Map<string, number>();
     for (const row of rows) {
       const inScope =
-        (contract && (row.buyContractId ?? "unassigned").toLowerCase().includes(contract)) ||
-        (deal && (row.buyContractId ? (getContract(row.buyContractId)?.dealNumber ?? "").toLowerCase().includes(deal) : false));
+        (contract && (row.buyContractId ?? "").toLowerCase() === contract) ||
+        (deal && (row.buyContractId ? (getContract(row.buyContractId)?.dealNumber ?? "").toLowerCase() === deal : false));
       if (inScope) {
         balance += row.quantity;
         map.set(row.ledgerItemId, balance);
@@ -131,10 +131,10 @@ function LedgerPage() {
     const transaction = transactionFilter.trim().toLowerCase();
     const ledgerItem = ledgerItemFilter.trim().toLowerCase();
     return rows.filter((row) => {
-      if (contract && !(row.buyContractId ?? "unassigned").toLowerCase().includes(contract)) return false;
+      if (contract && (row.buyContractId ?? "").toLowerCase() !== contract) return false;
       if (deal) {
         const dealNumber = row.buyContractId ? getContract(row.buyContractId)?.dealNumber ?? "" : "";
-        if (!dealNumber.toLowerCase().includes(deal)) return false;
+        if (dealNumber.toLowerCase() !== deal) return false;
       }
       if (typeFilter !== "all" && row.ledgerItemType !== typeFilter) return false;
       if (transaction && !(row.transactionId ?? "").toLowerCase().includes(transaction)) return false;
