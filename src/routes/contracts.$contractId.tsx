@@ -249,30 +249,37 @@ function ContractDetail() {
           <Button asChild variant="ghost" size="sm" className="-ml-3 text-subtle">
             <Link to="/"><ArrowLeft />Buy Contract Balances</Link>
           </Button>
-          {isRemovable && (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-rose/40 text-rose hover:bg-rose-soft/60 hover:text-rose"
-                onClick={() => setDialogAction("terminate")}
-              >
-                <AlertTriangle className="size-4" />
-                Terminate
-              </Button>
-              {canCancel && (
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm" className="border-hair text-primary hover:bg-table-head hover:text-primary">
+              <Link to="/ledger" search={{ contract: contract.contractId }}>
+                View ledger entries
+              </Link>
+            </Button>
+            {isRemovable && (
+              <>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-hair text-subtle hover:bg-table-head"
-                  onClick={() => setDialogAction("cancel")}
+                  className="border-rose/40 text-rose hover:bg-rose-soft/60 hover:text-rose"
+                  onClick={() => setDialogAction("terminate")}
                 >
-                  <Ban className="size-4" />
-                  Cancel
+                  <AlertTriangle className="size-4" />
+                  Terminate
                 </Button>
-              )}
-            </div>
-          )}
+                {canCancel && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-hair text-subtle hover:bg-table-head"
+                    onClick={() => setDialogAction("cancel")}
+                  >
+                    <Ban className="size-4" />
+                    Cancel
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
         <header className="rounded-md border border-hair bg-panel shadow-sm">
