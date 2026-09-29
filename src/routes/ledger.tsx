@@ -149,6 +149,23 @@ function LedgerPage() {
     });
   }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
 
+  /** In a contract-scoped view, note any buy that over-fulfilled the contract:
+   * the overflow posts to the Unassigned pool, not this contract's balance. */
+  const overflowNotes = useMemo(() => {
+    if (!contractScopeActive) return [];
+    const scopeTxIds = new Set(
+      visibleRows.filter((r) => r.transactionId).map((r) => r.transactionId!),
+    );
+    return ledgerItems
+      .filter(
+        (r) =>
+          r.ledgerItemType === "unreconciled_buy" &&
+          r.transactionId !== null &&
+          scopeTxIds.has(r.transactionId),
+      )
+      .map((r) => ({ transactionId: r.transactionId!, quantity: r.quantity }));
+  }, [contractScopeActive, visibleRows]);
+
   const activeFilterCount =
     (contractFilter.trim() ? 1 : 0) +
     (dealFilter.trim() ? 1 : 0) +
@@ -446,6 +463,18 @@ function LedgerPage() {
               </div>
             )}
           </div>
+
+          {contractScopeActive && overflowNotes.length > 0 && (
+            <div className="border-t border-hair bg-table-head px-5 py-3 text-xs text-subtle">
+              {overflowNotes.map((note) => (
+                <p key={note.transactionId}>
+                  Buy transaction {note.transactionId} over-fulfilled this contract. The overflow of{" "}
+                  {numberFmt.format(note.quantity)} RINs was posted to the Unassigned pool and is not
+                  part of this contract's balance.
+                </p>
+              ))}
+            </div>
+          )}
 
           <div className="flex flex-col gap-3 border-t border-hair px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-xs text-subtle">
