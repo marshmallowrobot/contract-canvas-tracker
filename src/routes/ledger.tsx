@@ -87,7 +87,6 @@ function LedgerPage() {
   const [ledgerItemFilter, setLedgerItemFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [assignmentFilter, setAssignmentFilter] = useState("all");
   const [dateSort, setDateSort] = useState<SortDirection>("desc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
   const [page, setPage] = useState(1);
@@ -138,23 +137,18 @@ function LedgerPage() {
         if (dealNumber.toLowerCase() !== deal) return false;
       }
       if (typeFilter !== "all" && row.ledgerItemType !== typeFilter) return false;
-      if (assignmentFilter !== "all") {
-        const wanted = assignmentFilter === "assigned" ? "assigned" : "separated";
-        if (row.assignmentType !== wanted) return false;
-      }
       if (transaction && !(row.transactionId ?? "").toLowerCase().includes(transaction)) return false;
       if (ledgerItem && !row.ledgerItemId.toLowerCase().includes(ledgerItem)) return false;
       if (fromDate && row.timestamp < fromDate) return false;
       if (toDate && row.timestamp > toDate) return false;
       return true;
     });
-  }, [assignmentFilter, contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
+  }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
 
   const activeFilterCount =
     (contractFilter.trim() ? 1 : 0) +
     (dealFilter.trim() ? 1 : 0) +
     (typeFilter !== "all" ? 1 : 0) +
-    (assignmentFilter !== "all" ? 1 : 0) +
     (transactionFilter.trim() ? 1 : 0) +
     (ledgerItemFilter.trim() ? 1 : 0) +
     (fromDate ? 1 : 0) +
@@ -162,7 +156,7 @@ function LedgerPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [assignmentFilter, contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
+  }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
 
   const totalPages = Math.max(Math.ceil(visibleRows.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
@@ -199,7 +193,6 @@ function LedgerPage() {
     setContractFilter("");
     setDealFilter("");
     setTypeFilter("all");
-    setAssignmentFilter("all");
     setTransactionFilter("");
     setLedgerItemFilter("");
     setFromDate("");
@@ -291,19 +284,6 @@ function LedgerPage() {
                         {(Object.keys(ledgerItemTypeMeta) as LedgerItemType[]).map((key) => (
                           <SelectItem key={key} value={key}>{ledgerItemTypeMeta[key].label}</SelectItem>
                         ))}
-                      </SelectContent>
-                    </Select>
-                  </label>
-                  <label className="block">
-                    <FilterLabel>Assignment</FilterLabel>
-                    <Select value={assignmentFilter} onValueChange={setAssignmentFilter}>
-                      <SelectTrigger aria-label="Filter by assignment" className="mt-1 bg-panel">
-                        <SelectValue placeholder="All assignments" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All assignments</SelectItem>
-                        <SelectItem value="assigned">Assigned</SelectItem>
-                        <SelectItem value="unassigned">Unassigned</SelectItem>
                       </SelectContent>
                     </Select>
                   </label>
