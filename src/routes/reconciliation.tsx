@@ -49,8 +49,10 @@ function ReconciliationPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [fuel, setFuel] = useState("all");
   const [selected, setSelected] = useState<PendingBuy | null>(null);
+  /** Selection lives only while the review panel is open; closing the panel discards it. */
   const [chosenContract, setChosenContract] = useState<string | null>(null);
-  const openReview = (buy: PendingBuy) => { setSelected(buy); setChosenContract(buy.candidateContracts?.[0]?.contractId ?? null); };
+  const openReview = (buy: PendingBuy) => { setSelected(buy); setChosenContract(null); };
+  const closeReview = () => { setSelected(null); setChosenContract(null); };
   const counts = {
     matched: pendingBuys.filter((buy) => buy.match === "matched").length,
     "needs-review": pendingBuys.filter((buy) => buy.match === "needs-review").length,
