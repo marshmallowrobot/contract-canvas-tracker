@@ -262,19 +262,32 @@ function LedgerPage() {
                     <input
                       value={contractFilter}
                       onChange={(event) => setContractFilter(event.target.value)}
+                      disabled={unassignedOnly}
                       aria-label="Filter by buy contract ID"
                       placeholder="Exact match, e.g. CT-4821"
-                      className={inputClass}
+                      className={`${inputClass} disabled:cursor-not-allowed disabled:opacity-50`}
                     />
+                    <label className="mt-2 flex items-center gap-2 text-xs text-ink">
+                      <input
+                        type="checkbox"
+                        checked={unassignedOnly}
+                        disabled={Boolean(contractFilter.trim() || dealFilter.trim())}
+                        onChange={(event) => setUnassignedOnly(event.target.checked)}
+                        aria-label="Show only unassigned contract items"
+                        className="size-3.5 accent-[--color-primary]"
+                      />
+                      Unassigned contracts only
+                    </label>
                   </label>
                   <label className="block">
                     <FilterLabel>Deal Number</FilterLabel>
                     <input
                       value={dealFilter}
                       onChange={(event) => setDealFilter(event.target.value)}
+                      disabled={unassignedOnly}
                       aria-label="Filter by deal number"
                       placeholder="Exact match, e.g. CONTI26TP0002"
-                      className={inputClass}
+                      className={`${inputClass} disabled:cursor-not-allowed disabled:opacity-50`}
                     />
                   </label>
                   <label className="block">
