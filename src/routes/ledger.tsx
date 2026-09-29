@@ -323,13 +323,6 @@ function LedgerPage() {
             )}
           </div>
 
-          {showBalance && openingBalance !== null && (
-            <div className="flex items-center justify-between border-b border-hair bg-canvas px-5 py-2 text-xs">
-              <span className="text-subtle">Balance before this view</span>
-              <span className="font-bold tabular-nums text-ink">{numberFmt.format(openingBalance)}</span>
-            </div>
-          )}
-
           <div className="overflow-x-auto">
 
             <table className="w-full min-w-[840px] text-left">
