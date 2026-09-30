@@ -123,7 +123,6 @@ function ReconciliationPage() {
         <div><h1 className="font-display text-2xl font-bold">RIN Buy Reconciliation</h1><p className="mt-1 text-sm text-subtle">Evergreen Fuels Group (48217) · Pending buys</p></div>
         <div className="flex flex-wrap items-center gap-2"><Button size="sm" variant="outline" className="bg-panel text-primary hover:text-primary">Export</Button><Button size="sm" variant="outline" className="bg-panel text-primary hover:text-primary">Advanced Export</Button></div>
       </header>
-      {bulkApproveButton("top") && <div className="-mt-3 mb-4 flex justify-end">{bulkApproveButton("top")}</div>}
 
       <div className="mb-6" role="group" aria-label="Filter pending buys by status">
         <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Filter by status</div>
