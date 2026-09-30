@@ -82,7 +82,7 @@ function ReconciliationPage() {
       <Link to="/" className="mb-5 inline-flex items-center gap-2 text-xs font-semibold text-subtle hover:text-primary"><ArrowLeft className="size-4" /> Buy Contract Balances</Link>
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div><h1 className="font-display text-2xl font-bold">RIN Buy Reconciliation</h1><p className="mt-1 text-sm text-subtle">Evergreen Fuels Group (48217) · Pending buys</p></div>
-        <div className="flex flex-wrap items-center gap-2"><Button size="sm" variant="outline" className="text-primary">Export</Button><Button size="sm" variant="outline" className="text-primary">Advanced Export</Button></div>
+        <div className="flex flex-wrap items-center gap-2"><Button size="sm" variant="outline" className="bg-panel text-primary hover:text-primary">Export</Button><Button size="sm" variant="outline" className="bg-panel text-primary hover:text-primary">Advanced Export</Button></div>
       </header>
 
       <div className="mb-6" role="group" aria-label="Filter pending buys by status">
