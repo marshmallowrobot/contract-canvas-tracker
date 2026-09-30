@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check, ChevronDown, ChevronRight, Filter, Split, TriangleAlert, X } from "lucide-react";
+import { ArrowLeft, Layers, ArrowRight, Check, ChevronDown, ChevronRight, Filter, Split, TriangleAlert, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
-import { pendingBuys, type PendingBuy } from "@/lib/reconciliation-data";
+import { findSettlementGroups, pendingBuys, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
 
 const openContracts = contracts.filter((contract) => contract.contractStatus === "open");
+const settlementGroups = findSettlementGroups(pendingBuys, openContracts);
+const groupOf = (buy: PendingBuy) => settlementGroups.find((group) => group.buys.some((b) => b.id === buy.id));
 
 export const Route = createFileRoute("/reconciliation")({
   head: () => ({ meta: [
@@ -67,6 +69,8 @@ function ReconciliationPage() {
   const [chosenContract, setChosenContract] = useState<string | null>(null);
   const openReview = (buy: PendingBuy) => { setSelected(buy); setChosenContract(null); };
   const closeReview = () => { setSelected(null); setChosenContract(null); };
+  const [group, setGroup] = useState<SettlementGroup | null>(null);
+  const openGroup = (g: SettlementGroup) => { closeReview(); setGroup(g); };
   const counts = {
     matched: pendingBuys.filter((buy) => buy.match === "matched").length,
     "needs-review": pendingBuys.filter((buy) => buy.match === "needs-review").length,
@@ -74,7 +78,7 @@ function ReconciliationPage() {
   };
   const partners = useMemo(() => [...new Set(pendingBuys.map((buy) => buy.partner))].sort(), []);
   const visible = useMemo(() => pendingBuys.filter((buy) =>
-    (view === "all" || buy.match === view) &&
+    (view === "all" || (view === "groups" ? !!groupOf(buy) : buy.match === view)) &&
     (fuel === "all" || buy.fuel === fuel) &&
     (partner === "all" || buy.partner === partner) &&
     (!ptdFilter.trim() || buy.ptd.toLowerCase().includes(ptdFilter.trim().toLowerCase())) &&
@@ -92,13 +96,13 @@ function ReconciliationPage() {
 
       <div className="mb-6" role="group" aria-label="Filter pending buys by status">
         <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Filter by status</div>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {([ ["all", pendingBuys.length, "All pending buys"], ["matched", counts.matched, "Matched"], ["needs-review", counts["needs-review"], "Needs review"], ["unmatched", counts.unmatched, "Unmatched"] ] as const).map(([key, count, label]) =>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        {([ ["all", pendingBuys.length, "All pending buys"], ["matched", counts.matched, "Matched"], ["needs-review", counts["needs-review"], "Needs review"], ["unmatched", counts.unmatched, "Unmatched"], ["groups", settlementGroups.length, "Settlement groups"] ] as const).map(([key, count, label]) =>
           <button key={key} type="button" onClick={() => setView(key)} aria-pressed={view === key}
             className={`group flex min-h-14 items-center justify-between gap-3 rounded-md border px-4 py-2.5 text-left shadow-sm transition-colors ${view === key ? "border-primary bg-selected" : "border-hair bg-panel hover:border-primary/50"}`}>
             <span>
               <span className="block text-xs font-semibold text-ink">{label}</span>
-              <span className={`font-display text-lg font-bold tabular-nums ${key === "needs-review" || key === "unmatched" ? "text-amber" : key === "matched" ? "text-moss" : "text-ink"}`}>{count}</span>
+              <span className={`font-display text-lg font-bold tabular-nums ${key === "needs-review" || key === "unmatched" ? "text-amber" : key === "matched" ? "text-moss" : key === "groups" ? "text-settle" : "text-ink"}`}>{count}</span>
             </span>
             <span aria-hidden="true" className={`flex size-4 shrink-0 items-center justify-center rounded-full border transition-colors ${view === key ? "border-primary bg-primary" : "border-subtle group-hover:border-primary"}`}>
               {view === key && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
@@ -107,6 +111,11 @@ function ReconciliationPage() {
         )}
         </div>
       </div>
+
+      {settlementGroups.map((g) => <div key={g.key} className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md bg-settle-soft px-5 py-3">
+        <div className="flex items-center gap-3"><Layers className="size-5 text-settle" /><div><p className="text-sm font-bold text-ink">{g.buys.length} pending buys together would settle {g.contractId}</p><p className="text-xs text-subtle">{g.partner} · {g.buys[0]?.fuel} {g.buys[0]?.year} · {numberFmt.format(g.total)} of {numberFmt.format(g.outstandingRins)} outstanding RINs</p></div></div>
+        <Button size="sm" onClick={() => openGroup(g)}>Review group</Button>
+      </div>)}
 
       <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hair px-5 py-3">
@@ -132,7 +141,7 @@ function ReconciliationPage() {
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
               <td className="max-w-44 px-5 py-3"><div className="text-xs font-medium">{buy.partner}</div>{buy.contractId && <div className="mt-0.5 text-[11px] font-semibold text-primary">{buy.contractId} · {buy.dealNumber}</div>}</td>
               <td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-xs">{buy.received}</td><td className="px-3 py-3 text-xs font-semibold"><span className={buy.expiresInDays <= 1 ? "text-rose" : buy.expiresInDays <= 5 ? "text-amber" : "text-ink"}>{expirationLabel(buy.expiresInDays)}</span></td><td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td><td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
-              <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}</div><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
+              <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}{groupOf(buy) && <button type="button" onClick={() => openGroup(groupOf(buy)!)} className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle hover:underline"><Layers className="size-3" /> Group settles {groupOf(buy)!.contractId}</button>}</div><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
@@ -147,6 +156,8 @@ function ReconciliationPage() {
           <SheetHeader className="border-b border-hair bg-panel px-6 py-5 text-left"><SheetDescription className="sr-only">Review pending buy {selected.id}</SheetDescription><div className="flex items-start justify-between gap-3 pr-4"><SheetTitle className="font-display text-xl text-ink">Review Incoming Buy</SheetTitle><span className={`mt-1 shrink-0 whitespace-nowrap rounded px-2 py-1 text-[11px] font-bold uppercase tracking-wide ${selected.match === "matched" ? "bg-moss-soft text-moss" : "bg-amber-soft text-amber"}`}>{matchLabel[selected.match]}</span></div></SheetHeader>
           <div className="flex-1 space-y-5 px-6 pb-6 pt-4">
             <section><h3 className="mb-3 font-display text-sm font-bold">Incoming RIN buy</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel p-4"><Detail label="Trading partner" value={selected.partner} /><Detail label="RIN quantity" value={numberFmt.format(selected.rins)} /><Detail label="Gallons" value={numberFmt.format(selected.gallons)} /><Detail label="Price" value={selected.price} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Fuel / assignment</dt><dd className="mt-2 flex items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span></dd></div><Detail label="Invoice number" value={selected.invoice} /><Detail label="PTD number" value={selected.ptd} /><Detail label="Bill of lading" value={selected.bol} /><Detail label="Received" value={selected.received} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Expires in</dt><dd className={`mt-2 text-sm font-semibold ${selected.expiresInDays <= 1 ? "text-rose" : selected.expiresInDays <= 5 ? "text-amber" : "text-ink"}`}>{expirationLabel(selected.expiresInDays)}</dd></div></dl></section>
+
+            {groupOf(selected) && <div className="flex items-center justify-between gap-3 rounded-md bg-settle-soft p-4"><p className="text-xs leading-relaxed text-ink">This buy is part of a group of {groupOf(selected)!.buys.length} buys that together would settle {groupOf(selected)!.contractId}.</p><Button size="sm" variant="outline" className="shrink-0 bg-panel" onClick={() => openGroup(groupOf(selected)!)}>Review group</Button></div>}
 
             <section>
               <h3 className="mb-1 font-display text-sm font-bold">Apply this buy to a contract</h3>
@@ -241,6 +252,41 @@ function ReconciliationPage() {
           <div className="mt-auto flex items-center justify-between gap-3 border-t border-hair bg-panel px-6 py-4">
             <Button variant="outline" onClick={closeReview}>Back to pending buys</Button>
             <Button disabled={chosenContract === null}>{chosenContract === "unreconciled" ? "Approve as Unreconciled" : chosenContract ? `Approve for ${chosenContract}` : "Approve"}</Button>
+          </div>
+        </>}
+      </SheetContent>
+    </Sheet>
+
+    <Sheet open={group !== null} onOpenChange={(open) => { if (!open) setGroup(null); }}>
+      <SheetContent side="right" className="flex w-full flex-col overflow-y-auto bg-canvas p-0 sm:max-w-[560px]">
+        {group && <>
+          <SheetHeader className="border-b border-hair bg-panel px-6 py-5 text-left"><SheetDescription className="sr-only">Review a group of buys that together settle {group.contractId}</SheetDescription><div className="flex items-start justify-between gap-3 pr-4"><SheetTitle className="font-display text-xl text-ink">Review Settlement Group</SheetTitle><span className="mt-1 shrink-0 whitespace-nowrap rounded bg-settle-soft px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-settle">Would settle</span></div></SheetHeader>
+          <div className="flex-1 space-y-5 px-6 pb-6 pt-4">
+            <section><h3 className="mb-3 font-display text-sm font-bold">Contract to settle</h3>
+              <div className="rounded-md border border-hair bg-panel p-4">
+                <div className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{group.contractId}</span><span className="text-xs font-semibold text-primary">{group.dealNumber}</span></div>
+                <p className="mt-1 text-xs text-subtle">{group.partner}</p>
+                <div className="mt-3 flex items-baseline justify-between text-xs"><span className="text-subtle">Group total / outstanding</span><span className="font-bold tabular-nums text-ink">{numberFmt.format(group.total)} / {numberFmt.format(group.outstandingRins)} RINs</span></div>
+                <div className="mt-2 flex h-2.5 overflow-hidden rounded-full bg-table-head">{group.buys.map((b, i) => <div key={b.id} className={`h-full bg-settle ${i > 0 ? "border-l-2 border-panel" : ""}`} style={{ width: `${(b.rins / group.outstandingRins) * 100}%`, opacity: 1 - i * 0.2 }} />)}</div>
+              </div>
+            </section>
+            <section><h3 className="mb-3 font-display text-sm font-bold">Buys in this group ({group.buys.length})</h3>
+              <div className="overflow-hidden rounded-md border border-hair bg-panel">
+                {group.buys.map((b) => <div key={b.id} className="flex items-center justify-between gap-3 border-b border-hair px-4 py-3 last:border-0">
+                  <div><div className="flex items-center gap-2"><Fuel buy={b} /></div><p className="mt-1 text-[11px] text-subtle">{b.ptd} · {b.invoice} · {b.received}</p></div>
+                  <div className="text-right"><div className="text-sm font-semibold tabular-nums">{numberFmt.format(b.rins)}</div><div className={`text-[11px] font-semibold ${b.expiresInDays <= 1 ? "text-rose" : b.expiresInDays <= 5 ? "text-amber" : "text-subtle"}`}>Expires in {expirationLabel(b.expiresInDays)}</div></div>
+                </div>)}
+                <div className="flex items-center justify-between bg-table-head px-4 py-2.5 text-xs font-bold"><span>Total</span><span className="tabular-nums">{numberFmt.format(group.total)} RINs</span></div>
+              </div>
+            </section>
+            <div role="alert" className="rounded-md bg-settle-soft p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-settle">Contract would settle</p>
+              <p className="mt-1 text-xs leading-relaxed text-ink">Approving all {group.buys.length} buys applies {numberFmt.format(group.total)} RINs to {group.contractId}{group.total === group.outstandingRins ? ", exactly matching its outstanding balance" : `, within 1% of its ${numberFmt.format(group.outstandingRins)} outstanding RINs`}. The contract settles. To handle a buy differently, review it on its own instead.</p>
+            </div>
+          </div>
+          <div className="mt-auto flex items-center justify-between gap-3 border-t border-hair bg-panel px-6 py-4">
+            <Button variant="outline" onClick={() => setGroup(null)}>Back to pending buys</Button>
+            <Button>Approve all {group.buys.length} for {group.contractId}</Button>
           </div>
         </>}
       </SheetContent>
