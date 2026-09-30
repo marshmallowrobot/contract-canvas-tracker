@@ -115,8 +115,12 @@ function ReconciliationPage() {
           </div>
         </div>
         {filtersOpen && <div className="flex flex-wrap items-end gap-3 border-b border-hair bg-table-head px-5 py-4">
+          <div><label className="text-[11px] font-bold uppercase text-subtle">Trading partner</label><Select value={partner} onValueChange={setPartner}><SelectTrigger aria-label="Filter by trading partner" className="mt-1 w-52 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All partners</SelectItem>{partners.map((name) => <SelectItem key={name} value={name}>{name}</SelectItem>)}</SelectContent></Select></div>
           <div><label className="text-[11px] font-bold uppercase text-subtle">Fuel code</label><Select value={fuel} onValueChange={setFuel}><SelectTrigger aria-label="Filter by fuel code" className="mt-1 w-36 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All fuels</SelectItem>{(["D3", "D4", "D5", "D6", "D7"] as const).map((code) => <SelectItem key={code} value={code}>{code}</SelectItem>)}</SelectContent></Select></div>
-          <Button variant="ghost" size="sm" onClick={() => { setFuel("all"); setQuery(""); setView("all"); }}>Clear all</Button>
+          <div><label className="text-[11px] font-bold uppercase text-subtle">PTD</label><Input aria-label="Filter by PTD" placeholder="e.g. 1558058" value={ptdFilter} onChange={(event) => setPtdFilter(event.target.value)} className="mt-1 w-36 bg-panel text-xs" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-subtle">Buy contract id</label><Input aria-label="Filter by buy contract id" placeholder="e.g. CT-4902" value={contractFilter} onChange={(event) => setContractFilter(event.target.value)} className="mt-1 w-36 bg-panel text-xs" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-subtle">Deal number</label><Input aria-label="Filter by deal number" placeholder="e.g. EVERG26TP0018" value={dealFilter} onChange={(event) => setDealFilter(event.target.value)} className="mt-1 w-44 bg-panel text-xs" /></div>
+          <Button variant="ghost" size="sm" onClick={() => { setFuel("all"); setPartner("all"); setPtdFilter(""); setContractFilter(""); setDealFilter(""); setQuery(""); setView("all"); }}>Clear all</Button>
           <Button variant="ghost" size="icon" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="ml-auto"><X className="size-4" /></Button>
         </div>}
         <div className="overflow-x-auto">
