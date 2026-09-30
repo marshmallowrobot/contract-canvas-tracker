@@ -124,7 +124,7 @@ function ReconciliationPage() {
         <div className="flex flex-wrap items-center gap-2"><Button size="sm" variant="outline" className="bg-panel text-primary hover:text-primary">Export</Button><Button size="sm" variant="outline" className="bg-panel text-primary hover:text-primary">Advanced Export</Button></div>
       </header>
 
-      <div className="mb-6" role="group" aria-label="Filter pending buys by status">
+      <div className={bulkApproveButton("top") ? "mb-4" : "mb-6"} role="group" aria-label="Filter pending buys by status">
         <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Filter by status</div>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {([ ["all", pendingBuys.length, "All pending buys"], ["matched", counts.matched, "Matched"], ["needs-review", counts["needs-review"], "Needs review"], ["unmatched", counts.unmatched, "Unmatched"] ] as const).map(([key, count, label]) =>
@@ -141,7 +141,7 @@ function ReconciliationPage() {
         )}
         </div>
       </div>
-      {bulkApproveButton("top") && <div className="mb-3 flex justify-end">{bulkApproveButton("top")}</div>}
+      {bulkApproveButton("top") && <div className="mb-4 flex justify-end">{bulkApproveButton("top")}</div>}
 
       <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
