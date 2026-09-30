@@ -102,7 +102,7 @@ function ReconciliationPage() {
             className={`group flex min-h-14 items-center justify-between gap-3 rounded-md border px-4 py-2.5 text-left shadow-sm transition-colors ${view === key ? "border-primary bg-selected" : "border-hair bg-panel hover:border-primary/50"}`}>
             <span>
               <span className="block text-xs font-semibold text-ink">{label}</span>
-              <span className={`font-display text-lg font-bold tabular-nums ${key === "needs-review" || key === "unmatched" ? "text-amber" : key === "matched" ? "text-moss" : key === "groups" ? "text-settle" : "text-ink"}`}>{count}</span>
+              <span className={`font-display text-lg font-bold tabular-nums ${key === "needs-review" || key === "unmatched" ? "text-amber" : key === "matched" ? "text-moss" : "text-ink"}`}>{count}</span>
             </span>
             <span aria-hidden="true" className={`flex size-4 shrink-0 items-center justify-center rounded-full border transition-colors ${view === key ? "border-primary bg-primary" : "border-subtle group-hover:border-primary"}`}>
               {view === key && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
