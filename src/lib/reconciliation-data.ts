@@ -48,4 +48,5 @@ export const pendingBuys: PendingBuy[] = [
       { contractId: "CT-4917", dealNumber: "EVERG26TP0031", partner: "Evergreen Refinery", dueDate: "Nov 2, 2026", outstandingRins: 6400, matchedOn: "PTD 1558058" },
       { contractId: "CT-4918", dealNumber: "EVERG26TP0032", partner: "Evergreen Refinery", dueDate: "Nov 14, 2026", outstandingRins: 9800, matchedOn: "PTD 1558058" },
     ] },
+  { id: "PB-80223", contractId: "CT-4750", dealNumber: "GULFSTAR26TP0026", contractOutstandingRins: 7350, partner: "Gulfstar Bunkering", received: "Sep 29, 2026", dueDate: null, invoice: "INV-70471", expectedRins: null, rins: 9000, gallons: 4500, price: "$2.150/RIN", fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558065", bol: "BOL-871301", match: "needs-review", reason: "Buy quantity exceeds CT-4750's outstanding balance by 1,650 RINs." },
 ];
