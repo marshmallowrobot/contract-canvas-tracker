@@ -61,3 +61,39 @@ export const pendingBuys: PendingBuy[] = [
   { id: "PB-80227", contractId: null, dealNumber: null, partner: "Evergreen Refinery", received: "Sep 27, 2026", expiresInDays: 6, dueDate: null, invoice: "INV-70486", expectedRins: null, rins: 4400, gallons: 4400, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558087", bol: "BOL-871327", match: "needs-review", reason: "Partial buy for Evergreen Refinery; no single contract matches this quantity." },
   { id: "PB-80228", contractId: null, dealNumber: null, partner: "Evergreen Refinery", received: "Sep 29, 2026", expiresInDays: 10, dueDate: null, invoice: "INV-70490", expectedRins: null, rins: 3000, gallons: 3000, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558092", bol: "BOL-871333", match: "needs-review", reason: "Partial buy for Evergreen Refinery; no single contract matches this quantity." },
 ];
+
+export type SettlementGroup = {
+  key: string;
+  contractId: string;
+  dealNumber: string;
+  partner: string;
+  outstandingRins: number;
+  buys: PendingBuy[];
+  total: number;
+};
+
+/**
+ * Cheap single-pass detection (no permutation search): bucket loose buys by
+ * trading partner + fuel + year, then compare each bucket's total against open
+ * contracts for that partner. A bucket that lands within 1% of (and not over)
+ * a contract's outstanding balance becomes a settlement group. Max 5 buys.
+ */
+export function findSettlementGroups(
+  buys: PendingBuy[],
+  openContracts: { contractId: string; dealNumber: string; counterparty: string; outstandingRins: number }[],
+): SettlementGroup[] {
+  const buckets = new Map<string, PendingBuy[]>();
+  for (const buy of buys) {
+    if (buy.match === "matched" || buy.contractId || buy.candidateContracts?.length) continue;
+    const key = `${buy.partner}|${buy.fuel}|${buy.year}`;
+    buckets.set(key, [...(buckets.get(key) ?? []), buy]);
+  }
+  const groups: SettlementGroup[] = [];
+  for (const [key, bucket] of buckets) {
+    if (bucket.length < 2 || bucket.length > 5) continue;
+    const total = bucket.reduce((sum, b) => sum + b.rins, 0);
+    const contract = openContracts.find((c) => c.counterparty === bucket[0].partner && total >= c.outstandingRins * 0.99 && total <= c.outstandingRins);
+    if (contract) groups.push({ key, contractId: contract.contractId, dealNumber: contract.dealNumber, partner: bucket[0].partner, outstandingRins: contract.outstandingRins, buys: bucket, total });
+  }
+  return groups;
+}
