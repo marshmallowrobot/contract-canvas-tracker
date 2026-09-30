@@ -260,7 +260,7 @@ function ReconciliationPage() {
     <Sheet open={group !== null} onOpenChange={(open) => { if (!open) setGroup(null); }}>
       <SheetContent side="right" className="flex w-full flex-col overflow-y-auto bg-canvas p-0 sm:max-w-[560px]">
         {group && <>
-          <SheetHeader className="border-b border-hair bg-panel px-6 py-5 text-left"><SheetDescription className="sr-only">Review a group of buys that together settle {group.contractId}</SheetDescription><div className="flex items-start justify-between gap-3 pr-4"><SheetTitle className="font-display text-xl text-ink">Review Settlement Group</SheetTitle><span className="mt-1 shrink-0 whitespace-nowrap rounded bg-settle-soft px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-settle">Would settle</span></div></SheetHeader>
+          <SheetHeader className="border-b border-hair bg-panel px-6 py-5 text-left"><SheetDescription className="sr-only">Review a group of buys that together settle {group.contractId}</SheetDescription><SheetTitle className="font-display text-xl text-ink">Review Settlement Group</SheetTitle></SheetHeader>
           <div className="flex-1 space-y-5 px-6 pb-6 pt-4">
             <section><h3 className="mb-3 font-display text-sm font-bold">Contract to settle</h3>
               <div className="rounded-md border border-hair bg-panel p-4">
