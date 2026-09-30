@@ -183,7 +183,7 @@ function ReconciliationPage() {
                   </div>
                 </div>}
 
-                <div>
+                {openContracts.length > 0 && <div>
                   <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Choose any open contract</div>
                   <Select value={chosenContract && !selected.candidateContracts?.some((c) => c.contractId === chosenContract) && chosenContract !== selected.contractId ? chosenContract : ""} onValueChange={(value) => setChosenContract(value)}>
                     <SelectTrigger aria-label="Choose from all open contracts" className="w-full bg-panel"><SelectValue placeholder="Select an open contract…" /></SelectTrigger>
@@ -193,7 +193,7 @@ function ReconciliationPage() {
                       </SelectItem>)}
                     </SelectContent>
                   </Select>
-                </div>
+                </div>}
 
                 <div>
                   <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Or leave unassigned</div>
