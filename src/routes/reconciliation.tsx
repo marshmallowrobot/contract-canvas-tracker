@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Layers, ArrowRight, Check, ChevronDown, ChevronRight, Funnel, Split, TriangleAlert, X } from "lucide-react";
+import { ArrowLeft, Layers, ArrowRight, Check, ChevronRight, Funnel, Split, TriangleAlert, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getSettlementSuggestions } from "@/lib/reconciliation.functions";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
