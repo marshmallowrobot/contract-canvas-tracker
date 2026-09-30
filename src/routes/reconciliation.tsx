@@ -197,6 +197,25 @@ function ReconciliationPage() {
               </div>
             </section>
 
+            {(() => {
+              if (!chosenContract || chosenContract === "unreconciled") return null;
+              const candidate = selected.candidateContracts?.find((c) => c.contractId === chosenContract);
+              const outstanding = candidate?.outstandingRins
+                ?? (selected.contractId === chosenContract ? selected.contractOutstandingRins ?? openContracts.find((c) => c.contractId === chosenContract)?.outstandingRins : undefined)
+                ?? openContracts.find((c) => c.contractId === chosenContract)?.outstandingRins;
+              if (outstanding == null) return null;
+              if (selected.rins < outstanding * 0.99) return null;
+              const overflow = selected.rins - outstanding;
+              return <div role="alert" className="rounded-md border border-amber bg-amber-soft p-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-amber">Contract would settle</p>
+                <p className="mt-1 text-xs leading-relaxed text-ink">
+                  {overflow >= 0
+                    ? `The buy's ${numberFmt.format(selected.rins)} RINs exceed ${chosenContract}'s outstanding balance of ${numberFmt.format(outstanding)} RINs. Approving settles the contract and moves the extra ${numberFmt.format(overflow)} RINs to the Unassigned pool.`
+                    : `The buy's ${numberFmt.format(selected.rins)} RINs are within 1% of ${chosenContract}'s outstanding balance of ${numberFmt.format(outstanding)} RINs. Approving settles the contract.`}
+                </p>
+              </div>;
+            })()}
+
             <div className="flex items-center justify-between gap-3 border-t border-hair pt-4">
               <Button variant="outline" onClick={closeReview}>Back to pending buys</Button>
               <Button disabled={chosenContract === null}>{chosenContract === "unreconciled" ? "Approve as Unreconciled" : chosenContract ? `Approve for ${chosenContract}` : "Approve"}</Button>
