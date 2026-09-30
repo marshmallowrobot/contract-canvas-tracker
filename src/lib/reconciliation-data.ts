@@ -57,12 +57,12 @@ export const pendingBuys: PendingBuy[] = [
   { id: "PB-80223", contractId: "CT-4750", dealNumber: "GULFSTAR26TP0026", contractOutstandingRins: 7350, partner: "Gulfstar Bunkering", received: "Sep 29, 2026", expiresInDays: 6, dueDate: null, invoice: "INV-70471", expectedRins: null, rins: 9000, gallons: 4500, price: "$2.150/RIN", fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558065", bol: "BOL-871301", match: "needs-review", reason: "Buy quantity exceeds CT-4750's outstanding balance by 1,650 RINs." },
   { id: "PB-80224", contractId: "CT-4799", dealNumber: "NORTH26TP0011", contractOutstandingRins: 21600, contractPartner: "Northline Terminals", partner: "Northline Terminals, Inc", received: "Sep 29, 2026", expiresInDays: 4, dueDate: null, invoice: "INV-70474", expectedRins: null, rins: 11200, gallons: 11200, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558071", bol: "BOL-871308", match: "needs-review", fuzzy: true, reason: "Trading partner is a fuzzy match: the buy shows 'Northline Terminals, Inc' but CT-4799 lists 'Northline Terminals'." },
   { id: "PB-80225", contractId: "CT-4913", dealNumber: "EVERG26TP0027", contractOutstandingRins: 22400, contractPartner: "Meridian Fuels", partner: "Meridain Fuels", received: "Sep 28, 2026", expiresInDays: 8, dueDate: null, invoice: "INV-70478", expectedRins: null, rins: 5400, gallons: 5400, price: "$2.150/RIN", fuel: "D4", year: 2026, assignment: "separated", qap: "Q-RIN", ptd: "PTD 1558076", bol: "BOL-871314", match: "needs-review", fuzzy: true, reason: "Trading partner looks misspelled: 'Meridain Fuels' vs CT-4913's 'Meridian Fuels'." },
-  { id: "PB-80226", contractId: null, dealNumber: null, partner: "Evergreen Refinery", received: "Sep 25, 2026", expiresInDays: 1, dueDate: null, invoice: "INV-70481", expectedRins: null, rins: 5000, gallons: 5000, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558081", bol: "BOL-871320", match: "needs-review", reason: "Partial buy for Evergreen Refinery; no single contract matches this quantity." },
-  { id: "PB-80227", contractId: null, dealNumber: null, partner: "Evergreen Refinery", received: "Sep 27, 2026", expiresInDays: 6, dueDate: null, invoice: "INV-70486", expectedRins: null, rins: 4400, gallons: 4400, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558087", bol: "BOL-871327", match: "needs-review", reason: "Partial buy for Evergreen Refinery; no single contract matches this quantity." },
-  { id: "PB-80228", contractId: null, dealNumber: null, partner: "Evergreen Refinery", received: "Sep 29, 2026", expiresInDays: 10, dueDate: null, invoice: "INV-70490", expectedRins: null, rins: 3000, gallons: 3000, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558092", bol: "BOL-871333", match: "needs-review", reason: "Partial buy for Evergreen Refinery; no single contract matches this quantity." },
-  { id: "PB-80229", contractId: null, dealNumber: null, partner: "BlueHarbor Refining", received: "Sep 28, 2026", expiresInDays: 3, dueDate: null, invoice: "INV-70495", expectedRins: null, rins: 3200, gallons: 3200, price: "$2.180/RIN", fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558096", bol: "BOL-871341", match: "needs-review", reason: "Partial buy for BlueHarbor Refining; no single contract matches this quantity." },
-  { id: "PB-80230", contractId: null, dealNumber: null, partner: "BlueHarbor Refining", received: "Sep 29, 2026", expiresInDays: 7, dueDate: null, invoice: "INV-70499", expectedRins: null, rins: 2900, gallons: 2900, price: "$2.180/RIN", fuel: "D4", year: 2026, assignment: "separated", qap: "Unverified", ptd: "PTD 1558101", bol: "BOL-871348", match: "needs-review", reason: "Partial buy for BlueHarbor Refining; no single contract matches this quantity." },
-  { id: "PB-80231", contractId: null, dealNumber: null, partner: "BlueHarbor Refining", received: "Sep 29, 2026", expiresInDays: 12, dueDate: null, invoice: "INV-70503", expectedRins: null, rins: 3300, gallons: 3300, price: "$2.180/RIN", fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558106", bol: "BOL-871355", match: "needs-review", reason: "Partial buy for BlueHarbor Refining; no single contract matches this quantity." },
+  { id: "PB-80226", contractId: null, dealNumber: null, partner: "Prairie Gold Ethanol", received: "Sep 25, 2026", expiresInDays: 1, dueDate: null, invoice: "INV-70481", expectedRins: null, rins: 5000, gallons: 5000, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558081", bol: "BOL-871320", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
+  { id: "PB-80227", contractId: null, dealNumber: null, partner: "Lakeshore Energy Partners", received: "Sep 27, 2026", expiresInDays: 6, dueDate: null, invoice: "INV-70486", expectedRins: null, rins: 4400, gallons: 4400, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558087", bol: "BOL-871327", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
+  { id: "PB-80228", contractId: null, dealNumber: null, partner: "Redrock Biodiesel", received: "Sep 29, 2026", expiresInDays: 10, dueDate: null, invoice: "INV-70490", expectedRins: null, rins: 3000, gallons: 3000, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558092", bol: "BOL-871333", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
+  { id: "PB-80229", contractId: null, dealNumber: null, partner: "Coastal Clean Fuels", received: "Sep 28, 2026", expiresInDays: 3, dueDate: null, invoice: "INV-70495", expectedRins: null, rins: 3200, gallons: 3200, price: "$2.180/RIN", fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558096", bol: "BOL-871341", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
+  { id: "PB-80230", contractId: null, dealNumber: null, partner: "Ironwood Trading", received: "Sep 29, 2026", expiresInDays: 7, dueDate: null, invoice: "INV-70499", expectedRins: null, rins: 2900, gallons: 2900, price: "$2.180/RIN", fuel: "D4", year: 2026, assignment: "separated", qap: "Unverified", ptd: "PTD 1558101", bol: "BOL-871348", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
+  { id: "PB-80231", contractId: null, dealNumber: null, partner: "Sagebrush Renewables", received: "Sep 29, 2026", expiresInDays: 12, dueDate: null, invoice: "INV-70503", expectedRins: null, rins: 3300, gallons: 3300, price: "$2.180/RIN", fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558106", bol: "BOL-871355", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
 ];
 
 export type SettlementGroup = {
@@ -76,27 +76,41 @@ export type SettlementGroup = {
 };
 
 /**
- * Cheap single-pass detection (no permutation search): bucket loose buys by
- * trading partner + fuel + year, then compare each bucket's total against open
- * contracts for that partner. A bucket that lands within 1% of (and not over)
- * a contract's outstanding balance becomes a settlement group. Max 5 buys.
+ * Quantity-only suggestions, computed on demand for ONE buy being reviewed.
+ * Only Unmatched buys are eligible (partner-matched buys go to the contract list).
+ * Groups are small (the reviewed buy + up to 2 others) and must land within 1%
+ * of a contract's outstanding balance without going over. Pairs use a lookup,
+ * triples are O(n²) — fine for ~1,000 buys. Best (closest) suggestions first.
  */
-export function findSettlementGroups(
+export const MAX_GROUP_SIZE = 3;
+export const MAX_SUGGESTIONS = 3;
+
+export function suggestSettlementGroups(
+  buy: PendingBuy,
   buys: PendingBuy[],
   openContracts: { contractId: string; dealNumber: string; counterparty: string; outstandingRins: number }[],
 ): SettlementGroup[] {
-  const buckets = new Map<string, PendingBuy[]>();
-  for (const buy of buys) {
-    if (buy.match === "matched" || buy.contractId || buy.candidateContracts?.length) continue;
-    const key = `${buy.partner}|${buy.fuel}|${buy.year}`;
-    buckets.set(key, [...(buckets.get(key) ?? []), buy]);
+  if (buy.match !== "unmatched") return [];
+  const pool = buys.filter((b) => b.match === "unmatched" && b.id !== buy.id);
+  const found: SettlementGroup[] = [];
+  const add = (c: (typeof openContracts)[number], members: PendingBuy[]) => {
+    const total = members.reduce((s, b) => s + b.rins, 0);
+    if (total < c.outstandingRins * 0.99 || total > c.outstandingRins) return;
+    found.push({ key: `${c.contractId}|${members.map((m) => m.id).sort().join(",")}`, contractId: c.contractId, dealNumber: c.dealNumber, partner: c.counterparty, outstandingRins: c.outstandingRins, buys: members, total });
+  };
+  for (const c of openContracts) {
+    const remaining = c.outstandingRins - buy.rins;
+    if (remaining <= 0) continue;
+    for (let i = 0; i < pool.length; i++) {
+      const a = pool[i]!;
+      add(c, [buy, a]);
+      if (MAX_GROUP_SIZE < 3 || a.rins >= remaining) continue;
+      for (let j = i + 1; j < pool.length; j++) add(c, [buy, a, pool[j]!]);
+    }
   }
-  const groups: SettlementGroup[] = [];
-  for (const [key, bucket] of buckets) {
-    if (bucket.length < 2 || bucket.length > 5) continue;
-    const total = bucket.reduce((sum, b) => sum + b.rins, 0);
-    const contract = openContracts.find((c) => c.counterparty === bucket[0]!.partner && total >= c.outstandingRins * 0.99 && total <= c.outstandingRins);
-    if (contract) groups.push({ key, contractId: contract.contractId, dealNumber: contract.dealNumber, partner: bucket[0]!.partner, outstandingRins: contract.outstandingRins, buys: bucket, total });
-  }
-  return groups;
+  const seen = new Set<string>();
+  return found
+    .filter((g) => (seen.has(g.key) ? false : (seen.add(g.key), true)))
+    .sort((x, y) => (x.outstandingRins - x.total) / x.outstandingRins - (y.outstandingRins - y.total) / y.outstandingRins || x.buys.length - y.buys.length)
+    .slice(0, MAX_SUGGESTIONS);
 }

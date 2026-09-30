@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
-import { findSettlementGroups, pendingBuys, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
+import { suggestSettlementGroups, pendingBuys, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
 
 const openContracts = contracts.filter((contract) => contract.contractStatus === "open");
 /** Computed on demand, only for the buy being reviewed — never for the whole list. */
-const groupOf = (buy: PendingBuy) => findSettlementGroups(pendingBuys.filter((b) => b.partner === buy.partner && b.fuel === buy.fuel && b.year === buy.year), openContracts).find((group) => group.buys.some((b) => b.id === buy.id));
+const groupsFor = (buy: PendingBuy) => suggestSettlementGroups(buy, pendingBuys, openContracts);
 
 export const Route = createFileRoute("/reconciliation")({
   head: () => ({ meta: [
@@ -152,7 +152,7 @@ function ReconciliationPage() {
           <div className="flex-1 space-y-5 px-6 pb-6 pt-4">
             <section><h3 className="mb-3 font-display text-sm font-bold">Incoming RIN buy</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel p-4"><Detail label="Trading partner" value={selected.partner} /><Detail label="RIN quantity" value={numberFmt.format(selected.rins)} /><Detail label="Gallons" value={numberFmt.format(selected.gallons)} /><Detail label="Price" value={selected.price} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Fuel / assignment</dt><dd className="mt-2 flex items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span></dd></div><Detail label="Invoice number" value={selected.invoice} /><Detail label="PTD number" value={selected.ptd} /><Detail label="Bill of lading" value={selected.bol} /><Detail label="Received" value={selected.received} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Expires in</dt><dd className={`mt-2 text-sm font-semibold ${selected.expiresInDays <= 1 ? "text-rose" : selected.expiresInDays <= 5 ? "text-amber" : "text-ink"}`}>{expirationLabel(selected.expiresInDays)}</dd></div></dl></section>
 
-            {groupOf(selected) && <div className="flex items-center justify-between gap-3 rounded-md bg-settle-soft p-4"><p className="text-xs leading-relaxed text-ink"><Layers className="mr-1 inline size-3.5 text-settle" />Along with {groupOf(selected)!.buys.length - 1} other pending buys from {selected.partner}, this buy would settle {groupOf(selected)!.contractId}.</p><Button size="sm" variant="outline" className="shrink-0 bg-panel" onClick={() => openGroup(groupOf(selected)!)}>Review group</Button></div>}
+            {groupsFor(selected).length > 0 && <div className="rounded-md bg-settle-soft p-4"><p className="text-xs font-semibold text-ink"><Layers className="mr-1 inline size-3.5 text-settle" />Possible settlement {groupsFor(selected).length === 1 ? "group" : "groups"} by RIN quantity</p><p className="mt-1 text-[11px] text-subtle">Totals land within 1% of a contract's outstanding balance. Trading partners may differ — confirm before approving.</p><ul className="mt-3 space-y-2">{groupsFor(selected).map((g) => <li key={g.key} className="flex items-center justify-between gap-3 rounded border border-hair bg-panel px-3 py-2"><div className="text-xs"><span className="font-bold text-ink">{g.contractId}</span> <span className="text-subtle">· {g.partner}</span><div className="mt-0.5 text-[11px] text-subtle">This buy + {g.buys.length - 1} other{g.buys.length > 2 ? "s" : ""} · {numberFmt.format(g.total)} / {numberFmt.format(g.outstandingRins)} RINs</div></div><Button size="sm" variant="outline" className="shrink-0" onClick={() => openGroup(g)}>Review group</Button></li>)}</ul></div>}
 
             <section>
               <h3 className="mb-1 font-display text-sm font-bold">Apply this buy to a contract</h3>
@@ -260,7 +260,7 @@ function ReconciliationPage() {
             <section><h3 className="mb-3 font-display text-sm font-bold">Contract to settle</h3>
               <div className="rounded-md border border-hair bg-panel p-4">
                 <div className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{group.contractId}</span><span className="text-xs font-semibold text-primary">{group.dealNumber}</span></div>
-                <p className="mt-1 text-xs text-subtle">{group.partner}</p>
+                <p className="mt-1 text-xs text-subtle">Contract partner: {group.partner}</p>
                 <div className="mt-3 flex items-baseline justify-between text-xs"><span className="text-subtle">Group total / outstanding</span><span className="font-bold tabular-nums text-ink">{numberFmt.format(group.total)} / {numberFmt.format(group.outstandingRins)} RINs</span></div>
                 <div className="mt-2 flex h-2.5 overflow-hidden rounded-full bg-table-head">{group.buys.map((b, i) => <div key={b.id} className={`h-full bg-settle ${i > 0 ? "border-l-2 border-panel" : ""}`} style={{ width: `${(b.rins / group.outstandingRins) * 100}%`, opacity: 1 - i * 0.2 }} />)}</div>
               </div>
@@ -268,7 +268,7 @@ function ReconciliationPage() {
             <section><h3 className="mb-3 font-display text-sm font-bold">Buys in this group ({group.buys.length})</h3>
               <div className="overflow-hidden rounded-md border border-hair bg-panel">
                 {group.buys.map((b) => <div key={b.id} className="flex items-center justify-between gap-3 border-b border-hair px-4 py-3 last:border-0">
-                  <div><div className="flex items-center gap-2"><Fuel buy={b} /></div><p className="mt-1 text-[11px] text-subtle">{b.ptd} · {b.invoice} · {b.received}</p></div>
+                  <div><div className="text-xs font-semibold text-ink">{b.partner}</div><div className="mt-1 flex items-center gap-2"><Fuel buy={b} /></div><p className="mt-1 text-[11px] text-subtle">{b.ptd} · {b.invoice} · {b.received}</p></div>
                   <div className="text-right"><div className="text-sm font-semibold tabular-nums">{numberFmt.format(b.rins)}</div><div className={`text-[11px] font-semibold ${b.expiresInDays <= 1 ? "text-rose" : b.expiresInDays <= 5 ? "text-amber" : "text-subtle"}`}>Expires in {expirationLabel(b.expiresInDays)}</div></div>
                 </div>)}
                 <div className="flex items-center justify-between bg-table-head px-4 py-2.5 text-xs font-bold"><span>Total</span><span className="tabular-nums">{numberFmt.format(group.total)} RINs</span></div>
