@@ -1,17 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Layers, ArrowRight, Check, ChevronDown, ChevronRight, Filter, Split, TriangleAlert, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getSettlementSuggestions } from "@/lib/reconciliation.functions";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
-import { suggestSettlementGroups, pendingBuys, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
+import { pendingBuys, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
 
 const openContracts = contracts.filter((contract) => contract.contractStatus === "open");
-/** Computed on demand, only for the buy being reviewed — never for the whole list. */
-const groupsFor = (buy: PendingBuy) => suggestSettlementGroups(buy, pendingBuys, openContracts);
 
 export const Route = createFileRoute("/reconciliation")({
   head: () => ({ meta: [
@@ -71,6 +72,13 @@ function ReconciliationPage() {
   const closeReview = () => { setSelected(null); setChosenContract(null); };
   const [group, setGroup] = useState<SettlementGroup | null>(null);
   const openGroup = (g: SettlementGroup) => { closeReview(); setGroup(g); };
+  /** Computed server-side on demand, only for the buy being reviewed. */
+  const fetchSuggestions = useServerFn(getSettlementSuggestions);
+  const { data: suggestions = [] } = useQuery({
+    queryKey: ["settlement-suggestions", selected?.id],
+    queryFn: () => fetchSuggestions({ data: { buyId: selected!.id } }),
+    enabled: !!selected && selected.match !== "matched",
+  });
   const counts = {
     matched: pendingBuys.filter((buy) => buy.match === "matched").length,
     "needs-review": pendingBuys.filter((buy) => buy.match === "needs-review").length,
@@ -152,7 +160,7 @@ function ReconciliationPage() {
           <div className="flex-1 space-y-5 px-6 pb-6 pt-4">
             <section><h3 className="mb-3 font-display text-sm font-bold">Incoming RIN buy</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel p-4"><Detail label="Trading partner" value={selected.partner} /><Detail label="RIN quantity" value={numberFmt.format(selected.rins)} /><Detail label="Gallons" value={numberFmt.format(selected.gallons)} /><Detail label="Price" value={selected.price} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Fuel / assignment</dt><dd className="mt-2 flex items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span></dd></div><Detail label="Invoice number" value={selected.invoice} /><Detail label="PTD number" value={selected.ptd} /><Detail label="Bill of lading" value={selected.bol} /><Detail label="Received" value={selected.received} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Expires in</dt><dd className={`mt-2 text-sm font-semibold ${selected.expiresInDays <= 1 ? "text-rose" : selected.expiresInDays <= 5 ? "text-amber" : "text-ink"}`}>{expirationLabel(selected.expiresInDays)}</dd></div></dl></section>
 
-            {groupsFor(selected).length > 0 && <div className="rounded-md bg-settle-soft p-4"><p className="text-xs font-semibold text-ink"><Layers className="mr-1 inline size-3.5 text-settle" />Possible settlement {groupsFor(selected).length === 1 ? "group" : "groups"} by RIN quantity</p><p className="mt-1 text-[11px] text-subtle">Totals land within 1% of a contract's outstanding balance. Trading partners may differ — confirm before approving.</p><ul className="mt-3 space-y-2">{groupsFor(selected).map((g) => <li key={g.key} className="flex items-center justify-between gap-3 rounded border border-hair bg-panel px-3 py-2"><div className="text-xs"><span className="font-bold text-ink">{g.contractId}</span> <span className="text-subtle">· {g.partner}</span><div className="mt-0.5 text-[11px] text-subtle">This buy + {g.buys.length - 1} other{g.buys.length > 2 ? "s" : ""} · {numberFmt.format(g.total)} / {numberFmt.format(g.outstandingRins)} RINs</div></div><Button size="sm" variant="outline" className="shrink-0" onClick={() => openGroup(g)}>Review group</Button></li>)}</ul></div>}
+            {suggestions.length > 0 && <div className="rounded-md bg-settle-soft p-4"><p className="text-xs font-semibold text-ink"><Layers className="mr-1 inline size-3.5 text-settle" />Possible settlement {suggestions.length === 1 ? "group" : "groups"}{selected.match === "unmatched" ? " by RIN quantity" : " for this trading partner"}</p><p className="mt-1 text-[11px] text-subtle">{selected.match === "unmatched" ? "Totals land within 1% of a contract's outstanding balance. Trading partners may differ — confirm before approving." : "Buys from this trading partner that together land within 1% of one of its open contracts' outstanding balance."}</p><ul className="mt-3 space-y-2">{suggestions.map((g) => <li key={g.key} className="flex items-center justify-between gap-3 rounded border border-hair bg-panel px-3 py-2"><div className="text-xs"><span className="font-bold text-ink">{g.contractId}</span> <span className="text-subtle">· {g.partner}</span><div className="mt-0.5 text-[11px] text-subtle">This buy + {g.buys.length - 1} other{g.buys.length > 2 ? "s" : ""} · {numberFmt.format(g.total)} / {numberFmt.format(g.outstandingRins)} RINs</div></div><Button size="sm" variant="outline" className="shrink-0" onClick={() => openGroup(g)}>Review group</Button></li>)}</ul></div>}
 
             <section>
               <h3 className="mb-1 font-display text-sm font-bold">Apply this buy to a contract</h3>

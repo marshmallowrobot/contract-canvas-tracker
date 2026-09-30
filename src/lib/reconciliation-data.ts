@@ -63,6 +63,7 @@ export const pendingBuys: PendingBuy[] = [
   { id: "PB-80229", contractId: null, dealNumber: null, partner: "Coastal Clean Fuels", received: "Sep 28, 2026", expiresInDays: 3, dueDate: null, invoice: "INV-70495", expectedRins: null, rins: 3200, gallons: 3200, price: "$2.180/RIN", fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558096", bol: "BOL-871341", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
   { id: "PB-80230", contractId: null, dealNumber: null, partner: "Ironwood Trading", received: "Sep 29, 2026", expiresInDays: 7, dueDate: null, invoice: "INV-70499", expectedRins: null, rins: 2900, gallons: 2900, price: "$2.180/RIN", fuel: "D4", year: 2026, assignment: "separated", qap: "Unverified", ptd: "PTD 1558101", bol: "BOL-871348", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
   { id: "PB-80231", contractId: null, dealNumber: null, partner: "Sagebrush Renewables", received: "Sep 29, 2026", expiresInDays: 12, dueDate: null, invoice: "INV-70503", expectedRins: null, rins: 3300, gallons: 3300, price: "$2.180/RIN", fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558106", bol: "BOL-871355", match: "unmatched", reason: "No imported buy contract matches this incoming buy." },
+  { id: "PB-80232", contractId: "CT-4799", dealNumber: "NORTH26TP0011", contractOutstandingRins: 21600, partner: "Northline Terminals", received: "Sep 29, 2026", expiresInDays: 9, dueDate: null, invoice: "INV-70507", expectedRins: null, rins: 10400, gallons: 10400, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558111", bol: "BOL-871362", match: "needs-review", reason: "Trading partner matches CT-4799, but the buy covers only part of its outstanding balance." },
 ];
 
 export type SettlementGroup = {
@@ -75,37 +76,66 @@ export type SettlementGroup = {
   total: number;
 };
 
+export type OpenContractRef = { contractId: string; dealNumber: string; counterparty: string; outstandingRins: number };
+
 /**
- * Quantity-only suggestions, computed on demand for ONE buy being reviewed.
- * Only Unmatched buys are eligible (partner-matched buys go to the contract list).
- * Groups are small (the reviewed buy + up to 2 others) and must land within 1%
- * of a contract's outstanding balance without going over. Pairs use a lookup,
- * triples are O(n²) — fine for ~1,000 buys. Best (closest) suggestions first.
+ * Settlement-group suggestions, computed server-side for ONE buy under review.
+ *  - Unmatched buys: quantity-only — any other Unmatched buys, any open contract.
+ *  - Needs Review buys: limited by trading partner — only open contracts for that
+ *    partner (or already-matched candidates), pooled with other pending buys from
+ *    the same partner (name compared loosely: case, punctuation, Inc/LLC suffixes).
+ * Groups are 2–3 buys totalling 99%–100% of the outstanding balance (never over).
+ * Search uses a quantity-sorted pool + binary search: pairs are O(log n) and
+ * triples O(n log n) per contract. Closest suggestions first, max 3.
  */
-export const MAX_GROUP_SIZE = 3;
 export const MAX_SUGGESTIONS = 3;
 
-export function suggestSettlementGroups(
-  buy: PendingBuy,
-  buys: PendingBuy[],
-  openContracts: { contractId: string; dealNumber: string; counterparty: string; outstandingRins: number }[],
-): SettlementGroup[] {
-  if (buy.match !== "unmatched") return [];
-  const pool = buys.filter((b) => b.match === "unmatched" && b.id !== buy.id);
+const normalizePartner = (name: string) =>
+  name.toLowerCase().replace(/[.,]/g, " ").replace(/\b(inc|llc|ltd|corp|co|company)\b/g, "").replace(/\s+/g, " ").trim();
+
+/** Index of the largest element with rins <= max, searching sorted[from..]. -1 if none. */
+function largestAtMost(sorted: PendingBuy[], max: number, from: number): number {
+  let lo = from, hi = sorted.length - 1, ans = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (sorted[mid]!.rins <= max) { ans = mid; lo = mid + 1; } else hi = mid - 1;
+  }
+  return ans;
+}
+
+export function suggestSettlementGroups(buy: PendingBuy, buys: PendingBuy[], openContracts: OpenContractRef[]): SettlementGroup[] {
+  if (buy.match === "matched") return [];
+  const partnerKey = normalizePartner(buy.contractPartner ?? buy.partner);
+  const candidateIds = new Set([buy.contractId, ...(buy.candidateContracts ?? []).map((c) => c.contractId)].filter(Boolean));
+
+  const contractsToTry = buy.match === "unmatched"
+    ? openContracts
+    : openContracts.filter((c) => candidateIds.has(c.contractId) || normalizePartner(c.counterparty) === partnerKey);
+
   const found: SettlementGroup[] = [];
-  const add = (c: (typeof openContracts)[number], members: PendingBuy[]) => {
-    const total = members.reduce((s, b) => s + b.rins, 0);
-    if (total < c.outstandingRins * 0.99 || total > c.outstandingRins) return;
-    found.push({ key: `${c.contractId}|${members.map((m) => m.id).sort().join(",")}`, contractId: c.contractId, dealNumber: c.dealNumber, partner: c.counterparty, outstandingRins: c.outstandingRins, buys: members, total });
-  };
-  for (const c of openContracts) {
-    const remaining = c.outstandingRins - buy.rins;
-    if (remaining <= 0) continue;
+  for (const c of contractsToTry) {
+    const cKey = normalizePartner(c.counterparty);
+    const pool = buys
+      .filter((b) => b.id !== buy.id && (buy.match === "unmatched"
+        ? b.match === "unmatched"
+        : b.match !== "matched" && normalizePartner(b.contractPartner ?? b.partner) === cKey))
+      .sort((a, b) => a.rins - b.rins);
+    const hi = c.outstandingRins - buy.rins;
+    const lo = c.outstandingRins * 0.99 - buy.rins;
+    if (hi <= 0) continue;
+    const push = (members: PendingBuy[]) => {
+      const total = members.reduce((s, b) => s + b.rins, 0);
+      found.push({ key: `${c.contractId}|${members.map((m) => m.id).sort().join(",")}`, contractId: c.contractId, dealNumber: c.dealNumber, partner: c.counterparty, outstandingRins: c.outstandingRins, buys: members, total });
+    };
+    // Pair: best single buy <= hi.
+    const p = largestAtMost(pool, hi, 0);
+    if (p >= 0 && pool[p]!.rins >= lo) push([buy, pool[p]!]);
+    // Triples: for each a, best partner after it.
     for (let i = 0; i < pool.length; i++) {
       const a = pool[i]!;
-      add(c, [buy, a]);
-      if (MAX_GROUP_SIZE < 3 || a.rins >= remaining) continue;
-      for (let j = i + 1; j < pool.length; j++) add(c, [buy, a, pool[j]!]);
+      if (a.rins >= hi) break;
+      const j = largestAtMost(pool, hi - a.rins, i + 1);
+      if (j >= 0 && a.rins + pool[j]!.rins >= lo) push([buy, a, pool[j]!]);
     }
   }
   const seen = new Set<string>();
