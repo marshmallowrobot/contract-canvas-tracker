@@ -143,7 +143,7 @@ function ReconciliationPage() {
       </div>
 
       <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hair px-5 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
           <div className="flex items-baseline gap-3"><h2 className="font-display text-base font-bold">Pending Buys</h2><span className="text-xs text-subtle">{visible.length} results</span></div>
           <div className="flex flex-wrap items-center gap-2">
             {bulkApproveButton("top")}
@@ -155,16 +155,16 @@ function ReconciliationPage() {
             <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0} className="text-subtle disabled:opacity-50">Clear all</Button>
           </div>
         </div>
-        {filtersOpen && <div className="relative mt-3 rounded-md border border-hair bg-table-head p-4">
-          <button type="button" onClick={() => setFiltersOpen(false)} aria-label="Close filters" className="absolute right-3 top-3 rounded p-1 text-subtle hover:bg-panel hover:text-ink"><X className="size-4" /></button>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {filtersOpen && <div className="relative mx-5 mb-5 mt-1 rounded-md border border-hair bg-table-head p-6">
+          <button type="button" onClick={() => setFiltersOpen(false)} aria-label="Close filters" className="absolute right-4 top-4 rounded p-1 text-subtle hover:bg-panel hover:text-ink"><X className="size-4" /></button>
+          <div className="grid gap-x-6 gap-y-5 pr-8 sm:grid-cols-2 lg:grid-cols-5">
             <label className="block"><span className="text-[11px] font-bold uppercase text-ink">Trading partner</span><Select value={partner} onValueChange={setPartner}><SelectTrigger aria-label="Filter by trading partner" className="mt-1 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All partners</SelectItem>{partners.map((name) => <SelectItem key={name} value={name}>{name}</SelectItem>)}</SelectContent></Select></label>
             <label className="block"><span className="text-[11px] font-bold uppercase text-ink">Fuel code</span><Select value={fuel} onValueChange={setFuel}><SelectTrigger aria-label="Filter by fuel code" className="mt-1 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All fuels</SelectItem>{(["D3", "D4", "D5", "D6", "D7"] as const).map((code) => <SelectItem key={code} value={code}>{code}</SelectItem>)}</SelectContent></Select></label>
             <label className="block"><span className="text-[11px] font-bold uppercase text-ink">PTD</span><input aria-label="Filter by PTD" placeholder="Filter by PTD" value={ptdFilter} onChange={(event) => setPtdFilter(event.target.value)} className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20" /></label>
             <label className="block"><span className="text-[11px] font-bold uppercase text-ink">Buy contract id</span><input aria-label="Filter by buy contract id" placeholder="Filter by buy contract ID" value={contractFilter} onChange={(event) => setContractFilter(event.target.value)} className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20" /></label>
             <label className="block"><span className="text-[11px] font-bold uppercase text-ink">Deal number</span><input aria-label="Filter by deal number" placeholder="Filter by deal number" value={dealFilter} onChange={(event) => setDealFilter(event.target.value)} className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20" /></label>
-            <div className="flex items-end"><Button size="sm" className="w-full" onClick={() => setFiltersOpen(false)}>Apply filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}</Button></div>
           </div>
+          <div className="mt-6 flex justify-end"><Button size="sm" onClick={() => setFiltersOpen(false)}>Apply filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}</Button></div>
         </div>}
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse text-left text-sm">
