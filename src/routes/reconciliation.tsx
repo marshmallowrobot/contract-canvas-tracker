@@ -51,7 +51,6 @@ function Detail({ label, value }: { label: string; value: string }) {
 
 function ReconciliationPage() {
   const [view, setView] = useState("all");
-  const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [fuel, setFuel] = useState("all");
   const [partner, setPartner] = useState("all");
@@ -75,10 +74,8 @@ function ReconciliationPage() {
     (partner === "all" || buy.partner === partner) &&
     (!ptdFilter.trim() || buy.ptd.toLowerCase().includes(ptdFilter.trim().toLowerCase())) &&
     (!contractFilter.trim() || buy.contractId?.toLowerCase().includes(contractFilter.trim().toLowerCase())) &&
-    (!dealFilter.trim() || buy.dealNumber?.toLowerCase().includes(dealFilter.trim().toLowerCase())) &&
-    (!query.trim() || [buy.id, buy.contractId, buy.dealNumber, buy.partner, buy.invoice, buy.ptd, buy.bol]
-      .some((value) => value?.toLowerCase().includes(query.trim().toLowerCase())))
-  ), [view, fuel, partner, ptdFilter, contractFilter, dealFilter, query]);
+    (!dealFilter.trim() || buy.dealNumber?.toLowerCase().includes(dealFilter.trim().toLowerCase()))
+  ), [view, fuel, partner, ptdFilter, contractFilter, dealFilter]);
 
   return <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
     <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
@@ -110,7 +107,6 @@ function ReconciliationPage() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hair px-5 py-3">
           <div className="flex items-baseline gap-3"><h2 className="font-display text-base font-bold">Pending Buys</h2><span className="text-xs text-subtle">{visible.length} results</span></div>
           <div className="flex flex-wrap items-center gap-2">
-            <div className="relative"><Search className="pointer-events-none absolute left-2.5 top-2.5 size-4 text-subtle" /><Input aria-label="Search pending buys" placeholder="Search buys or contracts" value={query} onChange={(event) => setQuery(event.target.value)} className="h-9 w-52 bg-panel pl-8 text-xs sm:w-60" /></div>
             <Button variant="ghost" size="sm" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} className="text-primary"><Filter className="size-4" /> Filters <ChevronDown className="size-3" /></Button>
           </div>
         </div>
@@ -120,7 +116,7 @@ function ReconciliationPage() {
           <div><label className="text-[11px] font-bold uppercase text-subtle">PTD</label><Input aria-label="Filter by PTD" placeholder="e.g. 1558058" value={ptdFilter} onChange={(event) => setPtdFilter(event.target.value)} className="mt-1 w-36 bg-panel text-xs" /></div>
           <div><label className="text-[11px] font-bold uppercase text-subtle">Buy contract id</label><Input aria-label="Filter by buy contract id" placeholder="e.g. CT-4902" value={contractFilter} onChange={(event) => setContractFilter(event.target.value)} className="mt-1 w-36 bg-panel text-xs" /></div>
           <div><label className="text-[11px] font-bold uppercase text-subtle">Deal number</label><Input aria-label="Filter by deal number" placeholder="e.g. EVERG26TP0018" value={dealFilter} onChange={(event) => setDealFilter(event.target.value)} className="mt-1 w-44 bg-panel text-xs" /></div>
-          <Button variant="ghost" size="sm" onClick={() => { setFuel("all"); setPartner("all"); setPtdFilter(""); setContractFilter(""); setDealFilter(""); setQuery(""); setView("all"); }}>Clear all</Button>
+          <Button variant="ghost" size="sm" onClick={() => { setFuel("all"); setPartner("all"); setPtdFilter(""); setContractFilter(""); setDealFilter(""); setView("all"); }}>Clear all</Button>
           <Button variant="ghost" size="icon" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="ml-auto"><X className="size-4" /></Button>
         </div>}
         <div className="overflow-x-auto">
