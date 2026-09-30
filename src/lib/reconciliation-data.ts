@@ -14,6 +14,8 @@ export type PendingBuy = {
   contractId: string | null;
   dealNumber: string | null;
   contractOutstandingRins?: number;
+  /** The matched contract's correct trading-partner name, when it differs from the buy's. */
+  contractPartner?: string;
   candidateContracts?: CandidateContract[];
   partner: string;
   received: string;
@@ -53,6 +55,6 @@ export const pendingBuys: PendingBuy[] = [
       { contractId: "CT-4918", dealNumber: "EVERG26TP0032", partner: "Evergreen Refinery", dueDate: "Nov 14, 2026", outstandingRins: 9800, matchedOn: "PTD 1558058" },
     ] },
   { id: "PB-80223", contractId: "CT-4750", dealNumber: "GULFSTAR26TP0026", contractOutstandingRins: 7350, partner: "Gulfstar Bunkering", received: "Sep 29, 2026", expiresInDays: 6, dueDate: null, invoice: "INV-70471", expectedRins: null, rins: 9000, gallons: 4500, price: "$2.150/RIN", fuel: "D4", year: 2026, assignment: "assigned", qap: "Q-RIN", ptd: "PTD 1558065", bol: "BOL-871301", match: "needs-review", reason: "Buy quantity exceeds CT-4750's outstanding balance by 1,650 RINs." },
-  { id: "PB-80224", contractId: "CT-4799", dealNumber: "NORTH26TP0011", contractOutstandingRins: 21600, partner: "Northline Terminals, Inc", received: "Sep 29, 2026", expiresInDays: 4, dueDate: null, invoice: "INV-70474", expectedRins: null, rins: 11200, gallons: 11200, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558071", bol: "BOL-871308", match: "needs-review", fuzzy: true, reason: "Trading partner is a fuzzy match: the buy shows 'Northline Terminals, Inc' but CT-4799 lists 'Northline Terminals'." },
-  { id: "PB-80225", contractId: "CT-4913", dealNumber: "EVERG26TP0027", contractOutstandingRins: 22400, partner: "Meridain Fuels", received: "Sep 28, 2026", expiresInDays: 8, dueDate: null, invoice: "INV-70478", expectedRins: null, rins: 5400, gallons: 5400, price: "$2.150/RIN", fuel: "D4", year: 2026, assignment: "separated", qap: "Q-RIN", ptd: "PTD 1558076", bol: "BOL-871314", match: "needs-review", fuzzy: true, reason: "Trading partner looks misspelled: 'Meridain Fuels' vs CT-4913's 'Meridian Fuels'." },
+  { id: "PB-80224", contractId: "CT-4799", dealNumber: "NORTH26TP0011", contractOutstandingRins: 21600, contractPartner: "Northline Terminals", partner: "Northline Terminals, Inc", received: "Sep 29, 2026", expiresInDays: 4, dueDate: null, invoice: "INV-70474", expectedRins: null, rins: 11200, gallons: 11200, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "PTD 1558071", bol: "BOL-871308", match: "needs-review", fuzzy: true, reason: "Trading partner is a fuzzy match: the buy shows 'Northline Terminals, Inc' but CT-4799 lists 'Northline Terminals'." },
+  { id: "PB-80225", contractId: "CT-4913", dealNumber: "EVERG26TP0027", contractOutstandingRins: 22400, contractPartner: "Meridian Fuels", partner: "Meridain Fuels", received: "Sep 28, 2026", expiresInDays: 8, dueDate: null, invoice: "INV-70478", expectedRins: null, rins: 5400, gallons: 5400, price: "$2.150/RIN", fuel: "D4", year: 2026, assignment: "separated", qap: "Q-RIN", ptd: "PTD 1558076", bol: "BOL-871314", match: "needs-review", fuzzy: true, reason: "Trading partner looks misspelled: 'Meridain Fuels' vs CT-4913's 'Meridian Fuels'." },
 ];

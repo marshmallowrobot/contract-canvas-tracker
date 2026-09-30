@@ -160,7 +160,7 @@ function ReconciliationPage() {
                       </span>
                       <span className="flex-1">
                         <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{candidate.contractId}</span><span className="text-xs font-semibold text-primary">{candidate.dealNumber}</span></span>
-                        <span className="mt-1 block text-xs text-subtle">{candidate.partner} · Due {candidate.dueDate ?? "—"}</span>
+                        <span className="mt-1 block text-xs text-subtle">{candidate.partner} · {candidate.dueDate ? `Due ${candidate.dueDate}` : "No due date"}</span>
                         <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
                         <span className="mt-1 block text-[11px] font-semibold text-amber">Matched on {candidate.matchedOn}</span>
                       </span>
@@ -174,7 +174,7 @@ function ReconciliationPage() {
                         </span>
                         <span className="flex-1">
                           <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{selected.contractId}</span><span className="text-xs font-semibold text-primary">{selected.dealNumber}</span></span>
-                          <span className="mt-1 block text-xs text-subtle">{selected.partner} · Due {selected.dueDate ?? "—"}</span>
+                          <span className="mt-1 block text-xs text-subtle">{selected.contractPartner ?? selected.partner} · {selected.dueDate ? `Due ${selected.dueDate}` : "No due date"}</span>
                           <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(selected.contractOutstandingRins ?? match?.outstandingRins ?? 0)} RINs</span>
                           <span className="mt-1 block text-[11px] font-semibold text-amber">{selected.fuzzy ? "Fuzzy match on trading partner" : "Matched on trading partner"}</span>
                         </span>
