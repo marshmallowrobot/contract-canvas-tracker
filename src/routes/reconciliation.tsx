@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Layers, ArrowRight, Check, ChevronDown, ChevronRight, Filter, Split, TriangleAlert, X } from "lucide-react";
+import { ArrowLeft, Layers, ArrowRight, Check, ChevronDown, ChevronRight, Funnel, Split, TriangleAlert, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -85,6 +85,8 @@ function ReconciliationPage() {
     unmatched: pendingBuys.filter((buy) => buy.match === "unmatched").length,
   };
   const partners = useMemo(() => [...new Set(pendingBuys.map((buy) => buy.partner))].sort(), []);
+  const activeFilterCount = (fuel !== "all" ? 1 : 0) + (partner !== "all" ? 1 : 0) + (ptdFilter.trim() !== "" ? 1 : 0) + (contractFilter.trim() !== "" ? 1 : 0) + (dealFilter.trim() !== "" ? 1 : 0);
+  const clearFilters = () => { setFuel("all"); setPartner("all"); setPtdFilter(""); setContractFilter(""); setDealFilter(""); setView("all"); };
   const visible = useMemo(() => pendingBuys.filter((buy) =>
     (view === "all" || buy.match === view) &&
     (fuel === "all" || buy.fuel === fuel) &&
