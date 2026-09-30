@@ -17,6 +17,8 @@ export type PendingBuy = {
   candidateContracts?: CandidateContract[];
   partner: string;
   received: string;
+  /** Days from today until the buy expires (0 = within hours). */
+  expiresInDays: number;
   dueDate: string | null;
   invoice: string;
   expectedRins: number | null;
