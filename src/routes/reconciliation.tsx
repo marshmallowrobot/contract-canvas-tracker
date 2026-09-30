@@ -225,7 +225,7 @@ function ReconciliationPage() {
               if (outstanding == null) return null;
               if (selected.rins < outstanding * 0.99) return null;
               const overflow = selected.rins - outstanding;
-              return <div role="alert" className="rounded-md border border-settle bg-settle-soft p-4">
+              return <div role="alert" className="rounded-md bg-settle-soft p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-settle">Contract would settle</p>
                 <p className="mt-1 text-xs leading-relaxed text-ink">
                   {overflow > 0
