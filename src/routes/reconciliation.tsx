@@ -93,6 +93,27 @@ function ReconciliationPage() {
     (!contractFilter.trim() || buy.contractId?.toLowerCase().includes(contractFilter.trim().toLowerCase())) &&
     (!dealFilter.trim() || buy.dealNumber?.toLowerCase().includes(dealFilter.trim().toLowerCase()))
   ), [view, fuel, partner, ptdFilter, contractFilter, dealFilter]);
+  /** Bulk-approve selection — Matched buys only; Needs Review and Unmatched must go through the Review panel. */
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
+  const matchedVisible = visible.filter((buy) => buy.match === "matched");
+  const allMatchedChecked = matchedVisible.length > 0 && matchedVisible.every((buy) => checkedIds.has(buy.id));
+  const toggleBuy = (buy: PendingBuy) => setCheckedIds((prev) => {
+    const next = new Set(prev);
+    if (next.has(buy.id)) next.delete(buy.id); else next.add(buy.id);
+    return next;
+  });
+  const toggleAllMatched = () => setCheckedIds((prev) => {
+    const next = new Set(prev);
+    if (allMatchedChecked) matchedVisible.forEach((buy) => next.delete(buy.id));
+    else matchedVisible.forEach((buy) => next.add(buy.id));
+    return next;
+  });
+  const approveSelected = () => setCheckedIds(new Set());
+  const bulkApproveButton = (key: string) => checkedIds.size > 0 && (
+    <Button key={key} size="sm" onClick={approveSelected}>
+      Approve {checkedIds.size} matched {checkedIds.size === 1 ? "buy" : "buys"}
+    </Button>
+  );
 
   return <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
     <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
@@ -124,6 +145,7 @@ function ReconciliationPage() {
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hair px-5 py-3">
           <div className="flex items-baseline gap-3"><h2 className="font-display text-base font-bold">Pending Buys</h2><span className="text-xs text-subtle">{visible.length} results</span></div>
           <div className="flex flex-wrap items-center gap-2">
+            {bulkApproveButton("top")}
             <Button variant="ghost" size="sm" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} className="text-primary"><Filter className="size-4" /> Filters <ChevronDown className="size-3" /></Button>
           </div>
         </div>
@@ -139,9 +161,10 @@ function ReconciliationPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-5 py-2">Trading partner</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">PTD</th><th className="px-3 py-2">Transaction date</th><th className="px-3 py-2">Expires in</th><th className="px-3 py-2 text-right">RINs / Gal</th><th className="px-3 py-2 text-right">Price</th><th className="px-5 py-2">Match</th></tr>
+              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="w-10 px-3 py-2"><input type="checkbox" aria-label="Select all matched buys" checked={allMatchedChecked} onChange={toggleAllMatched} disabled={matchedVisible.length === 0} className="size-4 accent-primary disabled:opacity-40" /></th><th className="px-5 py-2">Trading partner</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">PTD</th><th className="px-3 py-2">Transaction date</th><th className="px-3 py-2">Expires in</th><th className="px-3 py-2 text-right">RINs / Gal</th><th className="px-3 py-2 text-right">Price</th><th className="px-5 py-2">Match</th></tr>
             </thead>
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
+              <td className="px-3 py-3">{buy.match === "matched" && <input type="checkbox" aria-label={`Select matched buy from ${buy.partner}`} checked={checkedIds.has(buy.id)} onChange={() => toggleBuy(buy)} className="size-4 accent-primary" />}</td>
               <td className="max-w-44 px-5 py-3"><div className="text-xs font-medium">{buy.partner}</div>{buy.contractId && <div className="mt-0.5 text-[11px] font-semibold text-primary">{buy.contractId} · {buy.dealNumber}</div>}</td>
               <td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-xs">{buy.received}</td><td className="px-3 py-3 text-xs font-semibold"><span className={buy.expiresInDays <= 1 ? "text-rose" : buy.expiresInDays <= 5 ? "text-amber" : "text-ink"}>{expirationLabel(buy.expiresInDays)}</span></td><td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td><td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
               <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}</div><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
@@ -149,7 +172,7 @@ function ReconciliationPage() {
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
         </div>
-        <div className="border-t border-hair px-5 py-3 text-xs text-subtle">Showing {visible.length} of {pendingBuys.length} pending buys</div>
+        <div className="flex items-center justify-between gap-3 border-t border-hair px-5 py-3 text-xs text-subtle"><span>Showing {visible.length} of {pendingBuys.length} pending buys</span>{bulkApproveButton("bottom")}</div>
       </section>
     </main>
 
