@@ -132,7 +132,7 @@ function ReconciliationPage() {
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
               <td className="max-w-44 px-5 py-3"><div className="text-xs font-medium">{buy.partner}</div>{buy.contractId && <div className="mt-0.5 text-[11px] font-semibold text-primary">{buy.contractId} · {buy.dealNumber}</div>}</td>
               <td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-xs">{buy.received}</td><td className="px-3 py-3 text-xs font-semibold"><span className={buy.expiresInDays <= 1 ? "text-rose" : buy.expiresInDays <= 5 ? "text-amber" : "text-ink"}>{expirationLabel(buy.expiresInDays)}</span></td><td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td><td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
-              <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-amber" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}</div><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
+              <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-ice" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}</div><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
@@ -225,8 +225,8 @@ function ReconciliationPage() {
               if (outstanding == null) return null;
               if (selected.rins < outstanding * 0.99) return null;
               const overflow = selected.rins - outstanding;
-              return <div role="alert" className="rounded-md border border-amber bg-amber-soft p-4">
-                <p className="text-xs font-bold uppercase tracking-wide text-amber">Contract would settle</p>
+              return <div role="alert" className="rounded-md border border-ice bg-ice-soft p-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-ice">Contract would settle</p>
                 <p className="mt-1 text-xs leading-relaxed text-ink">
                   {overflow > 0
                     ? `The buy's ${numberFmt.format(selected.rins)} RINs exceed ${chosenContract}'s outstanding balance of ${numberFmt.format(outstanding)} RINs. Approving settles the contract and moves the extra ${numberFmt.format(overflow)} RINs to the Unassigned pool.`
