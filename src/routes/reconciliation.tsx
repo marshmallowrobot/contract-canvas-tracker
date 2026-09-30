@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Layers, ArrowRight, Check, ChevronDown, ChevronRight, Filter, Split, TriangleAlert, X } from "lucide-react";
+import { ArrowLeft, Layers, ArrowRight, Check, ChevronRight, Funnel, Split, TriangleAlert, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getSettlementSuggestions } from "@/lib/reconciliation.functions";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
@@ -85,6 +84,8 @@ function ReconciliationPage() {
     unmatched: pendingBuys.filter((buy) => buy.match === "unmatched").length,
   };
   const partners = useMemo(() => [...new Set(pendingBuys.map((buy) => buy.partner))].sort(), []);
+  const activeFilterCount = (fuel !== "all" ? 1 : 0) + (partner !== "all" ? 1 : 0) + (ptdFilter.trim() !== "" ? 1 : 0) + (contractFilter.trim() !== "" ? 1 : 0) + (dealFilter.trim() !== "" ? 1 : 0);
+  const clearFilters = () => { setFuel("all"); setPartner("all"); setPtdFilter(""); setContractFilter(""); setDealFilter(""); setView("all"); };
   const visible = useMemo(() => pendingBuys.filter((buy) =>
     (view === "all" || buy.match === view) &&
     (fuel === "all" || buy.fuel === fuel) &&
@@ -146,17 +147,24 @@ function ReconciliationPage() {
           <div className="flex items-baseline gap-3"><h2 className="font-display text-base font-bold">Pending Buys</h2><span className="text-xs text-subtle">{visible.length} results</span></div>
           <div className="flex flex-wrap items-center gap-2">
             {bulkApproveButton("top")}
-            <Button variant="ghost" size="sm" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} className="text-primary"><Filter className="size-4" /> Filters <ChevronDown className="size-3" /></Button>
+            <Button variant="ghost" size="sm" onClick={() => setFiltersOpen((open) => !open)} className="text-primary hover:text-primary" aria-expanded={filtersOpen}>
+              <Funnel className="size-4" />
+              {activeFilterCount > 0 ? `${activeFilterCount} ${activeFilterCount === 1 ? "filter" : "filters"}` : "Filters"}
+            </Button>
+            <span className="h-4 w-px bg-hair" aria-hidden />
+            <Button variant="ghost" size="sm" onClick={clearFilters} disabled={activeFilterCount === 0} className="text-subtle disabled:opacity-50">Clear all</Button>
           </div>
         </div>
-        {filtersOpen && <div className="flex flex-wrap items-end gap-3 border-b border-hair bg-table-head px-5 py-4">
-          <div><label className="text-[11px] font-bold uppercase text-subtle">Trading partner</label><Select value={partner} onValueChange={setPartner}><SelectTrigger aria-label="Filter by trading partner" className="mt-1 w-52 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All partners</SelectItem>{partners.map((name) => <SelectItem key={name} value={name}>{name}</SelectItem>)}</SelectContent></Select></div>
-          <div><label className="text-[11px] font-bold uppercase text-subtle">Fuel code</label><Select value={fuel} onValueChange={setFuel}><SelectTrigger aria-label="Filter by fuel code" className="mt-1 w-36 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All fuels</SelectItem>{(["D3", "D4", "D5", "D6", "D7"] as const).map((code) => <SelectItem key={code} value={code}>{code}</SelectItem>)}</SelectContent></Select></div>
-          <div><label className="text-[11px] font-bold uppercase text-subtle">PTD</label><Input aria-label="Filter by PTD" placeholder="e.g. 1558058" value={ptdFilter} onChange={(event) => setPtdFilter(event.target.value)} className="mt-1 w-36 bg-panel text-xs" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-subtle">Buy contract id</label><Input aria-label="Filter by buy contract id" placeholder="e.g. CT-4902" value={contractFilter} onChange={(event) => setContractFilter(event.target.value)} className="mt-1 w-36 bg-panel text-xs" /></div>
-          <div><label className="text-[11px] font-bold uppercase text-subtle">Deal number</label><Input aria-label="Filter by deal number" placeholder="e.g. EVERG26TP0018" value={dealFilter} onChange={(event) => setDealFilter(event.target.value)} className="mt-1 w-44 bg-panel text-xs" /></div>
-          <Button variant="ghost" size="sm" onClick={() => { setFuel("all"); setPartner("all"); setPtdFilter(""); setContractFilter(""); setDealFilter(""); setView("all"); }}>Clear all</Button>
-          <Button variant="ghost" size="icon" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="ml-auto"><X className="size-4" /></Button>
+        {filtersOpen && <div className="relative mt-3 rounded-md border border-hair bg-table-head p-4">
+          <button type="button" onClick={() => setFiltersOpen(false)} aria-label="Close filters" className="absolute right-3 top-3 rounded p-1 text-subtle hover:bg-panel hover:text-ink"><X className="size-4" /></button>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <label className="block"><span className="text-[11px] font-bold uppercase text-ink">Trading partner</span><Select value={partner} onValueChange={setPartner}><SelectTrigger aria-label="Filter by trading partner" className="mt-1 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All partners</SelectItem>{partners.map((name) => <SelectItem key={name} value={name}>{name}</SelectItem>)}</SelectContent></Select></label>
+            <label className="block"><span className="text-[11px] font-bold uppercase text-ink">Fuel code</span><Select value={fuel} onValueChange={setFuel}><SelectTrigger aria-label="Filter by fuel code" className="mt-1 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All fuels</SelectItem>{(["D3", "D4", "D5", "D6", "D7"] as const).map((code) => <SelectItem key={code} value={code}>{code}</SelectItem>)}</SelectContent></Select></label>
+            <label className="block"><span className="text-[11px] font-bold uppercase text-ink">PTD</span><input aria-label="Filter by PTD" placeholder="Filter by PTD" value={ptdFilter} onChange={(event) => setPtdFilter(event.target.value)} className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20" /></label>
+            <label className="block"><span className="text-[11px] font-bold uppercase text-ink">Buy contract id</span><input aria-label="Filter by buy contract id" placeholder="Filter by buy contract ID" value={contractFilter} onChange={(event) => setContractFilter(event.target.value)} className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20" /></label>
+            <label className="block"><span className="text-[11px] font-bold uppercase text-ink">Deal number</span><input aria-label="Filter by deal number" placeholder="Filter by deal number" value={dealFilter} onChange={(event) => setDealFilter(event.target.value)} className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20" /></label>
+            <div className="flex items-end"><Button size="sm" className="w-full" onClick={() => setFiltersOpen(false)}>Apply filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}</Button></div>
+          </div>
         </div>}
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse text-left text-sm">
