@@ -68,12 +68,17 @@ function ReconciliationPage() {
     "needs-review": pendingBuys.filter((buy) => buy.match === "needs-review").length,
     unmatched: pendingBuys.filter((buy) => buy.match === "unmatched").length,
   };
+  const partners = useMemo(() => [...new Set(pendingBuys.map((buy) => buy.partner))].sort(), []);
   const visible = useMemo(() => pendingBuys.filter((buy) =>
     (view === "all" || buy.match === view) &&
     (fuel === "all" || buy.fuel === fuel) &&
+    (partner === "all" || buy.partner === partner) &&
+    (!ptdFilter.trim() || buy.ptd.toLowerCase().includes(ptdFilter.trim().toLowerCase())) &&
+    (!contractFilter.trim() || buy.contractId?.toLowerCase().includes(contractFilter.trim().toLowerCase())) &&
+    (!dealFilter.trim() || buy.dealNumber?.toLowerCase().includes(dealFilter.trim().toLowerCase())) &&
     (!query.trim() || [buy.id, buy.contractId, buy.dealNumber, buy.partner, buy.invoice, buy.ptd, buy.bol]
       .some((value) => value?.toLowerCase().includes(query.trim().toLowerCase())))
-  ), [view, fuel, query]);
+  ), [view, fuel, partner, ptdFilter, contractFilter, dealFilter, query]);
 
   return <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
     <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
