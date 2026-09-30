@@ -92,8 +92,8 @@ export function findSettlementGroups(
   for (const [key, bucket] of buckets) {
     if (bucket.length < 2 || bucket.length > 5) continue;
     const total = bucket.reduce((sum, b) => sum + b.rins, 0);
-    const contract = openContracts.find((c) => c.counterparty === bucket[0].partner && total >= c.outstandingRins * 0.99 && total <= c.outstandingRins);
-    if (contract) groups.push({ key, contractId: contract.contractId, dealNumber: contract.dealNumber, partner: bucket[0].partner, outstandingRins: contract.outstandingRins, buys: bucket, total });
+    const contract = openContracts.find((c) => c.counterparty === bucket[0]!.partner && total >= c.outstandingRins * 0.99 && total <= c.outstandingRins);
+    if (contract) groups.push({ key, contractId: contract.contractId, dealNumber: contract.dealNumber, partner: bucket[0]!.partner, outstandingRins: contract.outstandingRins, buys: bucket, total });
   }
   return groups;
 }

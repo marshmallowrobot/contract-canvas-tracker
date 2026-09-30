@@ -113,7 +113,7 @@ function ReconciliationPage() {
       </div>
 
       {settlementGroups.map((g) => <div key={g.key} className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md bg-settle-soft px-5 py-3">
-        <div className="flex items-center gap-3"><Layers className="size-5 text-settle" /><div><p className="text-sm font-bold text-ink">{g.buys.length} pending buys together would settle {g.contractId}</p><p className="text-xs text-subtle">{g.partner} · {g.buys[0].fuel} {g.buys[0].year} · {numberFmt.format(g.total)} of {numberFmt.format(g.outstandingRins)} outstanding RINs</p></div></div>
+        <div className="flex items-center gap-3"><Layers className="size-5 text-settle" /><div><p className="text-sm font-bold text-ink">{g.buys.length} pending buys together would settle {g.contractId}</p><p className="text-xs text-subtle">{g.partner} · {g.buys[0]?.fuel} {g.buys[0]?.year} · {numberFmt.format(g.total)} of {numberFmt.format(g.outstandingRins)} outstanding RINs</p></div></div>
         <Button size="sm" onClick={() => openGroup(g)}>Review group</Button>
       </div>)}
 
