@@ -141,6 +141,7 @@ function ReconciliationPage() {
         )}
         </div>
       </div>
+      {bulkApproveButton("top") && <div className="mb-3 flex justify-end">{bulkApproveButton("top")}</div>}
 
       <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
