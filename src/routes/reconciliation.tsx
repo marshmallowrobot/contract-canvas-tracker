@@ -237,10 +237,10 @@ function ReconciliationPage() {
               </div>;
             })()}
 
-          <div className="flex items-center justify-between gap-3 border-t border-hair bg-panel px-6 py-4">
+          </div>
+          <div className="mt-auto flex items-center justify-between gap-3 border-t border-hair bg-panel px-6 py-4">
             <Button variant="outline" onClick={closeReview}>Back to pending buys</Button>
             <Button disabled={chosenContract === null}>{chosenContract === "unreconciled" ? "Approve as Unreconciled" : chosenContract ? `Approve for ${chosenContract}` : "Approve"}</Button>
-          </div>
           </div>
         </>}
       </SheetContent>
