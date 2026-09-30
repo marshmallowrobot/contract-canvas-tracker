@@ -29,6 +29,12 @@ const fuelClass: Record<RinCode, string> = {
 };
 const matchLabel = { matched: "Matched", "needs-review": "Needs Review", unmatched: "Unmatched" } as const;
 
+/** Relative expiration label, e.g. "5 hours", "1 day", "5 days". */
+function expirationLabel(days: number) {
+  if (days <= 0) return "5 hours";
+  return days === 1 ? "1 day" : `${days} days`;
+}
+
 function Fuel({ buy }: { buy: PendingBuy }) {
   return <div className="flex items-center gap-2 whitespace-nowrap">
     <span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[buy.fuel]}`}>{buy.fuel}</span>
@@ -48,6 +54,10 @@ function ReconciliationPage() {
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [fuel, setFuel] = useState("all");
+  const [partner, setPartner] = useState("all");
+  const [ptdFilter, setPtdFilter] = useState("");
+  const [contractFilter, setContractFilter] = useState("");
+  const [dealFilter, setDealFilter] = useState("");
   const [selected, setSelected] = useState<PendingBuy | null>(null);
   /** Selection lives only while the review panel is open; closing the panel discards it. */
   const [chosenContract, setChosenContract] = useState<string | null>(null);
