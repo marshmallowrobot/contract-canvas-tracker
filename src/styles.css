@@ -71,6 +71,8 @@
   --color-panel: var(--panel);
   --color-settle: var(--settle);
   --color-settle-soft: var(--settle-soft);
+  --color-ice: var(--ice);
+  --color-ice-soft: var(--ice-soft);
   --color-amber: var(--amber);
   --color-amber-soft: var(--amber-soft);
   --color-rose: var(--rose);
@@ -133,6 +135,8 @@
   --panel: oklch(1 0 0);
   --settle: oklch(0.55 0.13 155);
   --settle-soft: oklch(0.95 0.045 155);
+  --ice: oklch(0.55 0.12 240);
+  --ice-soft: oklch(0.95 0.035 240);
   --amber: oklch(0.68 0.15 70);
   --amber-soft: oklch(0.94 0.05 70);
   --rose: oklch(0.58 0.2 22);
@@ -192,6 +196,8 @@
   --panel: oklch(0.2 0.02 265);
   --settle: oklch(0.75 0.14 155);
   --settle-soft: oklch(0.28 0.05 155);
+  --ice: oklch(0.75 0.12 240);
+  --ice-soft: oklch(0.28 0.05 240);
   --amber: oklch(0.78 0.15 70);
   --amber-soft: oklch(0.32 0.07 70);
   --rose: oklch(0.68 0.18 22);
