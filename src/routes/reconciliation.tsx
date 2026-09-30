@@ -180,9 +180,10 @@ function ReconciliationPage() {
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
         </div>
-        <div className="flex items-center justify-between gap-3 border-t border-hair px-5 py-3 text-xs text-subtle"><span>Showing {visible.length} of {pendingBuys.length} pending buys</span>{bulkApproveButton("bottom")}</div>
-      </section>
-    </main>
+          <div className="flex items-center justify-between gap-3 border-t border-hair px-5 py-3 text-xs text-subtle"><span>Showing {visible.length} of {pendingBuys.length} pending buys</span></div>
+        </section>
+        {bulkApproveButton("bottom") && <div className="mt-3 flex justify-end">{bulkApproveButton("bottom")}</div>}
+      </main>
 
     <Sheet open={selected !== null} onOpenChange={(open) => { if (!open) closeReview(); }}>
       <SheetContent side="right" className="flex w-full flex-col overflow-y-auto bg-canvas p-0 sm:max-w-[560px]">
