@@ -123,6 +123,7 @@ function ReconciliationPage() {
         <div><h1 className="font-display text-2xl font-bold">RIN Buy Reconciliation</h1><p className="mt-1 text-sm text-subtle">Evergreen Fuels Group (48217) · Pending buys</p></div>
         <div className="flex flex-wrap items-center gap-2"><Button size="sm" variant="outline" className="bg-panel text-primary hover:text-primary">Export</Button><Button size="sm" variant="outline" className="bg-panel text-primary hover:text-primary">Advanced Export</Button></div>
       </header>
+      {bulkApproveButton("top") && <div className="-mt-3 mb-4 flex justify-end">{bulkApproveButton("top")}</div>}
 
       <div className="mb-6" role="group" aria-label="Filter pending buys by status">
         <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Filter by status</div>
@@ -146,7 +147,6 @@ function ReconciliationPage() {
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
           <div className="flex items-baseline gap-3"><h2 className="font-display text-base font-bold">Pending Buys</h2><span className="text-xs text-subtle">{visible.length} results</span></div>
           <div className="flex flex-wrap items-center gap-2">
-            {bulkApproveButton("top")}
             <Button variant="ghost" size="sm" onClick={() => setFiltersOpen((open) => !open)} className="text-primary hover:text-primary" aria-expanded={filtersOpen}>
               <Funnel className="size-4" />
               {activeFilterCount > 0 ? `${activeFilterCount} ${activeFilterCount === 1 ? "filter" : "filters"}` : "Filters"}
@@ -180,9 +180,10 @@ function ReconciliationPage() {
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
         </div>
-        <div className="flex items-center justify-between gap-3 border-t border-hair px-5 py-3 text-xs text-subtle"><span>Showing {visible.length} of {pendingBuys.length} pending buys</span>{bulkApproveButton("bottom")}</div>
-      </section>
-    </main>
+          <div className="flex items-center justify-between gap-3 border-t border-hair px-5 py-3 text-xs text-subtle"><span>Showing {visible.length} of {pendingBuys.length} pending buys</span></div>
+        </section>
+        {bulkApproveButton("bottom") && <div className="mt-3 flex justify-end">{bulkApproveButton("bottom")}</div>}
+      </main>
 
     <Sheet open={selected !== null} onOpenChange={(open) => { if (!open) closeReview(); }}>
       <SheetContent side="right" className="flex w-full flex-col overflow-y-auto bg-canvas p-0 sm:max-w-[560px]">
