@@ -93,6 +93,27 @@ function ReconciliationPage() {
     (!contractFilter.trim() || buy.contractId?.toLowerCase().includes(contractFilter.trim().toLowerCase())) &&
     (!dealFilter.trim() || buy.dealNumber?.toLowerCase().includes(dealFilter.trim().toLowerCase()))
   ), [view, fuel, partner, ptdFilter, contractFilter, dealFilter]);
+  /** Bulk-approve selection — Matched buys only; Needs Review and Unmatched must go through the Review panel. */
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
+  const matchedVisible = visible.filter((buy) => buy.match === "matched");
+  const allMatchedChecked = matchedVisible.length > 0 && matchedVisible.every((buy) => checkedIds.has(buy.id));
+  const toggleBuy = (buy: PendingBuy) => setCheckedIds((prev) => {
+    const next = new Set(prev);
+    if (next.has(buy.id)) next.delete(buy.id); else next.add(buy.id);
+    return next;
+  });
+  const toggleAllMatched = () => setCheckedIds((prev) => {
+    const next = new Set(prev);
+    if (allMatchedChecked) matchedVisible.forEach((buy) => next.delete(buy.id));
+    else matchedVisible.forEach((buy) => next.add(buy.id));
+    return next;
+  });
+  const approveSelected = () => setCheckedIds(new Set());
+  const bulkApproveButton = (key: string) => checkedIds.size > 0 && (
+    <Button key={key} size="sm" onClick={approveSelected}>
+      Approve {checkedIds.size} matched {checkedIds.size === 1 ? "buy" : "buys"}
+    </Button>
+  );
 
   return <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
     <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
