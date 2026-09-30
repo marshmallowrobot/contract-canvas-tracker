@@ -10,8 +10,8 @@ import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
 import { findSettlementGroups, pendingBuys, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
 
 const openContracts = contracts.filter((contract) => contract.contractStatus === "open");
-const settlementGroups = findSettlementGroups(pendingBuys, openContracts);
-const groupOf = (buy: PendingBuy) => settlementGroups.find((group) => group.buys.some((b) => b.id === buy.id));
+/** Computed on demand, only for the buy being reviewed — never for the whole list. */
+const groupOf = (buy: PendingBuy) => findSettlementGroups(pendingBuys.filter((b) => b.partner === buy.partner && b.fuel === buy.fuel && b.year === buy.year), openContracts).find((group) => group.buys.some((b) => b.id === buy.id));
 
 export const Route = createFileRoute("/reconciliation")({
   head: () => ({ meta: [
@@ -78,7 +78,7 @@ function ReconciliationPage() {
   };
   const partners = useMemo(() => [...new Set(pendingBuys.map((buy) => buy.partner))].sort(), []);
   const visible = useMemo(() => pendingBuys.filter((buy) =>
-    (view === "all" || (view === "groups" ? !!groupOf(buy) : buy.match === view)) &&
+    (view === "all" || buy.match === view) &&
     (fuel === "all" || buy.fuel === fuel) &&
     (partner === "all" || buy.partner === partner) &&
     (!ptdFilter.trim() || buy.ptd.toLowerCase().includes(ptdFilter.trim().toLowerCase())) &&
@@ -96,8 +96,8 @@ function ReconciliationPage() {
 
       <div className="mb-6" role="group" aria-label="Filter pending buys by status">
         <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Filter by status</div>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        {([ ["all", pendingBuys.length, "All pending buys"], ["matched", counts.matched, "Matched"], ["needs-review", counts["needs-review"], "Needs review"], ["unmatched", counts.unmatched, "Unmatched"], ["groups", settlementGroups.length, "Settlement groups"] ] as const).map(([key, count, label]) =>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {([ ["all", pendingBuys.length, "All pending buys"], ["matched", counts.matched, "Matched"], ["needs-review", counts["needs-review"], "Needs review"], ["unmatched", counts.unmatched, "Unmatched"] ] as const).map(([key, count, label]) =>
           <button key={key} type="button" onClick={() => setView(key)} aria-pressed={view === key}
             className={`group flex min-h-14 items-center justify-between gap-3 rounded-md border px-4 py-2.5 text-left shadow-sm transition-colors ${view === key ? "border-primary bg-selected" : "border-hair bg-panel hover:border-primary/50"}`}>
             <span>
@@ -111,11 +111,6 @@ function ReconciliationPage() {
         )}
         </div>
       </div>
-
-      {settlementGroups.map((g) => <div key={g.key} className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md bg-settle-soft px-5 py-3">
-        <div className="flex items-center gap-3"><Layers className="size-5 text-settle" /><div><p className="text-sm font-bold text-ink">{g.buys.length} pending buys together would settle {g.contractId}</p><p className="text-xs text-subtle">{g.partner} · {g.buys[0]?.fuel} {g.buys[0]?.year} · {numberFmt.format(g.total)} of {numberFmt.format(g.outstandingRins)} outstanding RINs</p></div></div>
-        <Button size="sm" onClick={() => openGroup(g)}>Review group</Button>
-      </div>)}
 
       <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hair px-5 py-3">
@@ -141,7 +136,7 @@ function ReconciliationPage() {
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
               <td className="max-w-44 px-5 py-3"><div className="text-xs font-medium">{buy.partner}</div>{buy.contractId && <div className="mt-0.5 text-[11px] font-semibold text-primary">{buy.contractId} · {buy.dealNumber}</div>}</td>
               <td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-xs">{buy.received}</td><td className="px-3 py-3 text-xs font-semibold"><span className={buy.expiresInDays <= 1 ? "text-rose" : buy.expiresInDays <= 5 ? "text-amber" : "text-ink"}>{expirationLabel(buy.expiresInDays)}</span></td><td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td><td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
-              <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}{groupOf(buy) && <button type="button" onClick={() => openGroup(groupOf(buy)!)} className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle hover:underline"><Layers className="size-3" /> Group settles {groupOf(buy)!.contractId}</button>}</div><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
+              <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}</div><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
@@ -157,7 +152,7 @@ function ReconciliationPage() {
           <div className="flex-1 space-y-5 px-6 pb-6 pt-4">
             <section><h3 className="mb-3 font-display text-sm font-bold">Incoming RIN buy</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel p-4"><Detail label="Trading partner" value={selected.partner} /><Detail label="RIN quantity" value={numberFmt.format(selected.rins)} /><Detail label="Gallons" value={numberFmt.format(selected.gallons)} /><Detail label="Price" value={selected.price} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Fuel / assignment</dt><dd className="mt-2 flex items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span></dd></div><Detail label="Invoice number" value={selected.invoice} /><Detail label="PTD number" value={selected.ptd} /><Detail label="Bill of lading" value={selected.bol} /><Detail label="Received" value={selected.received} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Expires in</dt><dd className={`mt-2 text-sm font-semibold ${selected.expiresInDays <= 1 ? "text-rose" : selected.expiresInDays <= 5 ? "text-amber" : "text-ink"}`}>{expirationLabel(selected.expiresInDays)}</dd></div></dl></section>
 
-            {groupOf(selected) && <div className="flex items-center justify-between gap-3 rounded-md bg-settle-soft p-4"><p className="text-xs leading-relaxed text-ink">This buy is part of a group of {groupOf(selected)!.buys.length} buys that together would settle {groupOf(selected)!.contractId}.</p><Button size="sm" variant="outline" className="shrink-0 bg-panel" onClick={() => openGroup(groupOf(selected)!)}>Review group</Button></div>}
+            {groupOf(selected) && <div className="flex items-center justify-between gap-3 rounded-md bg-settle-soft p-4"><p className="text-xs leading-relaxed text-ink"><Layers className="mr-1 inline size-3.5 text-settle" />Along with {groupOf(selected)!.buys.length - 1} other pending buys from {selected.partner}, this buy would settle {groupOf(selected)!.contractId}.</p><Button size="sm" variant="outline" className="shrink-0 bg-panel" onClick={() => openGroup(groupOf(selected)!)}>Review group</Button></div>}
 
             <section>
               <h3 className="mb-1 font-display text-sm font-bold">Apply this buy to a contract</h3>
