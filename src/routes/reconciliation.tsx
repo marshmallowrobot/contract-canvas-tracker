@@ -29,6 +29,12 @@ const fuelClass: Record<RinCode, string> = {
 };
 const matchLabel = { matched: "Matched", "needs-review": "Needs Review", unmatched: "Unmatched" } as const;
 
+/** Relative expiration label, e.g. "5 hours", "1 day", "5 days". */
+function expirationLabel(days: number) {
+  if (days <= 0) return "5 hours";
+  return days === 1 ? "1 day" : `${days} days`;
+}
+
 function Fuel({ buy }: { buy: PendingBuy }) {
   return <div className="flex items-center gap-2 whitespace-nowrap">
     <span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[buy.fuel]}`}>{buy.fuel}</span>
@@ -48,6 +54,10 @@ function ReconciliationPage() {
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [fuel, setFuel] = useState("all");
+  const [partner, setPartner] = useState("all");
+  const [ptdFilter, setPtdFilter] = useState("");
+  const [contractFilter, setContractFilter] = useState("");
+  const [dealFilter, setDealFilter] = useState("");
   const [selected, setSelected] = useState<PendingBuy | null>(null);
   /** Selection lives only while the review panel is open; closing the panel discards it. */
   const [chosenContract, setChosenContract] = useState<string | null>(null);
@@ -58,12 +68,17 @@ function ReconciliationPage() {
     "needs-review": pendingBuys.filter((buy) => buy.match === "needs-review").length,
     unmatched: pendingBuys.filter((buy) => buy.match === "unmatched").length,
   };
+  const partners = useMemo(() => [...new Set(pendingBuys.map((buy) => buy.partner))].sort(), []);
   const visible = useMemo(() => pendingBuys.filter((buy) =>
     (view === "all" || buy.match === view) &&
     (fuel === "all" || buy.fuel === fuel) &&
+    (partner === "all" || buy.partner === partner) &&
+    (!ptdFilter.trim() || buy.ptd.toLowerCase().includes(ptdFilter.trim().toLowerCase())) &&
+    (!contractFilter.trim() || buy.contractId?.toLowerCase().includes(contractFilter.trim().toLowerCase())) &&
+    (!dealFilter.trim() || buy.dealNumber?.toLowerCase().includes(dealFilter.trim().toLowerCase())) &&
     (!query.trim() || [buy.id, buy.contractId, buy.dealNumber, buy.partner, buy.invoice, buy.ptd, buy.bol]
       .some((value) => value?.toLowerCase().includes(query.trim().toLowerCase())))
-  ), [view, fuel, query]);
+  ), [view, fuel, partner, ptdFilter, contractFilter, dealFilter, query]);
 
   return <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
     <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
@@ -100,18 +115,22 @@ function ReconciliationPage() {
           </div>
         </div>
         {filtersOpen && <div className="flex flex-wrap items-end gap-3 border-b border-hair bg-table-head px-5 py-4">
+          <div><label className="text-[11px] font-bold uppercase text-subtle">Trading partner</label><Select value={partner} onValueChange={setPartner}><SelectTrigger aria-label="Filter by trading partner" className="mt-1 w-52 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All partners</SelectItem>{partners.map((name) => <SelectItem key={name} value={name}>{name}</SelectItem>)}</SelectContent></Select></div>
           <div><label className="text-[11px] font-bold uppercase text-subtle">Fuel code</label><Select value={fuel} onValueChange={setFuel}><SelectTrigger aria-label="Filter by fuel code" className="mt-1 w-36 bg-panel"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All fuels</SelectItem>{(["D3", "D4", "D5", "D6", "D7"] as const).map((code) => <SelectItem key={code} value={code}>{code}</SelectItem>)}</SelectContent></Select></div>
-          <Button variant="ghost" size="sm" onClick={() => { setFuel("all"); setQuery(""); setView("all"); }}>Clear all</Button>
+          <div><label className="text-[11px] font-bold uppercase text-subtle">PTD</label><Input aria-label="Filter by PTD" placeholder="e.g. 1558058" value={ptdFilter} onChange={(event) => setPtdFilter(event.target.value)} className="mt-1 w-36 bg-panel text-xs" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-subtle">Buy contract id</label><Input aria-label="Filter by buy contract id" placeholder="e.g. CT-4902" value={contractFilter} onChange={(event) => setContractFilter(event.target.value)} className="mt-1 w-36 bg-panel text-xs" /></div>
+          <div><label className="text-[11px] font-bold uppercase text-subtle">Deal number</label><Input aria-label="Filter by deal number" placeholder="e.g. EVERG26TP0018" value={dealFilter} onChange={(event) => setDealFilter(event.target.value)} className="mt-1 w-44 bg-panel text-xs" /></div>
+          <Button variant="ghost" size="sm" onClick={() => { setFuel("all"); setPartner("all"); setPtdFilter(""); setContractFilter(""); setDealFilter(""); setQuery(""); setView("all"); }}>Clear all</Button>
           <Button variant="ghost" size="icon" aria-label="Close filters" onClick={() => setFiltersOpen(false)} className="ml-auto"><X className="size-4" /></Button>
         </div>}
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[820px] border-collapse text-left text-sm">
+          <table className="w-full min-w-[900px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-5 py-2">Pending buy</th><th className="px-3 py-2">Trading partner</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">PTD</th><th className="px-3 py-2 text-right">RINs / Gal</th><th className="px-3 py-2 text-right">Price</th><th className="px-5 py-2">Match</th></tr>
+              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-5 py-2">Trading partner</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">PTD</th><th className="px-3 py-2">Transaction date</th><th className="px-3 py-2">Expires in</th><th className="px-3 py-2 text-right">RINs / Gal</th><th className="px-3 py-2 text-right">Price</th><th className="px-5 py-2">Match</th></tr>
             </thead>
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
-              <td className="px-5 py-3"><div className="font-semibold">{buy.id}</div><div className="mt-0.5 text-[11px] text-subtle">{buy.received}</div>{buy.contractId && <div className="mt-0.5 text-[11px] font-semibold text-primary">{buy.contractId} · {buy.dealNumber}</div>}</td>
-              <td className="max-w-44 px-3 py-3 text-xs font-medium">{buy.partner}</td><td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td><td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
+              <td className="max-w-44 px-5 py-3"><div className="text-xs font-medium">{buy.partner}</div>{buy.contractId && <div className="mt-0.5 text-[11px] font-semibold text-primary">{buy.contractId} · {buy.dealNumber}</div>}</td>
+              <td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-xs">{buy.received}</td><td className="px-3 py-3 text-xs font-semibold"><span className={buy.expiresInDays <= 1 ? "text-rose" : buy.expiresInDays <= 5 ? "text-amber" : "text-ink"}>{expirationLabel(buy.expiresInDays)}</span></td><td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td><td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
               <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
