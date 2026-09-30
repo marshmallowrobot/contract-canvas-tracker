@@ -143,7 +143,7 @@ function ReconciliationPage() {
       </div>
 
       <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hair px-5 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
           <div className="flex items-baseline gap-3"><h2 className="font-display text-base font-bold">Pending Buys</h2><span className="text-xs text-subtle">{visible.length} results</span></div>
           <div className="flex flex-wrap items-center gap-2">
             {bulkApproveButton("top")}
