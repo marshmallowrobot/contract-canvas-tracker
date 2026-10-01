@@ -305,14 +305,7 @@ function LedgerPage() {
               <PenLine />
               Add adjustment
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setCloseDate(defaultNextClose(closedThrough, latestEntry));
-                setCloseOpen(true);
-              }}
-            >
+            <Button variant="outline" size="sm" disabled title="Coming soon">
               <Download />
               Export CSV
             </Button>
