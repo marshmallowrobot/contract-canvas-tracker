@@ -74,7 +74,7 @@ function TypePill({ type }: { type: LedgerItemType }) {
 }
 
 
-function StatCard({ label, value, note, tone }: { label: string; value: string; note: string; tone?: string }) {
+function StatCard({ label, value, note, tone }: { label: string; value: string; note: string; tone?: string | undefined }) {
   return (
     <div className="rounded-md border border-hair bg-panel px-5 py-4 shadow-sm">
       <div className="text-xs font-semibold text-subtle">{label}</div>
