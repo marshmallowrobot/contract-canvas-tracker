@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Download, Funnel, Lock, MessageSquareText, PenLine, Split, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Download, Funnel, MessageSquareText, PenLine, Split, X } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -43,26 +43,6 @@ export const Route = createFileRoute("/ledger")({
 });
 
 const PAGE_SIZE_OPTIONS = [50, 100] as const;
-
-const INITIAL_CLOSED_THROUGH = "2025-12-31";
-
-function formatCloseDate(iso: string) {
-  const [y, m, d] = iso.split("-").map(Number);
-  return new Date(Date.UTC(y!, m! - 1, d!)).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
-}
-
-/** The day after a close date — the start of the open period. */
-function dayAfter(iso: string) {
-  const [y, m, d] = iso.split("-").map(Number);
-  return new Date(Date.UTC(y!, m! - 1, d! + 1)).toISOString().slice(0, 10);
-}
-
-/** Suggest the end of the month after the current close, capped at the latest entry. */
-function defaultNextClose(closed: string, latest: string) {
-  const [y, m] = closed.split("-").map(Number);
-  const end = new Date(Date.UTC(y!, m! + 1, 0)).toISOString().slice(0, 10);
-  return end > latest ? latest : end;
-}
 
 type SortDirection = "asc" | "desc";
 
@@ -114,16 +94,11 @@ function LedgerPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [transactionFilter, setTransactionFilter] = useState("");
   const [ledgerItemFilter, setLedgerItemFilter] = useState("");
-  const [fromDate, setFromDate] = useState(() => dayAfter(INITIAL_CLOSED_THROUGH));
+  const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [dateSort, setDateSort] = useState<SortDirection>("desc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
   const [page, setPage] = useState(1);
-  // Prototype only: closing is held in page state and resets on reload.
-  const [closedThrough, setClosedThrough] = useState(INITIAL_CLOSED_THROUGH);
-  const [closeOpen, setCloseOpen] = useState(false);
-  const [closeDate, setCloseDate] = useState("");
-  const [closeNotes, setCloseNotes] = useState("");
   // Prototype only: the manual adjustment mock keeps its own form state.
   const [adjustOpen, setAdjustOpen] = useState(false);
   const [adjustContract, setAdjustContract] = useState("unassigned");
@@ -136,9 +111,9 @@ function LedgerPage() {
   /** Unassigned pool — buys posted without a contract. */
   const unassignedEntries = useMemo(() => ledgerItems.filter((e) => e.buyContractId === null), []);
 
-  /** Stats for the current open period — entries dated after the last close. */
+  /** Stats over the full ledger for now — periods arrive later. */
   const periodStats = useMemo(() => {
-    const periodEntries = ledgerItems.filter((e) => e.timestamp.slice(0, 10) > closedThrough);
+    const periodEntries = ledgerItems;
     let added = 0;
     let drawn = 0;
     for (const e of periodEntries) {
@@ -164,7 +139,7 @@ function LedgerPage() {
       writtenOff,
       terminations,
     };
-  }, [closedThrough]);
+  }, []);
 
   /** Running balance is computed over the full ledger, oldest first, so it
    * stays correct no matter which rows the filters reveal. */
@@ -227,12 +202,8 @@ function LedgerPage() {
     (typeFilter !== "all" ? 1 : 0) +
     (transactionFilter.trim() ? 1 : 0) +
     (ledgerItemFilter.trim() ? 1 : 0) +
-    (fromDate && fromDate !== dayAfter(closedThrough) ? 1 : 0) +
+    (fromDate ? 1 : 0) +
     (toDate ? 1 : 0);
-
-  // The default period start is still a real filter from the user's point of
-  // view: count it for the badge and keep Clear all enabled so it can be removed.
-  const displayFilterCount = activeFilterCount + (fromDate && fromDate === dayAfter(closedThrough) ? 1 : 0);
 
   useEffect(() => {
     setPage(1);
@@ -251,8 +222,7 @@ function LedgerPage() {
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
 
-  const closedLabel = formatCloseDate(closedThrough);
-  const latestEntry = rows[rows.length - 1]?.timestamp ?? closedThrough;
+  const latestEntry = rows[rows.length - 1]?.timestamp ?? "";
 
   /** Balance column is always shown: it reads "balance after this entry",
    * computed over the full register history (never derived from the visible
@@ -268,15 +238,6 @@ function LedgerPage() {
     setLedgerItemFilter("");
     setFromDate("");
     setToDate("");
-  };
-
-  const closeDateValid = closeDate > closedThrough && closeDate <= latestEntry;
-  const confirmClose = () => {
-    if (!closeDateValid) return;
-    setClosedThrough(closeDate);
-    setFromDate(dayAfter(closeDate));
-    setCloseOpen(false);
-    setCloseNotes("");
   };
 
   return (
