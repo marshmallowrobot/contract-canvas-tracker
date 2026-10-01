@@ -208,7 +208,7 @@ function LedgerPage() {
     (typeFilter !== "all" ? 1 : 0) +
     (transactionFilter.trim() ? 1 : 0) +
     (ledgerItemFilter.trim() ? 1 : 0) +
-    (fromDate ? 1 : 0) +
+    (fromDate && fromDate !== dayAfter(closedThrough) ? 1 : 0) +
     (toDate ? 1 : 0);
 
   useEffect(() => {
