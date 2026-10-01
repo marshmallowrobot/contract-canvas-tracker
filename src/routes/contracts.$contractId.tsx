@@ -325,14 +325,6 @@ function ContractDetail() {
                 <div className="mt-1 font-display text-2xl font-bold tabular-nums text-ink">
                   {numberFmt.format(startingRins)}
                 </div>
-                <button
-                  type="button"
-                  disabled
-                  title="Adjust starting balance — coming soon"
-                  className="mt-1 cursor-not-allowed text-[11px] font-semibold text-subtle"
-                >
-                  Adjust · <span className="uppercase">Coming soon</span>
-                </button>
               </div>
               <div
                 className={`min-w-[160px] rounded-md border px-5 py-4 text-right ${
