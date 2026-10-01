@@ -51,7 +51,7 @@ export const Route = createFileRoute("/contracts/$contractId")({
   component: ContractDetail,
   errorComponent: ({ error }) => (
     <div role="alert" className="p-8 font-mono text-sm">
-      {error.message}
+      {error instanceof Error ? error.message : String(error)}
     </div>
   ),
   notFoundComponent: () => (
