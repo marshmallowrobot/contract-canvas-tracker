@@ -421,7 +421,7 @@ function LedgerPage() {
           </DialogContent>
         </Dialog>
 
-        <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Net RINs this period</p>
             <p className={`mt-1 text-xl font-bold ${periodStats.net < 0 ? "text-rose" : "text-ink"}`}>{periodStats.net > 0 ? `+${numberFmt.format(periodStats.net)}` : numberFmt.format(periodStats.net)}</p>
