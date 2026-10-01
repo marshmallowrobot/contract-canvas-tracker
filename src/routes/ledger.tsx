@@ -568,7 +568,6 @@ function LedgerPage() {
               const related = r.transactionId
                 ? ledgerItems.filter((e) => e.transactionId === r.transactionId && e.ledgerItemId !== r.ledgerItemId)
                 : [];
-              const deal = r.buyContractId ? getContract(r.buyContractId)?.dealNumber ?? null : null;
               const field = (label: string, value: React.ReactNode) => (
                 <div>
                   <dt className="text-[10px] font-bold uppercase text-subtle">{label}</dt>
