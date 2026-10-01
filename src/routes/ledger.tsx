@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Lock, MessageSquareText, PenLine, Split, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Download, Funnel, Lock, MessageSquareText, PenLine, Split, X } from "lucide-react";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Fragment, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import {
   ledgerItemTypeMeta,
   ledgerItems,
   type LedgerItemType,
+  type LedgerItem,
 } from "@/lib/ledger-data";
 
 export const Route = createFileRoute("/ledger")({
@@ -129,6 +131,7 @@ function LedgerPage() {
   const [adjustQuantity, setAdjustQuantity] = useState("");
   const [adjustDate, setAdjustDate] = useState("");
   const [adjustReason, setAdjustReason] = useState("");
+  const [detailRow, setDetailRow] = useState<LedgerItem | null>(null);
 
   /** Unassigned pool — buys posted without a contract. */
   const unassignedEntries = useMemo(() => ledgerItems.filter((e) => e.buyContractId === null), []);
@@ -458,6 +461,10 @@ function LedgerPage() {
                 <span className="text-xs text-subtle">{visibleRows.length} results</span>
               </div>
               <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" disabled title="Coming soon">
+                  <Download />
+                  Export CSV
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -622,7 +629,13 @@ function LedgerPage() {
                       </td>
                     </tr>
                   )}
-                  <tr className="group border-b border-hair last:border-0 hover:bg-table-head">
+                  <tr
+                    className="group cursor-pointer border-b border-hair last:border-0 hover:bg-table-head"
+                    onClick={(e) => {
+                      if ((e.target as HTMLElement).closest("a,button")) return;
+                      setDetailRow(row);
+                    }}
+                  >
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
                         <div className="text-xs font-semibold">{formatLedgerDate(row.timestamp)}</div>
@@ -688,7 +701,13 @@ function LedgerPage() {
               {visibleRows.length > 0 && (
                 <tfoot>
                   <tr className="border-t border-hair bg-table-head text-[11px] font-bold uppercase text-subtle">
-                    <td className="px-5 py-3" colSpan={5}>Totals in view</td>
+                    <td className="px-5 py-3" colSpan={5}>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                        <span>Totals in view · {visibleRows.length} entries</span>
+                        <span className="normal-case font-semibold">Added <span className="tabular-nums text-ink">+{numberFmt.format(credits)}</span></span>
+                        <span className="normal-case font-semibold">Drawn down <span className="tabular-nums text-rose">−{numberFmt.format(debits)}</span></span>
+                      </div>
+                    </td>
                     <td className={`px-4 py-3 text-right tabular-nums ${credits - debits >= 0 ? "text-ink" : "text-rose"}`}>
                       {credits - debits > 0 ? `+${numberFmt.format(credits - debits)}` : numberFmt.format(credits - debits)}
                     </td>
@@ -742,6 +761,82 @@ function LedgerPage() {
             </div>
           </div>
         </section>
+
+        <Sheet open={detailRow !== null} onOpenChange={(open) => !open && setDetailRow(null)}>
+          <SheetContent className="w-full overflow-y-auto bg-panel sm:max-w-md">
+            {detailRow && (() => {
+              const r = detailRow;
+              const related = r.transactionId
+                ? ledgerItems.filter((e) => e.transactionId === r.transactionId && e.ledgerItemId !== r.ledgerItemId)
+                : [];
+              const deal = r.buyContractId ? getContract(r.buyContractId)?.dealNumber ?? null : null;
+              const field = (label: string, value: React.ReactNode) => (
+                <div>
+                  <dt className="text-[10px] font-bold uppercase text-subtle">{label}</dt>
+                  <dd className="mt-0.5 text-sm text-ink">{value ?? "—"}</dd>
+                </div>
+              );
+              return (
+                <>
+                  <SheetHeader>
+                    <SheetTitle className="font-display">Ledger item {r.ledgerItemId}</SheetTitle>
+                    <SheetDescription>{formatLedgerDate(r.timestamp)}{r.timestamp <= closedThrough ? " · Closed period" : ""}</SheetDescription>
+                  </SheetHeader>
+                  <div className="mt-4 flex items-center justify-between rounded-md border border-hair bg-table-head px-4 py-3">
+                    <TypePill type={r.ledgerItemType} />
+                    <span className={`text-lg font-bold tabular-nums ${r.quantity >= 0 ? "text-ink" : "text-rose"}`}>
+                      {r.quantity > 0 ? `+${numberFmt.format(r.quantity)}` : numberFmt.format(r.quantity)} RINs
+                    </span>
+                  </div>
+                  <dl className="mt-5 grid grid-cols-2 gap-4">
+                    {field("Buy contract", r.buyContractId ? (
+                      <Link to="/contracts/$contractId" params={{ contractId: r.buyContractId }} className="font-semibold text-primary hover:underline">{r.buyContractId}</Link>
+                    ) : "Unassigned")}
+                    {field("Deal number", deal)}
+                    {field("Source system ID", r.sourceSystemContractId)}
+                    {field("Transaction ID", r.transactionId)}
+                    {field("Created by", r.createdBy)}
+                    {field("Fuel", r.fuelCode ? (
+                      <span className="flex items-center gap-2">
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[r.fuelCode]}`}>{r.fuelCode}</span>
+                        <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold">{r.fuelYear}</span>
+                        {r.assignmentType && <AssignmentMark type={r.assignmentType} />}
+                        {r.qapServiceType && <span className="text-xs text-subtle">{r.qapServiceType}</span>}
+                      </span>
+                    ) : null)}
+                  </dl>
+                  <div className="mt-5">
+                    <div className="text-[10px] font-bold uppercase text-subtle">Note</div>
+                    <p className="mt-1 text-sm text-ink">{r.notes ?? <span className="text-subtle">No note</span>}</p>
+                  </div>
+                  {related.length > 0 && (
+                    <div className="mt-5">
+                      <div className="text-[10px] font-bold uppercase text-subtle">Related entries for transaction {r.transactionId}</div>
+                      <ul className="mt-2 divide-y divide-hair rounded-md border border-hair">
+                        {related.map((e) => (
+                          <li key={e.ledgerItemId}>
+                            <button type="button" onClick={() => setDetailRow(e)} className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-table-head">
+                              <span>
+                                <span className="block text-xs font-semibold">{e.ledgerItemId} · {e.buyContractId ?? "Unassigned"}</span>
+                                <span className="block text-[11px] text-subtle">{formatLedgerDate(e.timestamp)}</span>
+                              </span>
+                              <span className="flex items-center gap-2">
+                                <TypePill type={e.ledgerItemType} />
+                                <span className={`text-xs font-bold tabular-nums ${e.quantity >= 0 ? "text-ink" : "text-rose"}`}>
+                                  {e.quantity > 0 ? `+${numberFmt.format(e.quantity)}` : numberFmt.format(e.quantity)}
+                                </span>
+                              </span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </SheetContent>
+        </Sheet>
       </main>
     </div>
   );
