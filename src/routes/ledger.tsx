@@ -74,6 +74,16 @@ function TypePill({ type }: { type: LedgerItemType }) {
 }
 
 
+function StatCard({ label, value, note, tone }: { label: string; value: string; note: string; tone?: string | undefined }) {
+  return (
+    <div className="rounded-md border border-hair bg-panel px-5 py-4 shadow-sm">
+      <div className="text-xs font-semibold text-subtle">{label}</div>
+      <div className={`mt-1 font-display text-2xl font-bold tabular-nums ${tone ?? "text-ink"}`}>{value}</div>
+      <div className="mt-1 text-xs text-subtle">{note}</div>
+    </div>
+  );
+}
+
 function FilterLabel({ children }: { children: React.ReactNode }) {
   return <span className="text-[11px] font-bold uppercase text-ink">{children}</span>;
 }
@@ -173,8 +183,11 @@ function LedgerPage() {
     .slice(startIndex, startIndex + pageSize);
   const endIndex = Math.min(startIndex + pageRows.length, visibleRows.length);
 
+  const correctionCount = visibleRows.filter((r) => r.ledgerItemType === "automated_correction").length;
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
+  const net = credits - debits;
+  const netText = net > 0 ? `+${numberFmt.format(net)}` : numberFmt.format(net);
 
   /** Balance column: shown unfiltered (client-wide) or when scoped to a
    * contract/deal (that contract's balance); hidden for any other filter. */
@@ -201,6 +214,23 @@ function LedgerPage() {
           <h1 className="font-display text-2xl font-bold">RIN Balance Ledger</h1>
           <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} ({EPA_ID})</p>
         </header>
+
+        <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Ledger summary for current view">
+          <StatCard
+            label="Net movement in view"
+            value={netText}
+            note={visibleRows.length === 0 ? "No entries match the filters" : `Across ${visibleRows.length} ${visibleRows.length === 1 ? "entry" : "entries"}`}
+            tone={net >= 0 ? "text-ink" : "text-rose"}
+          />
+          <StatCard label="Added" value={`+${numberFmt.format(credits)}`} note="RINs added by the entries in view" />
+          <StatCard label="Drawn down" value={numberFmt.format(-debits)} note="RINs drawn by the entries in view" tone="text-rose" />
+          <StatCard
+            label="Automated corrections"
+            value={numberFmt.format(correctionCount)}
+            note={correctionCount > 0 ? "Rejected buys with quantity restored" : "None in view"}
+            tone={correctionCount > 0 ? "text-amber" : undefined}
+          />
+        </section>
 
 
         <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
