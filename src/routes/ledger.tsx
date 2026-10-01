@@ -306,6 +306,7 @@ function LedgerPage() {
                 Close through {closeDateValid ? formatCloseDate(closeDate) : "…"}
               </Button>
             </DialogFooter>
+            <p className="text-center text-xs text-subtle">Coming soon — closing the period isn't wired up in this prototype yet.</p>
           </DialogContent>
         </Dialog>
 
