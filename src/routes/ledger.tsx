@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Download, Funnel, MessageSquareText, PenLine, Split, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Download, Funnel, MessageSquareText, Split, X } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
