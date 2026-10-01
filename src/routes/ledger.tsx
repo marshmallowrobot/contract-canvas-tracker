@@ -459,7 +459,7 @@ function LedgerPage() {
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Written Off RINs</p>
             <p className="mt-1 text-xl font-bold text-rose">{numberFmt.format(periodStats.writtenOff)}</p>
-            <p className="mt-0.5 text-xs text-subtle">{periodStats.terminations} terminations</p>
+            <p className="mt-0.5 text-xs text-subtle">{periodStats.terminations} {periodStats.terminations === 1 ? "entry" : "entries"}</p>
           </div>
         </div>
 
