@@ -254,9 +254,11 @@ function LedgerPage() {
   const closedLabel = formatCloseDate(closedThrough);
   const latestEntry = rows[rows.length - 1]?.timestamp ?? closedThrough;
 
-  /** Balance column: shown unfiltered (client-wide) or when scoped to a
-   * contract/deal (that contract's balance); hidden for any other filter. */
-  const showBalance = activeFilterCount === 0 || contractScopeActive;
+  /** Balance column is always shown: it reads "balance after this entry",
+   * computed over the full register history (never derived from the visible
+   * rows). Scoped to a contract/deal filter it shows that contract's own
+   * running balance; otherwise the client-wide balance. */
+  const showBalance = true;
 
   const clearFilters = () => {
     setContractFilter("");
