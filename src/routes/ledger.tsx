@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Lock, MessageSquareText, Split, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Lock, MessageSquareText, PenLine, Split, X } from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getContract, numberFmt, type AssignmentType, type RinCode } from "@/lib/contracts-data";
+import { contracts, getContract, numberFmt, type AssignmentType, type RinCode } from "@/lib/contracts-data";
 import {
   EPA_ID,
   CLIENT_NAME,
@@ -116,6 +116,13 @@ function LedgerPage() {
   const [closeOpen, setCloseOpen] = useState(false);
   const [closeDate, setCloseDate] = useState("");
   const [closeNotes, setCloseNotes] = useState("");
+  // Prototype only: the manual adjustment mock keeps its own form state.
+  const [adjustOpen, setAdjustOpen] = useState(false);
+  const [adjustContract, setAdjustContract] = useState("unassigned");
+  const [adjustDirection, setAdjustDirection] = useState("add");
+  const [adjustQuantity, setAdjustQuantity] = useState("");
+  const [adjustDate, setAdjustDate] = useState("");
+  const [adjustReason, setAdjustReason] = useState("");
 
   /** Running balance is computed over the full ledger, oldest first, so it
    * stays correct no matter which rows the filters reveal. */
@@ -244,6 +251,21 @@ function LedgerPage() {
               variant="outline"
               size="sm"
               onClick={() => {
+                setAdjustContract("unassigned");
+                setAdjustDirection("add");
+                setAdjustQuantity("");
+                setAdjustDate(defaultNextClose(closedThrough, latestEntry));
+                setAdjustReason("");
+                setAdjustOpen(true);
+              }}
+            >
+              <PenLine />
+              Add adjustment
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
                 setCloseDate(defaultNextClose(closedThrough, latestEntry));
                 setCloseOpen(true);
               }}
@@ -287,6 +309,79 @@ function LedgerPage() {
           </DialogContent>
         </Dialog>
 
+        <Dialog open={adjustOpen} onOpenChange={setAdjustOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add manual adjustment</DialogTitle>
+              <DialogDescription>
+                Posts a one-off quantity correction as a new ledger entry. Existing entries are never edited.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <label className="block">
+                <FilterLabel>Contract</FilterLabel>
+                <Select value={adjustContract} onValueChange={setAdjustContract}>
+                  <SelectTrigger aria-label="Adjustment contract" className="mt-1 bg-panel">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unassigned">Unassigned</SelectItem>
+                    {contracts.map((contract) => (
+                      <SelectItem key={contract.contractId} value={contract.contractId}>
+                        {contract.contractId} · {contract.counterparty}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </label>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="block">
+                  <FilterLabel>Direction</FilterLabel>
+                  <Select value={adjustDirection} onValueChange={setAdjustDirection}>
+                    <SelectTrigger aria-label="Adjustment direction" className="mt-1 bg-panel">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="add">Add RINs</SelectItem>
+                      <SelectItem value="remove">Remove RINs</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </label>
+                <label className="block">
+                  <FilterLabel>Quantity</FilterLabel>
+                  <input
+                    type="number"
+                    min={1}
+                    value={adjustQuantity}
+                    onChange={(event) => setAdjustQuantity(event.target.value)}
+                    aria-label="Adjustment quantity"
+                    placeholder="e.g. 1200"
+                    className={inputClass}
+                  />
+                </label>
+              </div>
+              <label className="block">
+                <FilterLabel>Date</FilterLabel>
+                <input type="date" className={inputClass} value={adjustDate} min={closedThrough} max={latestEntry} onChange={(e) => setAdjustDate(e.target.value)} />
+                <span className="mt-1 block text-xs text-subtle">
+                  Adjustments post to the open period only — after {closedLabel}.
+                </span>
+              </label>
+              <label className="block">
+                <FilterLabel>Reason</FilterLabel>
+                <Textarea rows={3} value={adjustReason} onChange={(e) => setAdjustReason(e.target.value)} placeholder="e.g. Quantity recount after BOL audit" />
+              </label>
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setAdjustOpen(false)}>Cancel</Button>
+              <Button disabled>
+                <PenLine />
+                Post adjustment
+              </Button>
+            </DialogFooter>
+            <p className="text-center text-xs text-subtle">Coming soon — manual adjustments aren't wired up in this prototype yet.</p>
+          </DialogContent>
+        </Dialog>
 
         <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
           <div className="border-b border-hair px-5 py-3">
