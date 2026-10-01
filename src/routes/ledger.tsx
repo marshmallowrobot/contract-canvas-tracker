@@ -606,7 +606,7 @@ function LedgerPage() {
                   </dl>
                   <div className="mt-5">
                     <div className="text-[10px] font-bold uppercase text-subtle">Note</div>
-                    <p className="mt-1 text-sm text-ink">{r.notes ?? <span className="text-subtle">No note</span>}</p>
+                    <p className="mt-1 text-sm text-ink">{r.notes ?? <span className="text-subtle">—</span>}</p>
                   </div>
                   {related.length > 0 && (
                     <div className="mt-5">
