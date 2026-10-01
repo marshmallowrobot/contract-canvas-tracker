@@ -134,7 +134,7 @@ function LedgerPage() {
   const unassignedEntries = useMemo(() => ledgerItems.filter((e) => e.buyContractId === null), []);
 
   /** All-time RINs written off by contract terminations. */
-  const writtenOff = useMemo(() => {
+  const writtenOffAll = useMemo(() => {
     let sum = 0;
     let count = 0;
     for (const e of ledgerItems) {
