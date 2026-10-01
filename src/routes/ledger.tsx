@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Download, Funnel, MessageSquareText, PenLine, Split, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Download, Funnel, MessageSquareText, Split, X } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
@@ -99,13 +98,6 @@ function LedgerPage() {
   const [dateSort, setDateSort] = useState<SortDirection>("desc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
   const [page, setPage] = useState(1);
-  // Prototype only: the manual adjustment mock keeps its own form state.
-  const [adjustOpen, setAdjustOpen] = useState(false);
-  const [adjustContract, setAdjustContract] = useState("unassigned");
-  const [adjustDirection, setAdjustDirection] = useState("add");
-  const [adjustQuantity, setAdjustQuantity] = useState("");
-  const [adjustDate, setAdjustDate] = useState("");
-  const [adjustReason, setAdjustReason] = useState("");
   const [detailRow, setDetailRow] = useState<LedgerItem | null>(null);
 
   /** Unassigned pool — buys posted without a contract. */
@@ -222,7 +214,6 @@ function LedgerPage() {
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
 
-  const latestEntry = rows[rows.length - 1]?.timestamp ?? "";
 
   /** Balance column is always shown: it reads "balance after this entry",
    * computed over the full register history (never derived from the visible
@@ -257,97 +248,10 @@ function LedgerPage() {
               <Download />
               Export CSV
             </Button>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setAdjustContract("unassigned");
-                  setAdjustDirection("add");
-                  setAdjustQuantity("");
-                  setAdjustDate(latestEntry);
-                  setAdjustReason("");
-                  setAdjustOpen(true);
-                }}
-              >
-                <PenLine />
-                Add adjustment
-              </Button>
-            </div>
           </div>
         </header>
 
 
-        <Dialog open={adjustOpen} onOpenChange={setAdjustOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add manual adjustment</DialogTitle>
-              <DialogDescription>
-                Posts a one-off quantity correction as a new ledger entry. Existing entries are never edited.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <label className="block">
-                <FilterLabel>Contract</FilterLabel>
-                <Select value={adjustContract} onValueChange={setAdjustContract}>
-                  <SelectTrigger aria-label="Adjustment contract" className="mt-1 bg-panel">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="unassigned">Unassigned</SelectItem>
-                    {contracts.map((contract) => (
-                      <SelectItem key={contract.contractId} value={contract.contractId}>
-                        {contract.contractId} · {contract.counterparty}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </label>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <label className="block">
-                  <FilterLabel>Direction</FilterLabel>
-                  <Select value={adjustDirection} onValueChange={setAdjustDirection}>
-                    <SelectTrigger aria-label="Adjustment direction" className="mt-1 bg-panel">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="add">Add RINs</SelectItem>
-                      <SelectItem value="remove">Remove RINs</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </label>
-                <label className="block">
-                  <FilterLabel>Quantity</FilterLabel>
-                  <input
-                    type="number"
-                    min={1}
-                    value={adjustQuantity}
-                    onChange={(event) => setAdjustQuantity(event.target.value)}
-                    aria-label="Adjustment quantity"
-                    placeholder="e.g. 1200"
-                    className={inputClass}
-                  />
-                </label>
-              </div>
-              <label className="block">
-                <FilterLabel>Date</FilterLabel>
-                <input type="date" className={inputClass} value={adjustDate} max={latestEntry} onChange={(e) => setAdjustDate(e.target.value)} />
-              </label>
-              <label className="block">
-                <FilterLabel>Reason</FilterLabel>
-                <Textarea rows={3} value={adjustReason} onChange={(e) => setAdjustReason(e.target.value)} placeholder="e.g. Quantity recount after BOL audit" />
-              </label>
-            </div>
-            <DialogFooter>
-              <Button variant="ghost" onClick={() => setAdjustOpen(false)}>Cancel</Button>
-              <Button disabled>
-                <PenLine />
-                Post adjustment
-              </Button>
-            </DialogFooter>
-            <p className="text-center text-xs text-subtle">Coming soon — manual adjustments aren't wired up in this prototype yet.</p>
-          </DialogContent>
-        </Dialog>
 
         <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
