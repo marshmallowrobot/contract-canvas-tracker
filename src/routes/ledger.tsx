@@ -262,7 +262,7 @@ function LedgerPage() {
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1.5 text-xs text-subtle">
               <Lock className="size-3.5" />
-              Books closed through <span className="font-semibold text-ink">{closedLabel}</span>
+              Closed through <span className="font-semibold text-ink">{closedLabel}</span>
             </span>
             <Button
               variant="outline"
