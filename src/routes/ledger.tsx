@@ -532,26 +532,13 @@ function LedgerPage() {
                 </tr>
               </thead>
               <tbody>
-                {pageRows.map((row, rowIndex) => {
+                {pageRows.map((row) => {
                   const dealNumber = row.buyContractId
                     ? getContract(row.buyContractId)?.dealNumber ?? null
                     : null;
-                  const rowClosed = row.timestamp <= closedThrough;
-                  const prevClosed = rowIndex > 0 ? pageRows[rowIndex - 1]!.timestamp <= closedThrough : rowClosed;
-                  const crossesClose = rowIndex > 0 && prevClosed !== rowClosed;
                   return (
-                  <Fragment key={row.ledgerItemId}>
-                  {crossesClose && (
-                    <tr aria-hidden="true">
-                      <td colSpan={showBalance ? 7 : 6} className="p-0">
-                        <div className="flex items-center gap-3 border-y-2 border-ink/60 bg-table-head px-5 py-1.5">
-                          <Lock className="size-3.5 text-subtle" />
-                          <span className="text-[11px] font-bold uppercase text-subtle">Period closed through {closedLabel}</span>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
                   <tr
+                    key={row.ledgerItemId}
                     className="group cursor-pointer border-b border-hair last:border-0 hover:bg-table-head"
                     onClick={(e) => {
                       if ((e.target as HTMLElement).closest("a,button")) return;
@@ -616,7 +603,6 @@ function LedgerPage() {
                       </td>
                     )}
                   </tr>
-                  </Fragment>
                   );
                 })}
               </tbody>
