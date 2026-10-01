@@ -241,7 +241,7 @@ function LedgerPage() {
     setTypeFilter("all");
     setTransactionFilter("");
     setLedgerItemFilter("");
-    setFromDate("");
+    setFromDate(dayAfter(closedThrough));
     setToDate("");
   };
 
