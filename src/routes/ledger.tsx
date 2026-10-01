@@ -130,10 +130,8 @@ function LedgerPage() {
   const [adjustDate, setAdjustDate] = useState("");
   const [adjustReason, setAdjustReason] = useState("");
 
-  /** Current Unassigned pool — all-time balance of buys posted without a contract. */
+  /** Unassigned pool — buys posted without a contract. */
   const unassignedEntries = useMemo(() => ledgerItems.filter((e) => e.buyContractId === null), []);
-  const unassignedPool = useMemo(() => unassignedEntries.reduce((sum, e) => sum + e.quantity, 0), [unassignedEntries]);
-  const unassignedCount = unassignedEntries.length;
 
   /** All-time RINs written off by contract terminations. */
   const writtenOff = useMemo(() => {
