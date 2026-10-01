@@ -464,6 +464,7 @@ function LedgerPage() {
                 <h2 className="font-display text-base font-bold">Ledger Items</h2>
                 <span className="text-xs text-subtle">{visibleRows.length} results</span>
               </div>
+              <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
