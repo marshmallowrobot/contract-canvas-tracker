@@ -133,19 +133,6 @@ function LedgerPage() {
   /** Unassigned pool — buys posted without a contract. */
   const unassignedEntries = useMemo(() => ledgerItems.filter((e) => e.buyContractId === null), []);
 
-  /** All-time RINs written off by contract terminations. */
-  const writtenOffAll = useMemo(() => {
-    let sum = 0;
-    let count = 0;
-    for (const e of ledgerItems) {
-      if (e.ledgerItemType === "contract_termination") {
-        sum += Math.abs(e.quantity);
-        count += 1;
-      }
-    }
-    return { sum, count };
-  }, []);
-
   /** Stats for the current open period — entries dated after the last close. */
   const periodStats = useMemo(() => {
     const periodEntries = ledgerItems.filter((e) => e.timestamp.slice(0, 10) > closedThrough);
