@@ -533,6 +533,7 @@ function LedgerPage() {
                       aria-label="Filter from date"
                       className={inputClass}
                     />
+                    <span className="mt-1 block text-xs text-subtle">Defaults to the open period — clear to search all history.</span>
                   </label>
                   <label className="block">
                     <FilterLabel>To date</FilterLabel>
