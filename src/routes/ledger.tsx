@@ -313,6 +313,17 @@ function LedgerPage() {
                 setCloseOpen(true);
               }}
             >
+              <Download />
+              Export CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setCloseDate(defaultNextClose(closedThrough, latestEntry));
+                setCloseOpen(true);
+              }}
+            >
               Close period
             </Button>
           </div>
