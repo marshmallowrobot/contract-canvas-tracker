@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Lock, MessageSquareText, Split, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Lock, MessageSquareText, Shuffle, Split, X } from "lucide-react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -458,7 +458,7 @@ function LedgerPage() {
                       </td>
                     </tr>
                   )}
-                  <tr className="border-b border-hair last:border-0 hover:bg-table-head">
+                  <tr className="group border-b border-hair last:border-0 hover:bg-table-head">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
                         <div className="text-xs font-semibold">{formatLedgerDate(row.timestamp)}</div>
@@ -492,7 +492,27 @@ function LedgerPage() {
                       <div className="mt-0.5 text-[11px] text-subtle">{dealNumber ?? "—"}</div>
                     </td>
                     <td className="whitespace-nowrap px-5 py-3.5 text-xs text-subtle">
-                      {row.transactionId ?? "—"}
+                      <div className="flex items-center gap-1.5">
+                        {row.transactionId ?? "—"}
+                        {!rowClosed && (row.ledgerItemType === "reconciled_buy" || row.ledgerItemType === "unreconciled_buy") && (
+                          <HoverCard openDelay={100}>
+                            <HoverCardTrigger asChild>
+                              <button type="button" aria-label={`Reassign ${row.ledgerItemId} (coming soon)`} className="rounded p-0.5 text-subtle opacity-0 transition-opacity hover:text-primary focus:opacity-100 group-hover:opacity-100">
+                                <Shuffle className="size-3.5" />
+                              </button>
+                            </HoverCardTrigger>
+                            <HoverCardContent align="start" side="top" className="w-64 border-hair bg-panel p-3">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-ink">Reassign to another contract</span>
+                                <span className="rounded-full bg-table-head px-2 py-0.5 text-[10px] font-bold uppercase text-subtle">Coming soon</span>
+                              </div>
+                              <div className="mt-1 text-xs text-subtle">
+                                Move this buy to a different contract{row.buyContractId ? " or back to Unassigned" : ""}. Available for entries after the last period close.
+                              </div>
+                            </HoverCardContent>
+                          </HoverCard>
+                        )}
+                      </div>
                       <div className="mt-0.5 text-[11px]">{row.createdBy}</div>
                     </td>
                     <td className="px-5 py-3.5">
