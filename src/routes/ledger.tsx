@@ -405,7 +405,7 @@ function LedgerPage() {
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Net RINs this period</p>
             <p className={`mt-1 text-xl font-bold ${periodStats.net < 0 ? "text-rose" : "text-ink"}`}>{periodStats.net > 0 ? `+${numberFmt.format(periodStats.net)}` : numberFmt.format(periodStats.net)}</p>
-            <p className="mt-0.5 text-xs text-subtle">Since {closedLabel} · {periodStats.count} entries</p>
+            <p className="mt-0.5 text-xs text-subtle">{periodStats.count} entries</p>
           </div>
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Added this period</p>
