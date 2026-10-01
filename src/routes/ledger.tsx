@@ -155,7 +155,25 @@ function LedgerPage() {
       if (e.quantity > 0) added += e.quantity;
       else drawn += e.quantity;
     }
-    return { count: periodEntries.length, added, drawn, net: added + drawn };
+    const unassigned = periodEntries.filter((e) => e.buyContractId === null);
+    let writtenOff = 0;
+    let terminations = 0;
+    for (const e of periodEntries) {
+      if (e.ledgerItemType === "contract_termination") {
+        writtenOff += Math.abs(e.quantity);
+        terminations += 1;
+      }
+    }
+    return {
+      count: periodEntries.length,
+      added,
+      drawn,
+      net: added + drawn,
+      unassignedPool: unassigned.reduce((s, e) => s + e.quantity, 0),
+      unassignedCount: unassigned.length,
+      writtenOff,
+      terminations,
+    };
   }, [closedThrough]);
 
   /** Running balance is computed over the full ledger, oldest first, so it
