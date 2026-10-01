@@ -688,7 +688,7 @@ function LedgerPage() {
                 <>
                   <SheetHeader>
                     <SheetTitle className="font-display">Ledger item {r.ledgerItemId}</SheetTitle>
-                    <SheetDescription>{formatLedgerDate(r.timestamp)}{r.timestamp <= closedThrough ? " · Closed period" : ""}</SheetDescription>
+                    <SheetDescription>{formatLedgerDate(r.timestamp)}</SheetDescription>
                   </SheetHeader>
                   <div className="mt-4 flex items-center justify-between rounded-md border border-hair bg-table-head px-4 py-3">
                     <TypePill type={r.ledgerItemType} />
