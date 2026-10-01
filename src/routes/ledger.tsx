@@ -207,13 +207,6 @@ function LedgerPage() {
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
 
-  /** KPI boxes are anchored to the last closed period, so filters never move them. */
-  const closedRows = rows.filter((r) => r.timestamp <= closedThrough);
-  const closedAdded = closedRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
-  const closedDrawn = closedRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
-  const closedPosition = closedAdded - closedDrawn;
-  const closedUnassigned = closedRows.filter((r) => r.ledgerItemType === "unreconciled_buy");
-  const closedUnassignedRins = closedUnassigned.reduce((s, r) => s + r.quantity, 0);
   const closedLabel = formatCloseDate(closedThrough);
   const latestEntry = rows[rows.length - 1]?.timestamp ?? closedThrough;
 
