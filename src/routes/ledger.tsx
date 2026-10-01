@@ -494,7 +494,7 @@ function LedgerPage() {
                     <td className="whitespace-nowrap px-5 py-3.5 text-xs text-subtle">
                       <div className="flex items-center gap-1.5">
                         {row.transactionId ?? "—"}
-                        {!rowClosed && (row.ledgerItemType === "Reconciled Buy" || row.ledgerItemType === "Unreconciled Buy") && (
+                        {!rowClosed && (row.ledgerItemType === "reconciled_buy" || row.ledgerItemType === "unreconciled_buy") && (
                           <HoverCard openDelay={100}>
                             <HoverCardTrigger asChild>
                               <button type="button" aria-label={`Reassign ${row.ledgerItemId} (coming soon)`} className="rounded p-0.5 text-subtle opacity-0 transition-opacity hover:text-primary focus:opacity-100 group-hover:opacity-100">
