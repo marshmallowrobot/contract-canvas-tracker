@@ -410,12 +410,10 @@ function LedgerPage() {
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Added this period</p>
             <p className="mt-1 text-xl font-bold text-ink">+{numberFmt.format(periodStats.added)}</p>
-            <p className="mt-0.5 text-xs text-subtle">RINs credited since close</p>
           </div>
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Drawn down this period</p>
             <p className="mt-1 text-xl font-bold text-rose">{numberFmt.format(periodStats.drawn)}</p>
-            <p className="mt-0.5 text-xs text-subtle">RINs applied since close</p>
           </div>
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Unassigned RINs</p>
