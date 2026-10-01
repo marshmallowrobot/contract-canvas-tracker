@@ -124,6 +124,20 @@ function LedgerPage() {
   const [adjustDate, setAdjustDate] = useState("");
   const [adjustReason, setAdjustReason] = useState("");
 
+  /** Stats for the current open period — entries dated after the last close. */
+  const periodStats = useMemo(() => {
+    const periodEntries = ledgerItems.filter((e) => e.timestamp.slice(0, 10) > closedThrough);
+    let added = 0;
+    let drawn = 0;
+    let corrections = 0;
+    for (const e of periodEntries) {
+      if (e.quantity > 0) added += e.quantity;
+      else drawn += e.quantity;
+      if (e.ledgerItemType === "automated_correction") corrections += 1;
+    }
+    return { count: periodEntries.length, added, drawn, net: added + drawn, corrections };
+  }, [closedThrough]);
+
   /** Running balance is computed over the full ledger, oldest first, so it
    * stays correct no matter which rows the filters reveal. */
   const rows = useMemo(() => {
@@ -507,6 +521,29 @@ function LedgerPage() {
                 </div>
               </div>
             )}
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <div className="rounded-xl border border-hair bg-card px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Net RINs this period</p>
+              <p className={`mt-1 text-xl font-bold ${periodStats.net < 0 ? "text-rose" : "text-ink"}`}>{periodStats.net > 0 ? `+${numberFmt.format(periodStats.net)}` : numberFmt.format(periodStats.net)}</p>
+              <p className="mt-0.5 text-xs text-subtle">Since {closedLabel} · {periodStats.count} entries</p>
+            </div>
+            <div className="rounded-xl border border-hair bg-card px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Added this period</p>
+              <p className="mt-1 text-xl font-bold text-ink">+{numberFmt.format(periodStats.added)}</p>
+              <p className="mt-0.5 text-xs text-subtle">RINs credited since close</p>
+            </div>
+            <div className="rounded-xl border border-hair bg-card px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Drawn down this period</p>
+              <p className="mt-1 text-xl font-bold text-rose">{numberFmt.format(periodStats.drawn)}</p>
+              <p className="mt-0.5 text-xs text-subtle">RINs applied since close</p>
+            </div>
+            <div className="rounded-xl border border-hair bg-card px-4 py-3">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Automated corrections</p>
+              <p className="mt-1 text-xl font-bold text-ink">{periodStats.corrections}</p>
+              <p className="mt-0.5 text-xs text-subtle">Rejected buys this period</p>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
