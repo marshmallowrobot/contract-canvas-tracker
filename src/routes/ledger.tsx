@@ -135,6 +135,19 @@ function LedgerPage() {
   const unassignedPool = useMemo(() => unassignedEntries.reduce((sum, e) => sum + e.quantity, 0), [unassignedEntries]);
   const unassignedCount = unassignedEntries.length;
 
+  /** All-time RINs written off by contract terminations. */
+  const writtenOff = useMemo(() => {
+    let sum = 0;
+    let count = 0;
+    for (const e of ledgerItems) {
+      if (e.ledgerItemType === "contract_termination") {
+        sum += Math.abs(e.quantity);
+        count += 1;
+      }
+    }
+    return { sum, count };
+  }, []);
+
   /** Stats for the current open period — entries dated after the last close. */
   const periodStats = useMemo(() => {
     const periodEntries = ledgerItems.filter((e) => e.timestamp.slice(0, 10) > closedThrough);
@@ -408,7 +421,7 @@ function LedgerPage() {
           </DialogContent>
         </Dialog>
 
-        <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Net RINs this period</p>
             <p className={`mt-1 text-xl font-bold ${periodStats.net < 0 ? "text-rose" : "text-ink"}`}>{periodStats.net > 0 ? `+${numberFmt.format(periodStats.net)}` : numberFmt.format(periodStats.net)}</p>
@@ -426,6 +439,11 @@ function LedgerPage() {
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Unassigned RINs</p>
             <p className="mt-1 text-xl font-bold text-ink">{numberFmt.format(unassignedPool)}</p>
             <p className="mt-0.5 text-xs text-subtle">{unassignedCount} entries</p>
+          </div>
+          <div className="rounded-xl border border-hair bg-card px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Unrecoverable RINs</p>
+            <p className="mt-1 text-xl font-bold text-rose">{numberFmt.format(writtenOff.sum)}</p>
+            <p className="mt-0.5 text-xs text-subtle">{writtenOff.count} terminations</p>
           </div>
         </div>
 
