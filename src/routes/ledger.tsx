@@ -285,40 +285,42 @@ function LedgerPage() {
             <h1 className="font-display text-2xl font-bold">RIN Balance Ledger</h1>
             <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} ({EPA_ID})</p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 text-xs text-subtle">
-              <Lock className="size-3.5" />
-              Closed through <span className="font-semibold text-ink">{closedLabel}</span>
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setAdjustContract("unassigned");
-                setAdjustDirection("add");
-                setAdjustQuantity("");
-                setAdjustDate(defaultNextClose(closedThrough, latestEntry));
-                setAdjustReason("");
-                setAdjustOpen(true);
-              }}
-            >
-              <PenLine />
-              Add adjustment
-            </Button>
+          <div className="flex flex-col items-end gap-2">
             <Button variant="outline" size="sm" disabled title="Coming soon">
               <Download />
               Export CSV
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setCloseDate(defaultNextClose(closedThrough, latestEntry));
-                setCloseOpen(true);
-              }}
-            >
-              Close period
-            </Button>
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 text-xs text-subtle">
+                <Lock className="size-3.5" />
+                Closed through <span className="font-semibold text-ink">{closedLabel}</span>
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setAdjustContract("unassigned");
+                  setAdjustDirection("add");
+                  setAdjustQuantity("");
+                  setAdjustDate(defaultNextClose(closedThrough, latestEntry));
+                  setAdjustReason("");
+                  setAdjustOpen(true);
+                }}
+              >
+                <PenLine />
+                Add adjustment
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setCloseDate(defaultNextClose(closedThrough, latestEntry));
+                  setCloseOpen(true);
+                }}
+              >
+                Close period
+              </Button>
+            </div>
           </div>
         </header>
 
