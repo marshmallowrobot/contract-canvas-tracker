@@ -249,6 +249,7 @@ function LedgerPage() {
   const confirmClose = () => {
     if (!closeDateValid) return;
     setClosedThrough(closeDate);
+    setFromDate(dayAfter(closeDate));
     setCloseOpen(false);
     setCloseNotes("");
   };
