@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Lock, MessageSquareText, Split, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -90,15 +90,6 @@ function TypePill({ type }: { type: LedgerItemType }) {
 }
 
 
-function StatCard({ label, value, note, tone }: { label: string; value: string; note: string; tone?: string | undefined }) {
-  return (
-    <div className="rounded-md border border-hair bg-panel px-5 py-4 shadow-sm">
-      <div className="text-xs font-semibold text-subtle">{label}</div>
-      <div className={`mt-1 font-display text-2xl font-bold tabular-nums ${tone ?? "text-ink"}`}>{value}</div>
-      <div className="mt-1 text-xs text-subtle">{note}</div>
-    </div>
-  );
-}
 
 function FilterLabel({ children }: { children: React.ReactNode }) {
   return <span className="text-[11px] font-bold uppercase text-ink">{children}</span>;
@@ -207,13 +198,6 @@ function LedgerPage() {
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
 
-  /** KPI boxes are anchored to the last closed period, so filters never move them. */
-  const closedRows = rows.filter((r) => r.timestamp <= closedThrough);
-  const closedAdded = closedRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
-  const closedDrawn = closedRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
-  const closedPosition = closedAdded - closedDrawn;
-  const closedUnassigned = closedRows.filter((r) => r.ledgerItemType === "unreconciled_buy");
-  const closedUnassignedRins = closedUnassigned.reduce((s, r) => s + r.quantity, 0);
   const closedLabel = formatCloseDate(closedThrough);
   const latestEntry = rows[rows.length - 1]?.timestamp ?? closedThrough;
 
@@ -268,18 +252,6 @@ function LedgerPage() {
             </Button>
           </div>
         </header>
-
-        <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label={`Ledger summary as of ${closedLabel}`}>
-          <StatCard label="Closing RIN position" value={numberFmt.format(closedPosition)} note={`As of ${closedLabel} close`} tone={closedPosition >= 0 ? "text-ink" : "text-rose"} />
-          <StatCard label="Added through close" value={`+${numberFmt.format(closedAdded)}`} note={`${closedRows.filter((r) => r.quantity > 0).length} entries through ${closedLabel}`} />
-          <StatCard label="Drawn down through close" value={numberFmt.format(-closedDrawn)} note={`${closedRows.filter((r) => r.quantity < 0).length} entries through ${closedLabel}`} tone="text-rose" />
-          <StatCard
-            label="Unassigned pool"
-            value={numberFmt.format(closedUnassignedRins)}
-            note={`${closedUnassigned.length} unreconciled ${closedUnassigned.length === 1 ? "buy" : "buys"} as of close`}
-            tone="text-primary"
-          />
-        </section>
 
         <Dialog open={closeOpen} onOpenChange={setCloseOpen}>
           <DialogContent>
@@ -467,12 +439,26 @@ function LedgerPage() {
                 </tr>
               </thead>
               <tbody>
-                {pageRows.map((row) => {
+                {pageRows.map((row, rowIndex) => {
                   const dealNumber = row.buyContractId
                     ? getContract(row.buyContractId)?.dealNumber ?? null
                     : null;
+                  const rowClosed = row.timestamp <= closedThrough;
+                  const prevClosed = rowIndex > 0 ? pageRows[rowIndex - 1]!.timestamp <= closedThrough : rowClosed;
+                  const crossesClose = rowIndex > 0 && prevClosed !== rowClosed;
                   return (
-                  <tr key={row.ledgerItemId} className="border-b border-hair last:border-0 hover:bg-table-head">
+                  <Fragment key={row.ledgerItemId}>
+                  {crossesClose && (
+                    <tr aria-hidden="true">
+                      <td colSpan={showBalance ? 7 : 6} className="p-0">
+                        <div className="flex items-center gap-3 border-y-2 border-ink/60 bg-table-head px-5 py-1.5">
+                          <Lock className="size-3.5 text-subtle" />
+                          <span className="text-[11px] font-bold uppercase text-subtle">Period closed through {closedLabel}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  <tr className="border-b border-hair last:border-0 hover:bg-table-head">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
                         <div className="text-xs font-semibold">{formatLedgerDate(row.timestamp)}</div>
@@ -529,6 +515,7 @@ function LedgerPage() {
                       </td>
                     )}
                   </tr>
+                  </Fragment>
                   );
                 })}
               </tbody>
