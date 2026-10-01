@@ -248,23 +248,6 @@ function LedgerPage() {
               <Download />
               Export CSV
             </Button>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setAdjustContract("unassigned");
-                  setAdjustDirection("add");
-                  setAdjustQuantity("");
-                  setAdjustDate(latestEntry);
-                  setAdjustReason("");
-                  setAdjustOpen(true);
-                }}
-              >
-                <PenLine />
-                Add adjustment
-              </Button>
-            </div>
           </div>
         </header>
 
