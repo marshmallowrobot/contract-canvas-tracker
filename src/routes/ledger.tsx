@@ -124,18 +124,22 @@ function LedgerPage() {
   const [adjustDate, setAdjustDate] = useState("");
   const [adjustReason, setAdjustReason] = useState("");
 
+  /** Current Unassigned pool — all-time balance of buys posted without a contract. */
+  const unassignedPool = useMemo(
+    () => ledgerItems.filter((e) => e.buyContractId === null).reduce((sum, e) => sum + e.quantity, 0),
+    [],
+  );
+
   /** Stats for the current open period — entries dated after the last close. */
   const periodStats = useMemo(() => {
     const periodEntries = ledgerItems.filter((e) => e.timestamp.slice(0, 10) > closedThrough);
     let added = 0;
     let drawn = 0;
-    let corrections = 0;
     for (const e of periodEntries) {
       if (e.quantity > 0) added += e.quantity;
       else drawn += e.quantity;
-      if (e.ledgerItemType === "automated_correction") corrections += 1;
     }
-    return { count: periodEntries.length, added, drawn, net: added + drawn, corrections };
+    return { count: periodEntries.length, added, drawn, net: added + drawn };
   }, [closedThrough]);
 
   /** Running balance is computed over the full ledger, oldest first, so it
@@ -415,9 +419,9 @@ function LedgerPage() {
             <p className="mt-0.5 text-xs text-subtle">RINs applied since close</p>
           </div>
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Automated corrections</p>
-            <p className="mt-1 text-xl font-bold text-ink">{periodStats.corrections}</p>
-            <p className="mt-0.5 text-xs text-subtle">Rejected buys this period</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Unassigned pool</p>
+            <p className="mt-1 text-xl font-bold text-ink">{numberFmt.format(unassignedPool)}</p>
+            <p className="mt-0.5 text-xs text-subtle">Unreconciled buys awaiting a contract</p>
           </div>
         </div>
 
