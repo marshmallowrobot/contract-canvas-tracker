@@ -112,7 +112,7 @@ function LedgerPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [transactionFilter, setTransactionFilter] = useState("");
   const [ledgerItemFilter, setLedgerItemFilter] = useState("");
-  const [fromDate, setFromDate] = useState("");
+  const [fromDate, setFromDate] = useState(() => dayAfter(INITIAL_CLOSED_THROUGH));
   const [toDate, setToDate] = useState("");
   const [dateSort, setDateSort] = useState<SortDirection>("desc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
