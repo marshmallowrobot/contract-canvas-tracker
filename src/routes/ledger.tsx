@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, MessageSquareText, Split, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowUp, ChevronLeft, ChevronRight, Funnel, Lock, MessageSquareText, Split, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   Select,
@@ -39,6 +41,20 @@ export const Route = createFileRoute("/ledger")({
 });
 
 const PAGE_SIZE_OPTIONS = [50, 100] as const;
+
+const INITIAL_CLOSED_THROUGH = "2025-12-31";
+
+function formatCloseDate(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y!, m! - 1, d!)).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+}
+
+/** Suggest the end of the month after the current close, capped at the latest entry. */
+function defaultNextClose(closed: string, latest: string) {
+  const [y, m] = closed.split("-").map(Number);
+  const end = new Date(Date.UTC(y!, m! + 1, 0)).toISOString().slice(0, 10);
+  return end > latest ? latest : end;
+}
 
 type SortDirection = "asc" | "desc";
 
@@ -104,6 +120,11 @@ function LedgerPage() {
   const [dateSort, setDateSort] = useState<SortDirection>("desc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
   const [page, setPage] = useState(1);
+  // Prototype only: closing is held in page state and resets on reload.
+  const [closedThrough, setClosedThrough] = useState(INITIAL_CLOSED_THROUGH);
+  const [closeOpen, setCloseOpen] = useState(false);
+  const [closeDate, setCloseDate] = useState("");
+  const [closeNotes, setCloseNotes] = useState("");
 
   /** Running balance is computed over the full ledger, oldest first, so it
    * stays correct no matter which rows the filters reveal. */
@@ -183,11 +204,15 @@ function LedgerPage() {
     .slice(startIndex, startIndex + pageSize);
   const endIndex = Math.min(startIndex + pageRows.length, visibleRows.length);
 
-  const correctionCount = visibleRows.filter((r) => r.ledgerItemType === "automated_correction").length;
-  const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
-  const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
-  const net = credits - debits;
-  const netText = net > 0 ? `+${numberFmt.format(net)}` : numberFmt.format(net);
+  /** KPI boxes are anchored to the last closed period, so filters never move them. */
+  const closedRows = rows.filter((r) => r.timestamp <= closedThrough);
+  const closedAdded = closedRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
+  const closedDrawn = closedRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
+  const closedPosition = closedAdded - closedDrawn;
+  const closedUnassigned = closedRows.filter((r) => r.ledgerItemType === "unreconciled_buy");
+  const closedUnassignedRins = closedUnassigned.reduce((s, r) => s + r.quantity, 0);
+  const closedLabel = formatCloseDate(closedThrough);
+  const latestEntry = rows[rows.length - 1]?.timestamp ?? closedThrough;
 
   /** Balance column: shown unfiltered (client-wide) or when scoped to a
    * contract/deal (that contract's balance); hidden for any other filter. */
@@ -203,6 +228,14 @@ function LedgerPage() {
     setToDate("");
   };
 
+  const closeDateValid = closeDate > closedThrough && closeDate <= latestEntry;
+  const confirmClose = () => {
+    if (!closeDateValid) return;
+    setClosedThrough(closeDate);
+    setCloseOpen(false);
+    setCloseNotes("");
+  };
+
   return (
     <div className="min-h-screen bg-canvas font-sans text-ink antialiased">
       <main className="mx-auto max-w-[1440px] px-4 py-7 sm:px-6 lg:px-8">
@@ -210,27 +243,74 @@ function LedgerPage() {
           <Link to="/"><ArrowLeft />Buy Contract Balances</Link>
         </Button>
 
-        <header className="mb-6">
-          <h1 className="font-display text-2xl font-bold">RIN Balance Ledger</h1>
-          <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} ({EPA_ID})</p>
+        <header className="mb-6 flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-bold">RIN Balance Ledger</h1>
+            <p className="mt-1 text-sm text-subtle">{CLIENT_NAME} ({EPA_ID})</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 text-xs text-subtle">
+              <Lock className="size-3.5" />
+              Books closed through <span className="font-semibold text-ink">{closedLabel}</span>
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setCloseDate(defaultNextClose(closedThrough, latestEntry));
+                setCloseOpen(true);
+              }}
+            >
+              Close period
+            </Button>
+          </div>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Ledger summary for current view">
+        <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label={`Ledger summary as of ${closedLabel}`}>
+          <StatCard label="Closing RIN position" value={numberFmt.format(closedPosition)} note={`As of ${closedLabel} close`} tone={closedPosition >= 0 ? "text-ink" : "text-rose"} />
+          <StatCard label="Added through close" value={`+${numberFmt.format(closedAdded)}`} note={`${closedRows.filter((r) => r.quantity > 0).length} entries through ${closedLabel}`} />
+          <StatCard label="Drawn down through close" value={numberFmt.format(-closedDrawn)} note={`${closedRows.filter((r) => r.quantity < 0).length} entries through ${closedLabel}`} tone="text-rose" />
           <StatCard
-            label="Net RINs in view"
-            value={netText}
-            note={visibleRows.length === 0 ? "No entries match the filters" : `Net of ${visibleRows.length} ${visibleRows.length === 1 ? "entry" : "entries"}`}
-            tone={net >= 0 ? "text-ink" : "text-rose"}
-          />
-          <StatCard label="Added" value={`+${numberFmt.format(credits)}`} note="RINs added by the entries in view" />
-          <StatCard label="Drawn down" value={numberFmt.format(-debits)} note="RINs drawn by the entries in view" tone="text-rose" />
-          <StatCard
-            label="Automated corrections"
-            value={numberFmt.format(correctionCount)}
-            note={correctionCount > 0 ? "Rejected buys with quantity restored" : "None in view"}
-            tone={correctionCount > 0 ? "text-amber" : undefined}
+            label="Unassigned pool"
+            value={numberFmt.format(closedUnassignedRins)}
+            note={`${closedUnassigned.length} unreconciled ${closedUnassigned.length === 1 ? "buy" : "buys"} as of close`}
+            tone="text-primary"
           />
         </section>
+
+        <Dialog open={closeOpen} onOpenChange={setCloseOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Close period</DialogTitle>
+              <DialogDescription>
+                Entries dated on or before the close date are locked. Corrections after closing post as new entries in the open period.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="rounded-md bg-table-head px-3 py-2 text-xs text-subtle">
+                Currently closed through <span className="font-semibold text-ink">{closedLabel}</span>
+              </div>
+              <label className="block">
+                <FilterLabel>Close through</FilterLabel>
+                <input type="date" className={inputClass} value={closeDate} min={closedThrough} max={latestEntry} onChange={(e) => setCloseDate(e.target.value)} />
+                {!closeDateValid && closeDate && (
+                  <span className="mt-1 block text-xs text-rose">Choose a date after {closedLabel} and no later than {formatCloseDate(latestEntry)}.</span>
+                )}
+              </label>
+              <label className="block">
+                <FilterLabel>Notes</FilterLabel>
+                <Textarea className="mt-1" rows={3} value={closeNotes} onChange={(e) => setCloseNotes(e.target.value)} placeholder="Optional" />
+              </label>
+            </div>
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setCloseOpen(false)}>Cancel</Button>
+              <Button onClick={confirmClose} disabled={!closeDateValid}>
+                <Lock />
+                Close through {closeDateValid ? formatCloseDate(closeDate) : "…"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
 
         <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
