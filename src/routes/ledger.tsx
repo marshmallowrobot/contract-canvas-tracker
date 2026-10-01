@@ -591,9 +591,10 @@ function LedgerPage() {
                     {field("Buy contract", r.buyContractId ? (
                       <Link to="/contracts/$contractId" params={{ contractId: r.buyContractId }} className="font-semibold text-primary hover:underline">{r.buyContractId}</Link>
                     ) : "Unassigned")}
-                    {field("Deal number", deal)}
                     {field("Source system ID", r.sourceSystemContractId)}
-                    {field("Transaction ID", r.transactionId)}
+                    {field("Transaction ID", r.transactionId ? (
+                      <span className="cursor-pointer font-semibold text-primary hover:underline">{r.transactionId}</span>
+                    ) : null)}
                     {field("Created by", r.createdBy)}
                     {field("Fuel", r.fuelCode ? (
                       <span className="flex items-center gap-2">
