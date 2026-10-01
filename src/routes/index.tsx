@@ -161,7 +161,6 @@ function ContractBalances() {
             <p className="mt-1 text-sm text-subtle">RIN obligations and applied buy transactions</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild><Link to="/reconciliation">RIN Buy Reconciliation</Link></Button>
             <Button variant="outline" size="sm" disabled>
               Import Buy Contracts
             </Button>
