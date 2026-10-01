@@ -142,7 +142,7 @@ function contractEntries(): Draft[] {
       out.push({ ...base, ...noFuel, timestamp: addDays(last, 5), ledgerItemType: "contract_cancellation", quantity: -starting, transactionId: null, createdBy: user(1) });
     }
     if (c.contractStatus === "terminated" && c.writtenDownRins) {
-      out.push({ ...base, ...noFuel, timestamp: addDays(last, 7), ledgerItemType: "contract_termination", quantity: -c.writtenDownRins, transactionId: null, createdBy: user(1) });
+      out.push({ ...base, ...noFuel, timestamp: addDays(last, 7), ledgerItemType: "contract_termination", quantity: -c.writtenDownRins, transactionId: null, createdBy: user(1), notes: c.terminationNote ?? `Contract terminated; remaining ${c.writtenDownRins.toLocaleString("en-US")} RINs written down.` });
     }
   });
   return out;

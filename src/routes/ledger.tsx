@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   Select,
   SelectContent,
@@ -445,17 +444,9 @@ function LedgerPage() {
                       <div className="flex items-center gap-1.5">
                         <div className="text-xs font-semibold">{formatLedgerDate(row.timestamp)}</div>
                         {row.notes && (
-                          <HoverCard>
-                            <HoverCardTrigger asChild>
-                              <button type="button" aria-label={`Note for ${row.ledgerItemId}`} className="text-subtle hover:text-primary">
-                                <MessageSquareText className="size-3.5" />
-                              </button>
-                            </HoverCardTrigger>
-                            <HoverCardContent align="start" side="top" className="w-72 max-w-[280px] border-hair bg-panel p-3">
-                              <div className="text-[10px] font-bold uppercase text-subtle">Note</div>
-                              <div className="mt-1 text-xs text-ink">{row.notes}</div>
-                            </HoverCardContent>
-                          </HoverCard>
+                          <span className="inline-flex text-subtle" aria-label={`Has note (${row.ledgerItemId})`}>
+                            <MessageSquareText className="size-3.5" />
+                          </span>
                         )}
                       </div>
                       <div className="mt-0.5 text-[11px] text-subtle">{row.ledgerItemId}</div>
