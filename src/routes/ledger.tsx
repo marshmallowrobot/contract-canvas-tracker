@@ -130,23 +130,8 @@ function LedgerPage() {
   const [adjustDate, setAdjustDate] = useState("");
   const [adjustReason, setAdjustReason] = useState("");
 
-  /** Current Unassigned pool — all-time balance of buys posted without a contract. */
+  /** Unassigned pool — buys posted without a contract. */
   const unassignedEntries = useMemo(() => ledgerItems.filter((e) => e.buyContractId === null), []);
-  const unassignedPool = useMemo(() => unassignedEntries.reduce((sum, e) => sum + e.quantity, 0), [unassignedEntries]);
-  const unassignedCount = unassignedEntries.length;
-
-  /** All-time RINs written off by contract terminations. */
-  const writtenOff = useMemo(() => {
-    let sum = 0;
-    let count = 0;
-    for (const e of ledgerItems) {
-      if (e.ledgerItemType === "contract_termination") {
-        sum += Math.abs(e.quantity);
-        count += 1;
-      }
-    }
-    return { sum, count };
-  }, []);
 
   /** Stats for the current open period — entries dated after the last close. */
   const periodStats = useMemo(() => {
@@ -157,7 +142,25 @@ function LedgerPage() {
       if (e.quantity > 0) added += e.quantity;
       else drawn += e.quantity;
     }
-    return { count: periodEntries.length, added, drawn, net: added + drawn };
+    const unassigned = periodEntries.filter((e) => e.buyContractId === null);
+    let writtenOff = 0;
+    let terminations = 0;
+    for (const e of periodEntries) {
+      if (e.ledgerItemType === "contract_termination") {
+        writtenOff += Math.abs(e.quantity);
+        terminations += 1;
+      }
+    }
+    return {
+      count: periodEntries.length,
+      added,
+      drawn,
+      net: added + drawn,
+      unassignedPool: unassigned.reduce((s, e) => s + e.quantity, 0),
+      unassignedCount: unassigned.length,
+      writtenOff,
+      terminations,
+    };
   }, [closedThrough]);
 
   /** Running balance is computed over the full ledger, oldest first, so it
@@ -437,13 +440,13 @@ function LedgerPage() {
           </div>
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Unassigned RINs</p>
-            <p className="mt-1 text-xl font-bold text-ink">{numberFmt.format(unassignedPool)}</p>
-            <p className="mt-0.5 text-xs text-subtle">{unassignedCount} entries</p>
+            <p className="mt-1 text-xl font-bold text-ink">{numberFmt.format(periodStats.unassignedPool)}</p>
+            <p className="mt-0.5 text-xs text-subtle">{periodStats.unassignedCount} entries</p>
           </div>
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Written Off RINs</p>
-            <p className="mt-1 text-xl font-bold text-rose">{numberFmt.format(writtenOff.sum)}</p>
-            <p className="mt-0.5 text-xs text-subtle">{writtenOff.count} terminations</p>
+            <p className="mt-1 text-xl font-bold text-rose">{numberFmt.format(periodStats.writtenOff)}</p>
+            <p className="mt-0.5 text-xs text-subtle">{periodStats.terminations} terminations</p>
           </div>
         </div>
 
