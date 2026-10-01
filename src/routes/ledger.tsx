@@ -140,7 +140,7 @@ function LedgerPage() {
     let sum = 0;
     let count = 0;
     for (const e of ledgerItems) {
-      if (e.ledgerItemType === "Contract Termination") {
+      if (e.ledgerItemType === "contract_termination") {
         sum += Math.abs(e.quantity);
         count += 1;
       }
