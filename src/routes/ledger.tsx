@@ -204,6 +204,9 @@ function LedgerPage() {
     .slice(startIndex, startIndex + pageSize);
   const endIndex = Math.min(startIndex + pageRows.length, visibleRows.length);
 
+  const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
+  const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
+
   /** KPI boxes are anchored to the last closed period, so filters never move them. */
   const closedRows = rows.filter((r) => r.timestamp <= closedThrough);
   const closedAdded = closedRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
