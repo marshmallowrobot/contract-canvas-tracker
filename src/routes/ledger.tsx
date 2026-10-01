@@ -440,6 +440,11 @@ function LedgerPage() {
             <p className="mt-1 text-xl font-bold text-ink">{numberFmt.format(unassignedPool)}</p>
             <p className="mt-0.5 text-xs text-subtle">{unassignedCount} entries</p>
           </div>
+          <div className="rounded-xl border border-hair bg-card px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Unrecoverable RINs</p>
+            <p className="mt-1 text-xl font-bold text-rose">{numberFmt.format(writtenOff.sum)}</p>
+            <p className="mt-0.5 text-xs text-subtle">{writtenOff.count} terminations</p>
+          </div>
         </div>
 
         <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
