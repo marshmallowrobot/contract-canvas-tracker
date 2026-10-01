@@ -90,15 +90,6 @@ function TypePill({ type }: { type: LedgerItemType }) {
 }
 
 
-function StatCard({ label, value, note, tone }: { label: string; value: string; note: string; tone?: string | undefined }) {
-  return (
-    <div className="rounded-md border border-hair bg-panel px-5 py-4 shadow-sm">
-      <div className="text-xs font-semibold text-subtle">{label}</div>
-      <div className={`mt-1 font-display text-2xl font-bold tabular-nums ${tone ?? "text-ink"}`}>{value}</div>
-      <div className="mt-1 text-xs text-subtle">{note}</div>
-    </div>
-  );
-}
 
 function FilterLabel({ children }: { children: React.ReactNode }) {
   return <span className="text-[11px] font-bold uppercase text-ink">{children}</span>;
@@ -448,12 +439,26 @@ function LedgerPage() {
                 </tr>
               </thead>
               <tbody>
-                {pageRows.map((row) => {
+                {pageRows.map((row, rowIndex) => {
                   const dealNumber = row.buyContractId
                     ? getContract(row.buyContractId)?.dealNumber ?? null
                     : null;
+                  const rowClosed = row.timestamp <= closedThrough;
+                  const prevClosed = rowIndex > 0 ? pageRows[rowIndex - 1]!.timestamp <= closedThrough : rowClosed;
+                  const crossesClose = rowIndex > 0 && prevClosed !== rowClosed;
                   return (
-                  <tr key={row.ledgerItemId} className="border-b border-hair last:border-0 hover:bg-table-head">
+                  <Fragment key={row.ledgerItemId}>
+                  {crossesClose && (
+                    <tr aria-hidden="true">
+                      <td colSpan={showBalance ? 7 : 6} className="p-0">
+                        <div className="flex items-center gap-3 border-y-2 border-ink/60 bg-table-head px-5 py-1.5">
+                          <Lock className="size-3.5 text-subtle" />
+                          <span className="text-[11px] font-bold uppercase text-subtle">Period closed through {closedLabel}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  <tr className="border-b border-hair last:border-0 hover:bg-table-head">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
                         <div className="text-xs font-semibold">{formatLedgerDate(row.timestamp)}</div>
