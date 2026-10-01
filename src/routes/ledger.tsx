@@ -398,6 +398,29 @@ function LedgerPage() {
           </DialogContent>
         </Dialog>
 
+        <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="rounded-xl border border-hair bg-card px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Net RINs this period</p>
+            <p className={`mt-1 text-xl font-bold ${periodStats.net < 0 ? "text-rose" : "text-ink"}`}>{periodStats.net > 0 ? `+${numberFmt.format(periodStats.net)}` : numberFmt.format(periodStats.net)}</p>
+            <p className="mt-0.5 text-xs text-subtle">Since {closedLabel} · {periodStats.count} entries</p>
+          </div>
+          <div className="rounded-xl border border-hair bg-card px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Added this period</p>
+            <p className="mt-1 text-xl font-bold text-ink">+{numberFmt.format(periodStats.added)}</p>
+            <p className="mt-0.5 text-xs text-subtle">RINs credited since close</p>
+          </div>
+          <div className="rounded-xl border border-hair bg-card px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Drawn down this period</p>
+            <p className="mt-1 text-xl font-bold text-rose">{numberFmt.format(periodStats.drawn)}</p>
+            <p className="mt-0.5 text-xs text-subtle">RINs applied since close</p>
+          </div>
+          <div className="rounded-xl border border-hair bg-card px-4 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Automated corrections</p>
+            <p className="mt-1 text-xl font-bold text-ink">{periodStats.corrections}</p>
+            <p className="mt-0.5 text-xs text-subtle">Rejected buys this period</p>
+          </div>
+        </div>
+
         <section className="overflow-hidden rounded-md border border-hair bg-panel shadow-sm">
           <div className="border-b border-hair px-5 py-3">
             <div className="flex items-center justify-between gap-3">
@@ -523,28 +546,6 @@ function LedgerPage() {
             )}
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <div className="rounded-xl border border-hair bg-card px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Net RINs this period</p>
-              <p className={`mt-1 text-xl font-bold ${periodStats.net < 0 ? "text-rose" : "text-ink"}`}>{periodStats.net > 0 ? `+${numberFmt.format(periodStats.net)}` : numberFmt.format(periodStats.net)}</p>
-              <p className="mt-0.5 text-xs text-subtle">Since {closedLabel} · {periodStats.count} entries</p>
-            </div>
-            <div className="rounded-xl border border-hair bg-card px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Added this period</p>
-              <p className="mt-1 text-xl font-bold text-ink">+{numberFmt.format(periodStats.added)}</p>
-              <p className="mt-0.5 text-xs text-subtle">RINs credited since close</p>
-            </div>
-            <div className="rounded-xl border border-hair bg-card px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Drawn down this period</p>
-              <p className="mt-1 text-xl font-bold text-rose">{numberFmt.format(periodStats.drawn)}</p>
-              <p className="mt-0.5 text-xs text-subtle">RINs applied since close</p>
-            </div>
-            <div className="rounded-xl border border-hair bg-card px-4 py-3">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Automated corrections</p>
-              <p className="mt-1 text-xl font-bold text-ink">{periodStats.corrections}</p>
-              <p className="mt-0.5 text-xs text-subtle">Rejected buys this period</p>
-            </div>
-          </div>
 
           <div className="overflow-x-auto">
 
