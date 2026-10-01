@@ -217,9 +217,9 @@ function LedgerPage() {
 
         <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Ledger summary for current view">
           <StatCard
-            label="Net movement in view"
+            label="Net RINs in view"
             value={netText}
-            note={visibleRows.length === 0 ? "No entries match the filters" : `Across ${visibleRows.length} ${visibleRows.length === 1 ? "entry" : "entries"}`}
+            note={visibleRows.length === 0 ? "No entries match the filters" : `Net of ${visibleRows.length} ${visibleRows.length === 1 ? "entry" : "entries"}`}
             tone={net >= 0 ? "text-ink" : "text-rose"}
           />
           <StatCard label="Added" value={`+${numberFmt.format(credits)}`} note="RINs added by the entries in view" />
