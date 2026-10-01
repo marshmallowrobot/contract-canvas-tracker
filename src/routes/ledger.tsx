@@ -125,10 +125,9 @@ function LedgerPage() {
   const [adjustReason, setAdjustReason] = useState("");
 
   /** Current Unassigned pool — all-time balance of buys posted without a contract. */
-  const unassignedPool = useMemo(
-    () => ledgerItems.filter((e) => e.buyContractId === null).reduce((sum, e) => sum + e.quantity, 0),
-    [],
-  );
+  const unassignedEntries = useMemo(() => ledgerItems.filter((e) => e.buyContractId === null), []);
+  const unassignedPool = useMemo(() => unassignedEntries.reduce((sum, e) => sum + e.quantity, 0), [unassignedEntries]);
+  const unassignedCount = unassignedEntries.length;
 
   /** Stats for the current open period — entries dated after the last close. */
   const periodStats = useMemo(() => {
@@ -419,9 +418,9 @@ function LedgerPage() {
             <p className="mt-0.5 text-xs text-subtle">RINs applied since close</p>
           </div>
           <div className="rounded-xl border border-hair bg-card px-4 py-3">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Unassigned pool</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-subtle">Unassigned RINs</p>
             <p className="mt-1 text-xl font-bold text-ink">{numberFmt.format(unassignedPool)}</p>
-            <p className="mt-0.5 text-xs text-subtle">Unreconciled buys awaiting a contract</p>
+            <p className="mt-0.5 text-xs text-subtle">{unassignedCount} entries</p>
           </div>
         </div>
 
