@@ -49,6 +49,12 @@ function formatCloseDate(iso: string) {
   return new Date(Date.UTC(y!, m! - 1, d!)).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 }
 
+/** The day after a close date — the start of the open period. */
+function dayAfter(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y!, m! - 1, d! + 1)).toISOString().slice(0, 10);
+}
+
 /** Suggest the end of the month after the current close, capped at the latest entry. */
 function defaultNextClose(closed: string, latest: string) {
   const [y, m] = closed.split("-").map(Number);
@@ -106,7 +112,7 @@ function LedgerPage() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [transactionFilter, setTransactionFilter] = useState("");
   const [ledgerItemFilter, setLedgerItemFilter] = useState("");
-  const [fromDate, setFromDate] = useState("");
+  const [fromDate, setFromDate] = useState(() => dayAfter(INITIAL_CLOSED_THROUGH));
   const [toDate, setToDate] = useState("");
   const [dateSort, setDateSort] = useState<SortDirection>("desc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
@@ -202,7 +208,7 @@ function LedgerPage() {
     (typeFilter !== "all" ? 1 : 0) +
     (transactionFilter.trim() ? 1 : 0) +
     (ledgerItemFilter.trim() ? 1 : 0) +
-    (fromDate ? 1 : 0) +
+    (fromDate && fromDate !== dayAfter(closedThrough) ? 1 : 0) +
     (toDate ? 1 : 0);
 
   useEffect(() => {
@@ -235,7 +241,7 @@ function LedgerPage() {
     setTypeFilter("all");
     setTransactionFilter("");
     setLedgerItemFilter("");
-    setFromDate("");
+    setFromDate(dayAfter(closedThrough));
     setToDate("");
   };
 
@@ -243,6 +249,7 @@ function LedgerPage() {
   const confirmClose = () => {
     if (!closeDateValid) return;
     setClosedThrough(closeDate);
+    setFromDate(dayAfter(closeDate));
     setCloseOpen(false);
     setCloseNotes("");
   };
@@ -526,6 +533,7 @@ function LedgerPage() {
                       aria-label="Filter from date"
                       className={inputClass}
                     />
+                    <span className="mt-1 block text-xs text-subtle">Defaults to the open period — clear to search all history.</span>
                   </label>
                   <label className="block">
                     <FilterLabel>To date</FilterLabel>
