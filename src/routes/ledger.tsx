@@ -258,10 +258,6 @@ function LedgerPage() {
               Export CSV
             </Button>
             <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 text-xs text-subtle">
-                <Lock className="size-3.5" />
-                Closed through <span className="font-semibold text-ink">{closedLabel}</span>
-              </span>
               <Button
                 variant="outline"
                 size="sm"
@@ -269,23 +265,13 @@ function LedgerPage() {
                   setAdjustContract("unassigned");
                   setAdjustDirection("add");
                   setAdjustQuantity("");
-                  setAdjustDate(defaultNextClose(closedThrough, latestEntry));
+                  setAdjustDate(latestEntry);
                   setAdjustReason("");
                   setAdjustOpen(true);
                 }}
               >
                 <PenLine />
                 Add adjustment
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setCloseDate(defaultNextClose(closedThrough, latestEntry));
-                  setCloseOpen(true);
-                }}
-              >
-                Close period
               </Button>
             </div>
           </div>
