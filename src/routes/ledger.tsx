@@ -277,40 +277,6 @@ function LedgerPage() {
           </div>
         </header>
 
-        <Dialog open={closeOpen} onOpenChange={setCloseOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Close period</DialogTitle>
-              <DialogDescription>
-                Entries dated on or before the close date are locked. Corrections after closing post as new entries in the open period.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="rounded-md bg-table-head px-3 py-2 text-xs text-subtle">
-                Currently closed through <span className="font-semibold text-ink">{closedLabel}</span>
-              </div>
-              <label className="block">
-                <FilterLabel>Close through</FilterLabel>
-                <input type="date" className={inputClass} value={closeDate} min={closedThrough} max={latestEntry} onChange={(e) => setCloseDate(e.target.value)} />
-                {!closeDateValid && closeDate && (
-                  <span className="mt-1 block text-xs text-rose">Choose a date after {closedLabel} and no later than {formatCloseDate(latestEntry)}.</span>
-                )}
-              </label>
-              <label className="block">
-                <FilterLabel>Notes</FilterLabel>
-                <Textarea className="mt-1" rows={3} value={closeNotes} onChange={(e) => setCloseNotes(e.target.value)} placeholder="Optional" />
-              </label>
-            </div>
-            <DialogFooter>
-              <Button variant="ghost" onClick={() => setCloseOpen(false)}>Cancel</Button>
-              <Button onClick={confirmClose} disabled={!closeDateValid}>
-                <Lock />
-                Close through {closeDateValid ? formatCloseDate(closeDate) : "…"}
-              </Button>
-            </DialogFooter>
-            <p className="text-center text-xs text-subtle">Coming soon — closing the period isn't wired up in this prototype yet.</p>
-          </DialogContent>
-        </Dialog>
 
         <Dialog open={adjustOpen} onOpenChange={setAdjustOpen}>
           <DialogContent>
@@ -365,10 +331,7 @@ function LedgerPage() {
               </div>
               <label className="block">
                 <FilterLabel>Date</FilterLabel>
-                <input type="date" className={inputClass} value={adjustDate} min={closedThrough} max={latestEntry} onChange={(e) => setAdjustDate(e.target.value)} />
-                <span className="mt-1 block text-xs text-subtle">
-                  Adjustments post to the open period only — after {closedLabel}.
-                </span>
+                <input type="date" className={inputClass} value={adjustDate} max={latestEntry} onChange={(e) => setAdjustDate(e.target.value)} />
               </label>
               <label className="block">
                 <FilterLabel>Reason</FilterLabel>
@@ -428,14 +391,14 @@ function LedgerPage() {
                   aria-expanded={filtersOpen}
                 >
                   <Funnel className="size-4" />
-                  {displayFilterCount > 0 ? `${displayFilterCount} ${displayFilterCount === 1 ? "filter" : "filters"}` : "Filters"}
+                  {activeFilterCount > 0 ? `${activeFilterCount} ${activeFilterCount === 1 ? "filter" : "filters"}` : "Filters"}
                 </Button>
                 <span className="h-4 w-px bg-hair" aria-hidden />
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
-                  disabled={displayFilterCount === 0}
+                  disabled={activeFilterCount === 0}
                   className="text-subtle disabled:opacity-50"
                 >
                   Clear all
@@ -516,7 +479,6 @@ function LedgerPage() {
                       aria-label="Filter from date"
                       className={inputClass}
                     />
-                    <span className="mt-1 block text-xs text-subtle">Defaults to the open period — clear to search all history.</span>
                   </label>
                   <label className="block">
                     <FilterLabel>To date</FilterLabel>
@@ -531,7 +493,7 @@ function LedgerPage() {
                 </div>
                 <div className="mt-4 flex justify-end">
                   <Button size="sm" onClick={() => setFiltersOpen(false)}>
-                    Apply filters{displayFilterCount > 0 ? ` (${displayFilterCount})` : ""}
+                    Apply filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
                   </Button>
                 </div>
               </div>
