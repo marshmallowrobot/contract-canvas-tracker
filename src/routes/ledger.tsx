@@ -305,6 +305,10 @@ function LedgerPage() {
               <PenLine />
               Add adjustment
             </Button>
+            <Button variant="outline" size="sm" disabled title="Coming soon">
+              <Download />
+              Export CSV
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -461,10 +465,6 @@ function LedgerPage() {
                 <span className="text-xs text-subtle">{visibleRows.length} results</span>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" disabled title="Coming soon">
-                  <Download />
-                  Export CSV
-                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
