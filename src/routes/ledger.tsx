@@ -568,7 +568,6 @@ function LedgerPage() {
               const related = r.transactionId
                 ? ledgerItems.filter((e) => e.transactionId === r.transactionId && e.ledgerItemId !== r.ledgerItemId)
                 : [];
-              const deal = r.buyContractId ? getContract(r.buyContractId)?.dealNumber ?? null : null;
               const field = (label: string, value: React.ReactNode) => (
                 <div>
                   <dt className="text-[10px] font-bold uppercase text-subtle">{label}</dt>
@@ -591,9 +590,10 @@ function LedgerPage() {
                     {field("Buy contract", r.buyContractId ? (
                       <Link to="/contracts/$contractId" params={{ contractId: r.buyContractId }} className="font-semibold text-primary hover:underline">{r.buyContractId}</Link>
                     ) : "Unassigned")}
-                    {field("Deal number", deal)}
                     {field("Source system ID", r.sourceSystemContractId)}
-                    {field("Transaction ID", r.transactionId)}
+                    {field("Transaction ID", r.transactionId ? (
+                      <span className="cursor-pointer font-semibold text-primary hover:underline">{r.transactionId}</span>
+                    ) : null)}
                     {field("Created by", r.createdBy)}
                     {field("Fuel", r.fuelCode ? (
                       <span className="flex items-center gap-2">
