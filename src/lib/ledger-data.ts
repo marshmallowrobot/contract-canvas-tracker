@@ -18,6 +18,8 @@ export type LedgerItem = {
   ledgerItemId: string;
   /** ISO date (YYYY-MM-DD) of the event. */
   timestamp: string;
+  /** Time of day (HH:MM, 24h) the entry was posted. */
+  postedTime: string;
   clientId: string;
   /** Internal buy contract id. null = unassigned buy. */
   buyContractId: string | null;
@@ -99,7 +101,7 @@ const OPENED_WITHOUT_TX: Record<string, string> = {
   "CT-4718": "2026-01-20",
 };
 
-type Draft = Omit<LedgerItem, "ledgerItemId" | "clientId">;
+type Draft = Omit<LedgerItem, "ledgerItemId" | "clientId" | "postedTime">;
 
 const noFuel = { fuelCode: null, fuelYear: null, assignmentType: null, qapServiceType: null } as const;
 
@@ -197,11 +199,29 @@ const unreconciledBuys: Draft[] = [
 /** All ledger rows, oldest first, with sequential ledger item IDs. */
 export const ledgerItems: LedgerItem[] = [...contractEntries(), ...unreconciledBuys]
   .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
-  .map((d, i) => ({ ...d, ledgerItemId: `LI-${100001 + i}`, clientId: CLIENT_ID }));
+  .map((d, i) => {
+    const ledgerItemId = `LI-${100001 + i}`;
+    return { ...d, ledgerItemId, clientId: CLIENT_ID, postedTime: timeForSeed(ledgerItemId) };
+  });
 
 /** Formats an ISO date (YYYY-MM-DD) as e.g. "Dec 02, 2025". */
 export function formatLedgerDate(iso: string): string {
   return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
     month: "short", day: "2-digit", year: "numeric", timeZone: "UTC",
   });
+}
+
+/** Formats a 24h "HH:MM" posted time as e.g. "9:14 AM". */
+export function formatLedgerTime(time: string): string {
+  const [h = "0", m = "0"] = time.split(":");
+  return new Date(Date.UTC(2000, 0, 1, Number(h), Number(m)))
+    .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "UTC" });
+}
+
+/** Deterministic business-hours posting time so prototype rows stay stable. */
+function timeForSeed(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  const minutes = 8 * 60 + (hash % (11 * 60)); // 08:00–18:59
+  return `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
 }

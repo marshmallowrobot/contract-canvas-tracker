@@ -17,6 +17,7 @@ import {
   EPA_ID,
   CLIENT_NAME,
   formatLedgerDate,
+  formatLedgerTime,
   ledgerItemTypeMeta,
   ledgerItems,
   type LedgerItemType,
@@ -578,7 +579,7 @@ function LedgerPage() {
                 <>
                   <SheetHeader>
                     <SheetTitle className="font-display">Ledger item {r.ledgerItemId}</SheetTitle>
-                    <SheetDescription>{formatLedgerDate(r.timestamp)}</SheetDescription>
+                    <SheetDescription>{formatLedgerDate(r.timestamp)} · {formatLedgerTime(r.postedTime)}</SheetDescription>
                   </SheetHeader>
                   <div className="mt-4 flex items-center justify-between rounded-md border border-hair bg-table-head px-4 py-3">
                     <TypePill type={r.ledgerItemType} />
@@ -617,7 +618,7 @@ function LedgerPage() {
                             <button type="button" onClick={() => setDetailRow(e)} className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-table-head">
                               <span>
                                 <span className="block text-xs font-semibold">{e.ledgerItemId} · {e.buyContractId ?? "Unassigned"}</span>
-                                <span className="block text-[11px] text-subtle">{formatLedgerDate(e.timestamp)}</span>
+                                <span className="block text-[11px] text-subtle">{formatLedgerDate(e.timestamp)} · {formatLedgerTime(e.postedTime)}</span>
                               </span>
                               <span className="flex items-center gap-2">
                                 <TypePill type={e.ledgerItemType} />
