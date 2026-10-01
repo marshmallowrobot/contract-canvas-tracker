@@ -262,18 +262,6 @@ function LedgerPage() {
           </div>
         </header>
 
-        <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label={`Ledger summary as of ${closedLabel}`}>
-          <StatCard label="Closing RIN position" value={numberFmt.format(closedPosition)} note={`As of ${closedLabel} close`} tone={closedPosition >= 0 ? "text-ink" : "text-rose"} />
-          <StatCard label="Added through close" value={`+${numberFmt.format(closedAdded)}`} note={`${closedRows.filter((r) => r.quantity > 0).length} entries through ${closedLabel}`} />
-          <StatCard label="Drawn down through close" value={numberFmt.format(-closedDrawn)} note={`${closedRows.filter((r) => r.quantity < 0).length} entries through ${closedLabel}`} tone="text-rose" />
-          <StatCard
-            label="Unassigned pool"
-            value={numberFmt.format(closedUnassignedRins)}
-            note={`${closedUnassigned.length} unreconciled ${closedUnassigned.length === 1 ? "buy" : "buys"} as of close`}
-            tone="text-primary"
-          />
-        </section>
-
         <Dialog open={closeOpen} onOpenChange={setCloseOpen}>
           <DialogContent>
             <DialogHeader>
