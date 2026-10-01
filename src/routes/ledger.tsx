@@ -49,6 +49,12 @@ function formatCloseDate(iso: string) {
   return new Date(Date.UTC(y!, m! - 1, d!)).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 }
 
+/** The day after a close date — the start of the open period. */
+function dayAfter(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y!, m! - 1, d! + 1)).toISOString().slice(0, 10);
+}
+
 /** Suggest the end of the month after the current close, capped at the latest entry. */
 function defaultNextClose(closed: string, latest: string) {
   const [y, m] = closed.split("-").map(Number);
