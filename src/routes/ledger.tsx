@@ -230,6 +230,10 @@ function LedgerPage() {
     (fromDate && fromDate !== dayAfter(closedThrough) ? 1 : 0) +
     (toDate ? 1 : 0);
 
+  // The default period start is still a real filter from the user's point of
+  // view: count it for the badge and keep Clear all enabled so it can be removed.
+  const displayFilterCount = activeFilterCount + (fromDate && fromDate === dayAfter(closedThrough) ? 1 : 0);
+
   useEffect(() => {
     setPage(1);
   }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
@@ -475,14 +479,14 @@ function LedgerPage() {
                   aria-expanded={filtersOpen}
                 >
                   <Funnel className="size-4" />
-                  {activeFilterCount > 0 ? `${activeFilterCount} ${activeFilterCount === 1 ? "filter" : "filters"}` : "Filters"}
+                  {displayFilterCount > 0 ? `${displayFilterCount} ${displayFilterCount === 1 ? "filter" : "filters"}` : "Filters"}
                 </Button>
                 <span className="h-4 w-px bg-hair" aria-hidden />
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
-                  disabled={activeFilterCount === 0}
+                  disabled={displayFilterCount === 0}
                   className="text-subtle disabled:opacity-50"
                 >
                   Clear all
@@ -578,7 +582,7 @@ function LedgerPage() {
                 </div>
                 <div className="mt-4 flex justify-end">
                   <Button size="sm" onClick={() => setFiltersOpen(false)}>
-                    Apply filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+                    Apply filters{displayFilterCount > 0 ? ` (${displayFilterCount})` : ""}
                   </Button>
                 </div>
               </div>
