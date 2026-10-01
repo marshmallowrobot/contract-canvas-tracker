@@ -135,6 +135,19 @@ function LedgerPage() {
   const unassignedPool = useMemo(() => unassignedEntries.reduce((sum, e) => sum + e.quantity, 0), [unassignedEntries]);
   const unassignedCount = unassignedEntries.length;
 
+  /** All-time RINs written off by contract terminations. */
+  const writtenOff = useMemo(() => {
+    let sum = 0;
+    let count = 0;
+    for (const e of ledgerItems) {
+      if (e.ledgerItemType === "Contract Termination") {
+        sum += Math.abs(e.quantity);
+        count += 1;
+      }
+    }
+    return { sum, count };
+  }, []);
+
   /** Stats for the current open period — entries dated after the last close. */
   const periodStats = useMemo(() => {
     const periodEntries = ledgerItems.filter((e) => e.timestamp.slice(0, 10) > closedThrough);
