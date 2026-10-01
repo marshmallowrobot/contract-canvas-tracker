@@ -98,13 +98,6 @@ function LedgerPage() {
   const [dateSort, setDateSort] = useState<SortDirection>("desc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
   const [page, setPage] = useState(1);
-  // Prototype only: the manual adjustment mock keeps its own form state.
-  const [adjustOpen, setAdjustOpen] = useState(false);
-  const [adjustContract, setAdjustContract] = useState("unassigned");
-  const [adjustDirection, setAdjustDirection] = useState("add");
-  const [adjustQuantity, setAdjustQuantity] = useState("");
-  const [adjustDate, setAdjustDate] = useState("");
-  const [adjustReason, setAdjustReason] = useState("");
   const [detailRow, setDetailRow] = useState<LedgerItem | null>(null);
 
   /** Unassigned pool — buys posted without a contract. */
@@ -221,7 +214,6 @@ function LedgerPage() {
   const credits = visibleRows.filter((r) => r.quantity > 0).reduce((s, r) => s + r.quantity, 0);
   const debits = visibleRows.filter((r) => r.quantity < 0).reduce((s, r) => s + Math.abs(r.quantity), 0);
 
-  const latestEntry = rows[rows.length - 1]?.timestamp ?? "";
 
   /** Balance column is always shown: it reads "balance after this entry",
    * computed over the full register history (never derived from the visible
