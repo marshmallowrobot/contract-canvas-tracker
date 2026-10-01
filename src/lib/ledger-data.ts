@@ -101,7 +101,7 @@ const OPENED_WITHOUT_TX: Record<string, string> = {
   "CT-4718": "2026-01-20",
 };
 
-type Draft = Omit<LedgerItem, "ledgerItemId" | "clientId">;
+type Draft = Omit<LedgerItem, "ledgerItemId" | "clientId" | "postedTime">;
 
 const noFuel = { fuelCode: null, fuelYear: null, assignmentType: null, qapServiceType: null } as const;
 
