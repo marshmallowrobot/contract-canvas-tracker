@@ -127,7 +127,7 @@ function contractEntries(): Draft[] {
         fuelCode: t.rinCode,
         fuelYear: t.vintageYear,
         assignmentType: t.assignmentType,
-        qapServiceType: (ti % 3 === 2 ? "unverified" : "q_rin") as QapServiceType,
+        qapServiceType: t.qapServiceType,
       };
       out.push({ ...base, ...fuel, timestamp: t.iso, ledgerItemType: "reconciled_buy", quantity: t.rinApplied ? -t.rinApplied : 0, transactionId: t.transactionId, createdBy: user(ti + 1), notes: t.rinOverflow ? `Over-fulfilled contract: ${t.rinOverflow.toLocaleString("en-US")} RINs overflowed to the Unassigned pool.` : null });
       if (t.rinOverflow) {
