@@ -426,10 +426,10 @@ function LedgerPage() {
                 </tr>
               </thead>
               <tbody>
-                {pageRows.map((row) => {
-                  const dealNumber = row.buyContractId
-                    ? getContract(row.buyContractId)?.dealNumber ?? null
-                    : null;
+                  {pageRows.map((row) => {
+                    const contract = row.buyContractId ? getContract(row.buyContractId) : null;
+                    const dealNumber = contract?.dealNumber ?? null;
+                    const partner = contract?.counterparty ?? null;
                   return (
                   <tr
                     key={row.ledgerItemId}
@@ -451,13 +451,13 @@ function LedgerPage() {
                       <div className="text-xs font-semibold">
                         {row.buyContractId ? (
                           <Link to="/contracts/$contractId" params={{ contractId: row.buyContractId }} className="text-primary hover:underline">
-                            {row.buyContractId}
+                            {dealNumber ?? row.buyContractId}
                           </Link>
                         ) : (
                           <span className="text-subtle">Unassigned</span>
                         )}
                       </div>
-                      <div className="mt-0.5 text-[11px] text-subtle">{dealNumber ?? "—"}</div>
+                      <div className="mt-0.5 text-[11px] text-subtle">{partner ?? "—"}</div>
                     </td>
                     <td className="whitespace-nowrap px-5 py-3.5 text-xs">
                       <div className="flex items-center gap-1.5">
