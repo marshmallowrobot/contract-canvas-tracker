@@ -336,7 +336,8 @@ function ReconciliationPage() {
                         {contract.counterparty} · {contract.dealNumber} · {numberFmt.format(contract.outstandingRins)} RINs
                       </SelectItem>)}
                     </SelectContent>
-                  </Select>
+                  </Select>;
+                  })()}
                 </div>}
 
                 <div>
