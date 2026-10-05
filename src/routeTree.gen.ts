@@ -10,14 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FuelWorkspaceRouteImport } from './routes/fuel-workspace'
 import { Route as LedgerRouteImport } from './routes/ledger'
 import { Route as ReconciliationRouteImport } from './routes/reconciliation'
+import { Route as ReconciliationBoardRouteImport } from './routes/reconciliation-board'
+import { Route as ReconciliationConceptsRouteImport } from './routes/reconciliation-concepts'
+import { Route as ReconciliationEvidenceRouteImport } from './routes/reconciliation-evidence'
+import { Route as ReconciliationMatrixRouteImport } from './routes/reconciliation-matrix'
 import { Route as ReconciliationV1RouteImport } from './routes/reconciliation-v1'
 import { Route as ContractsContractIdRouteImport } from './routes/contracts.$contractId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FuelWorkspaceRoute = FuelWorkspaceRouteImport.update({
+  id: '/fuel-workspace',
+  path: '/fuel-workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LedgerRoute = LedgerRouteImport.update({
@@ -28,6 +38,26 @@ const LedgerRoute = LedgerRouteImport.update({
 const ReconciliationRoute = ReconciliationRouteImport.update({
   id: '/reconciliation',
   path: '/reconciliation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReconciliationBoardRoute = ReconciliationBoardRouteImport.update({
+  id: '/reconciliation-board',
+  path: '/reconciliation-board',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReconciliationConceptsRoute = ReconciliationConceptsRouteImport.update({
+  id: '/reconciliation-concepts',
+  path: '/reconciliation-concepts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReconciliationEvidenceRoute = ReconciliationEvidenceRouteImport.update({
+  id: '/reconciliation-evidence',
+  path: '/reconciliation-evidence',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReconciliationMatrixRoute = ReconciliationMatrixRouteImport.update({
+  id: '/reconciliation-matrix',
+  path: '/reconciliation-matrix',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReconciliationV1Route = ReconciliationV1RouteImport.update({
@@ -43,23 +73,38 @@ const ContractsContractIdRoute = ContractsContractIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/fuel-workspace': typeof FuelWorkspaceRoute
   '/ledger': typeof LedgerRoute
   '/reconciliation': typeof ReconciliationRoute
+  '/reconciliation-board': typeof ReconciliationBoardRoute
+  '/reconciliation-concepts': typeof ReconciliationConceptsRoute
+  '/reconciliation-evidence': typeof ReconciliationEvidenceRoute
+  '/reconciliation-matrix': typeof ReconciliationMatrixRoute
   '/reconciliation-v1': typeof ReconciliationV1Route
   '/contracts/$contractId': typeof ContractsContractIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/fuel-workspace': typeof FuelWorkspaceRoute
   '/ledger': typeof LedgerRoute
   '/reconciliation': typeof ReconciliationRoute
+  '/reconciliation-board': typeof ReconciliationBoardRoute
+  '/reconciliation-concepts': typeof ReconciliationConceptsRoute
+  '/reconciliation-evidence': typeof ReconciliationEvidenceRoute
+  '/reconciliation-matrix': typeof ReconciliationMatrixRoute
   '/reconciliation-v1': typeof ReconciliationV1Route
   '/contracts/$contractId': typeof ContractsContractIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/fuel-workspace': typeof FuelWorkspaceRoute
   '/ledger': typeof LedgerRoute
   '/reconciliation': typeof ReconciliationRoute
+  '/reconciliation-board': typeof ReconciliationBoardRoute
+  '/reconciliation-concepts': typeof ReconciliationConceptsRoute
+  '/reconciliation-evidence': typeof ReconciliationEvidenceRoute
+  '/reconciliation-matrix': typeof ReconciliationMatrixRoute
   '/reconciliation-v1': typeof ReconciliationV1Route
   '/contracts/$contractId': typeof ContractsContractIdRoute
 }
@@ -67,30 +112,50 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/fuel-workspace'
     | '/ledger'
     | '/reconciliation'
+    | '/reconciliation-board'
+    | '/reconciliation-concepts'
+    | '/reconciliation-evidence'
+    | '/reconciliation-matrix'
     | '/reconciliation-v1'
     | '/contracts/$contractId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/fuel-workspace'
     | '/ledger'
     | '/reconciliation'
+    | '/reconciliation-board'
+    | '/reconciliation-concepts'
+    | '/reconciliation-evidence'
+    | '/reconciliation-matrix'
     | '/reconciliation-v1'
     | '/contracts/$contractId'
   id:
     | '__root__'
     | '/'
+    | '/fuel-workspace'
     | '/ledger'
     | '/reconciliation'
+    | '/reconciliation-board'
+    | '/reconciliation-concepts'
+    | '/reconciliation-evidence'
+    | '/reconciliation-matrix'
     | '/reconciliation-v1'
     | '/contracts/$contractId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FuelWorkspaceRoute: typeof FuelWorkspaceRoute
   LedgerRoute: typeof LedgerRoute
   ReconciliationRoute: typeof ReconciliationRoute
+  ReconciliationBoardRoute: typeof ReconciliationBoardRoute
+  ReconciliationConceptsRoute: typeof ReconciliationConceptsRoute
+  ReconciliationEvidenceRoute: typeof ReconciliationEvidenceRoute
+  ReconciliationMatrixRoute: typeof ReconciliationMatrixRoute
   ReconciliationV1Route: typeof ReconciliationV1Route
   ContractsContractIdRoute: typeof ContractsContractIdRoute
 }
@@ -102,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fuel-workspace': {
+      id: '/fuel-workspace'
+      path: '/fuel-workspace'
+      fullPath: '/fuel-workspace'
+      preLoaderRoute: typeof FuelWorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ledger': {
@@ -116,6 +188,34 @@ declare module '@tanstack/react-router' {
       path: '/reconciliation'
       fullPath: '/reconciliation'
       preLoaderRoute: typeof ReconciliationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reconciliation-board': {
+      id: '/reconciliation-board'
+      path: '/reconciliation-board'
+      fullPath: '/reconciliation-board'
+      preLoaderRoute: typeof ReconciliationBoardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reconciliation-concepts': {
+      id: '/reconciliation-concepts'
+      path: '/reconciliation-concepts'
+      fullPath: '/reconciliation-concepts'
+      preLoaderRoute: typeof ReconciliationConceptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reconciliation-evidence': {
+      id: '/reconciliation-evidence'
+      path: '/reconciliation-evidence'
+      fullPath: '/reconciliation-evidence'
+      preLoaderRoute: typeof ReconciliationEvidenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reconciliation-matrix': {
+      id: '/reconciliation-matrix'
+      path: '/reconciliation-matrix'
+      fullPath: '/reconciliation-matrix'
+      preLoaderRoute: typeof ReconciliationMatrixRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reconciliation-v1': {
@@ -137,8 +237,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FuelWorkspaceRoute: FuelWorkspaceRoute,
   LedgerRoute: LedgerRoute,
   ReconciliationRoute: ReconciliationRoute,
+  ReconciliationBoardRoute: ReconciliationBoardRoute,
+  ReconciliationConceptsRoute: ReconciliationConceptsRoute,
+  ReconciliationEvidenceRoute: ReconciliationEvidenceRoute,
+  ReconciliationMatrixRoute: ReconciliationMatrixRoute,
   ReconciliationV1Route: ReconciliationV1Route,
   ContractsContractIdRoute: ContractsContractIdRoute,
 }
