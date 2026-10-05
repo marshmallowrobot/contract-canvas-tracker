@@ -389,8 +389,7 @@ function ReconciliationPage() {
           <div className="flex-1 space-y-5 px-6 pb-6 pt-4">
             <section><h3 className="mb-3 font-display text-sm font-bold">Contract to settle</h3>
               <div className="rounded-md border border-hair bg-panel p-4">
-                <div className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{group.contractId}</span><span className="text-xs font-semibold text-primary">{group.dealNumber}</span></div>
-                <p className="mt-1 text-xs text-subtle">Contract partner: {group.partner}</p>
+                <div className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{group.partner}</span><span className="text-xs font-semibold text-ink">{group.dealNumber}</span></div>
                 <div className="mt-3 flex items-baseline justify-between text-xs"><span className="text-subtle">Group total / outstanding</span><span className="font-bold tabular-nums text-ink">{numberFmt.format(group.total)} / {numberFmt.format(group.outstandingRins)} RINs</span></div>
                 <div className="mt-2 flex h-2.5 overflow-hidden rounded-full bg-table-head">{group.buys.map((b, i) => <div key={b.id} className={`h-full bg-settle ${i > 0 ? "border-l-2 border-panel" : ""}`} style={{ width: `${(b.rins / group.outstandingRins) * 100}%`, opacity: 1 - i * 0.2 }} />)}</div>
               </div>
