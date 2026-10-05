@@ -22,6 +22,7 @@ import {
   type BuyTransactionStatus,
   type RinCode,
 } from "@/lib/contracts-data";
+import { qapServiceTypeLabel } from "@/lib/ledger-data";
 
 export const Route = createFileRoute("/contracts/$contractId")({
   loader: ({ params }) => {
