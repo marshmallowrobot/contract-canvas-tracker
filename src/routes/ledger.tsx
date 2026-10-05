@@ -20,6 +20,7 @@ import {
   formatLedgerTime,
   ledgerItemTypeMeta,
   ledgerItems,
+  qapServiceTypeLabel,
   type LedgerItemType,
   type LedgerItem,
 } from "@/lib/ledger-data";
@@ -599,21 +600,27 @@ function LedgerPage() {
                   </div>
                   <dl className="mt-5 grid grid-cols-2 gap-4">
                     {field("Buy contract", r.buyContractId ? (
-                      <>
-                        <Link to="/contracts/$contractId" params={{ contractId: r.buyContractId }} className="font-semibold text-primary hover:underline">{contract?.dealNumber ?? r.buyContractId}</Link>
-                        <span className="mt-0.5 block text-[11px] text-subtle">{contract?.counterparty ?? "—"}</span>
-                      </>
+                      <Link to="/contracts/$contractId" params={{ contractId: r.buyContractId }} className="font-semibold text-primary hover:underline">{contract?.dealNumber ?? r.buyContractId}</Link>
                     ) : "Unassigned")}
+                    {field("Trading partner", contract?.counterparty ?? null)}
                     {field("Transaction ID", r.transactionId ? (
                       <span className="cursor-pointer font-semibold text-primary hover:underline">{r.transactionId}</span>
                     ) : null)}
                     {field("Created by", r.createdBy)}
                     {field("Fuel", r.fuelCode ? (
-                      <span className="flex items-center gap-2">
+                      <span className="flex flex-wrap items-center gap-2">
                         <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[r.fuelCode]}`}>{r.fuelCode}</span>
                         <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold">{r.fuelYear}</span>
                         {r.assignmentType && <AssignmentMark type={r.assignmentType} />}
-                        {r.qapServiceType && <span className="text-xs text-subtle">{r.qapServiceType}</span>}
+                        {r.qapServiceType && (
+                          <span
+                            title={`QAP service type: ${qapServiceTypeLabel[r.qapServiceType]}`}
+                            aria-label={`QAP service type: ${qapServiceTypeLabel[r.qapServiceType]}`}
+                            className="inline-flex items-center rounded-full border border-hair bg-card px-2 py-0.5 text-[10px] font-bold text-subtle"
+                          >
+                            {r.qapServiceType === "q_rin" ? "Q-RIN" : "UNVER"}
+                          </span>
+                        )}
                       </span>
                     ) : null)}
                   </dl>
