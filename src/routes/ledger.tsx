@@ -420,10 +420,7 @@ function LedgerPage() {
                   <th className="px-5 py-2.5 font-medium">Fuel</th>
                   <th className="px-5 py-2.5 text-right font-medium">Quantity</th>
 {showBalance && (
-                    <th className="px-5 py-2.5 text-right font-medium">
-                      Balance
-                      <span className="block text-[10px] font-normal text-muted-foreground">after entry</span>
-                    </th>
+                    <th className="px-5 py-2.5 text-right font-medium">{contractScopeActive ? "Contract Balance" : "Balance"}</th>
                   )}
                 </tr>
               </thead>
