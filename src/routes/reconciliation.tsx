@@ -93,6 +93,7 @@ function Fuel({ buy }: { buy: PendingBuy }) {
     <span title={buy.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={buy.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${buy.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>
       {buy.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}
     </span>
+    <Qap qap={buy.qap} />
   </div>;
 }
 
