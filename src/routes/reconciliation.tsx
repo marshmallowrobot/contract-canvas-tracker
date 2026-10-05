@@ -45,7 +45,7 @@ function MatchSignalChips({ buy, contractId, outstandingRins }: { buy: PendingBu
   return (
     <div className="mt-1.5 flex flex-wrap gap-1" aria-label={`Match signals for ${buy.id}`}>
       {SIGNAL_FIELDS.map(({ key, label }) => {
-        const value = signals[key];
+        const value = signals?.[key];
         const hit = value === true;
         const fuzzy = value === "fuzzy";
         const title = hit
