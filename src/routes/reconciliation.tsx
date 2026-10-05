@@ -327,8 +327,10 @@ function ReconciliationPage() {
 
                 {openContracts.length > 0 && <div>
                   <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-subtle">Choose any open contract</div>
-                  <Select value={chosenContract && !selected.candidateContracts?.some((c) => c.contractId === chosenContract) && chosenContract !== selected.contractId ? chosenContract : ""} onValueChange={(value) => setChosenContract(value)}>
-                    <SelectTrigger aria-label="Choose from all open contracts" className="w-full bg-panel"><SelectValue placeholder="Select an open contract…" /></SelectTrigger>
+                  {(() => {
+                    const openSelected = chosenContract !== null && chosenContract !== "unreconciled" && !selected.candidateContracts?.some((c) => c.contractId === chosenContract) && chosenContract !== selected.contractId;
+                    return <Select value={openSelected ? chosenContract : ""} onValueChange={(value) => setChosenContract(value)}>
+                      <SelectTrigger aria-label="Choose from all open contracts" className={cn("w-full bg-panel", openSelected && "border-primary bg-selected")}><SelectValue placeholder="Select an open contract…" /></SelectTrigger>
                     <SelectContent>
                       {openContracts.map((contract) => <SelectItem key={contract.contractId} value={contract.contractId}>
                         {contract.counterparty} · {contract.dealNumber} · {numberFmt.format(contract.outstandingRins)} RINs
