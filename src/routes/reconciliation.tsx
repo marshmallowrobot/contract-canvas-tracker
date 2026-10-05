@@ -316,8 +316,6 @@ function ReconciliationPage() {
                     </span>
                   </button>
                 </div>
-              </div>
-            </section>
 
             {(() => {
               if (!chosenContract || chosenContract === "unreconciled") return null;
