@@ -32,9 +32,10 @@ const fuelClass: Record<RinCode, string> = {
 const matchLabel = { matched: "Matched", "needs-review": "Needs Review", unmatched: "Unmatched" } as const;
 
 /** Why the engine selected the matched contract: one chip per search field, hit / miss / fuzzy. */
-function MatchSignalChips({ buy }: { buy: PendingBuy }) {
+function MatchSignalChips({ buy, contractId }: { buy: PendingBuy; contractId?: string | null }) {
   const signals = matchSignals[buy.id];
   if (!signals) return null;
+  const target = contractId ?? buy.contractId;
   return (
     <div className="mt-1.5 flex flex-wrap gap-1" aria-label={`Match signals for ${buy.id}`}>
       {SIGNAL_FIELDS.map(({ key, label }) => {
@@ -42,10 +43,10 @@ function MatchSignalChips({ buy }: { buy: PendingBuy }) {
         const hit = value === true;
         const fuzzy = value === "fuzzy";
         const title = hit
-          ? `${label} found on ${buy.contractId}`
+          ? `${label} found on ${target}`
           : fuzzy
-            ? `Partner differs slightly from ${buy.contractId} (fuzzy match)`
-            : `${label} not found on ${buy.contractId ?? "any contract"}`;
+            ? `Partner differs slightly from ${target} (fuzzy match)`
+            : `${label} not found on ${target ?? "any contract"}`;
         return (
           <span
             key={key}
@@ -289,11 +290,17 @@ function ReconciliationPage() {
                       <span aria-hidden="true" className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${chosenContract === candidate.contractId ? "border-primary bg-primary" : "border-subtle"}`}>
                         {chosenContract === candidate.contractId && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
                       </span>
-                      <span className="flex-1">
-                        <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{candidate.contractId}</span><span className="text-xs font-semibold text-primary">{candidate.dealNumber}</span></span>
-                        <span className="mt-1 block text-xs text-subtle">{candidate.partner} · {candidate.dueDate ? `Due ${candidate.dueDate}` : "No due date"}</span>
-                        <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
-                        <span className="mt-1 block text-[11px] font-semibold text-amber">Matched on {candidate.matchedOn}</span>
+                      <span className="flex flex-1 items-start justify-between gap-3">
+                        <span className="min-w-0">
+                          <span className="block text-sm font-bold text-ink">{candidate.partner}</span>
+                          <span className="mt-1 block text-xs font-semibold text-primary">{candidate.dealNumber}</span>
+                          {candidate.dueDate && <span className="mt-1 block text-xs text-subtle">Due {candidate.dueDate}</span>}
+                          <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
+                        </span>
+                        <span className="shrink-0">
+                          <span className={`block whitespace-nowrap text-[11px] font-semibold ${selected.match === "matched" ? "text-moss" : "text-amber"}`}>Matched on {candidate.matchedOn}</span>
+                          <MatchSignalChips buy={selected} contractId={candidate.contractId} />
+                        </span>
                       </span>
                     </button>)}
                     {!selected.candidateContracts?.length && selected.contractId && (() => {
@@ -303,11 +310,17 @@ function ReconciliationPage() {
                         <span aria-hidden="true" className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${chosenContract === selected.contractId ? "border-primary bg-primary" : "border-subtle"}`}>
                           {chosenContract === selected.contractId && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
                         </span>
-                        <span className="flex-1">
-                          <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{selected.contractId}</span><span className="text-xs font-semibold text-primary">{selected.dealNumber}</span></span>
-                          <span className="mt-1 block text-xs text-subtle">{selected.contractPartner ?? selected.partner} · {selected.dueDate ? `Due ${selected.dueDate}` : "No due date"}</span>
-                          <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(selected.contractOutstandingRins ?? match?.outstandingRins ?? 0)} RINs</span>
-                          <span className="mt-1 block text-[11px] font-semibold text-amber">{selected.fuzzy ? "Fuzzy match on trading partner" : "Matched on trading partner"}</span>
+                        <span className="flex flex-1 items-start justify-between gap-3">
+                          <span className="min-w-0">
+                            <span className="block text-sm font-bold text-ink">{selected.contractPartner ?? selected.partner}</span>
+                            <span className="mt-1 block text-xs font-semibold text-primary">{selected.dealNumber}</span>
+                            {selected.dueDate && <span className="mt-1 block text-xs text-subtle">Due {selected.dueDate}</span>}
+                            <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(selected.contractOutstandingRins ?? match?.outstandingRins ?? 0)} RINs</span>
+                          </span>
+                          <span className="shrink-0">
+                            <span className="block whitespace-nowrap text-[11px] font-semibold text-amber">{selected.fuzzy ? "Fuzzy match on trading partner" : "Matched on trading partner"}</span>
+                            <MatchSignalChips buy={selected} contractId={selected.contractId} />
+                          </span>
                         </span>
                       </button>;
                     })()}
