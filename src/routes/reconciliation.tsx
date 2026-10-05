@@ -298,7 +298,6 @@ function ReconciliationPage() {
                           <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
                         </span>
                         <span className="shrink-0">
-                          <span className={`block whitespace-nowrap text-[11px] font-semibold ${selected.match === "matched" ? "text-moss" : "text-amber"}`}>Matched on {candidate.matchedOn}</span>
                           <MatchSignalChips buy={selected} contractId={candidate.contractId} />
                         </span>
                       </span>
@@ -318,7 +317,6 @@ function ReconciliationPage() {
                             <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(selected.contractOutstandingRins ?? match?.outstandingRins ?? 0)} RINs</span>
                           </span>
                           <span className="shrink-0">
-                            <span className="block whitespace-nowrap text-[11px] font-semibold text-amber">{selected.fuzzy ? "Fuzzy match on trading partner" : "Matched on trading partner"}</span>
                             <MatchSignalChips buy={selected} contractId={selected.contractId} />
                           </span>
                         </span>
