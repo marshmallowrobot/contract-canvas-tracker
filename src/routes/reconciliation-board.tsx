@@ -54,7 +54,7 @@ function expiryClass(days: number) {
 type Row = {
   buy: PendingBuy;
   candidates: Assessment[];
-  best?: Assessment;
+  best?: Assessment | undefined;
   /** More than one contract explains this buy nearly as well — never safe to bulk-approve. */
   ambiguous: boolean;
   ready: boolean;

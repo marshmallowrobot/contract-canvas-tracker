@@ -785,7 +785,7 @@ export default function ReconciliationWorkspace() {
                               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
                                 Match Rationale Scoring:
                               </span>
-                              {cand.breakdown.map((item, idx) => (
+                              {(cand.breakdown ?? []).map((item, idx) => (
                                 <div key={idx} className="flex items-center justify-between text-[11px]">
                                   <span className="text-slate-400">{item.field}:</span>
                                   <span className={`font-semibold ${item.score >= 90 ? 'text-emerald-400' : 'text-amber-400'}`}>

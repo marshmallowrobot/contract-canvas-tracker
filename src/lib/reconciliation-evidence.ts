@@ -201,7 +201,8 @@ function editDistance(a: string, b: string) {
 
 function listSignal(key: string, label: string, weight: number, buyValue: string, list: string[]): Signal {
   if (list.length === 0) return { key, label, weight, buyValue, contractValue: "Not on contract", verdict: "missing", note: "The contract record carries no value to compare." };
-  if (list.includes(buyValue)) return { key, label, weight, buyValue, contractValue: buyValue, verdict: "match", note: list.length > 1 ? `1 of ${list.length} on the contract` : undefined };
+  const matched: Signal = { key, label, weight, buyValue, contractValue: buyValue, verdict: "match" };
+  return list.length > 1 ? { ...matched, note: `1 of ${list.length} on the contract` } : matched;
   return { key, label, weight, buyValue, contractValue: list.slice(0, 2).join(", ") + (list.length > 2 ? ` +${list.length - 2}` : ""), verdict: "differs", note: "This value does not appear on the contract." };
 }
 
