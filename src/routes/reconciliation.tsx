@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
-import { pendingBuys, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
+import { matchSignals, pendingBuys, SIGNAL_FIELDS, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
 
 const openContracts = contracts.filter((contract) => contract.contractStatus === "open");
 
