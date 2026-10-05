@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { contracts, numberFmt, type RinCode } from "@/lib/contracts-data";
-import { pendingBuys, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
+import { matchSignals, pendingBuys, SIGNAL_FIELDS, type PendingBuy, type SettlementGroup } from "@/lib/reconciliation-data";
 
 const openContracts = contracts.filter((contract) => contract.contractStatus === "open");
 
@@ -30,6 +30,35 @@ const fuelClass: Record<RinCode, string> = {
   D5: "bg-rin-d5 text-rin-on-color", D6: "bg-rin-d6 text-rin-on-color", D7: "bg-rin-d7 text-rin-on-color",
 };
 const matchLabel = { matched: "Matched", "needs-review": "Needs Review", unmatched: "Unmatched" } as const;
+
+/** Why the engine selected the matched contract: one chip per search field, hit / miss / fuzzy. */
+function MatchSignalChips({ buy }: { buy: PendingBuy }) {
+  const signals = matchSignals[buy.id];
+  if (!signals) return null;
+  return (
+    <div className="mt-1.5 flex flex-wrap gap-1" aria-label={`Match signals for ${buy.id}`}>
+      {SIGNAL_FIELDS.map(({ key, label }) => {
+        const value = signals[key];
+        const hit = value === true;
+        const fuzzy = value === "fuzzy";
+        const title = hit
+          ? `${label} found on ${buy.contractId}`
+          : fuzzy
+            ? `Partner differs slightly from ${buy.contractId} (fuzzy match)`
+            : `${label} not found on ${buy.contractId ?? "any contract"}`;
+        return (
+          <span
+            key={key}
+            title={title}
+            className={`rounded px-1 py-px text-[9px] font-bold uppercase tracking-wide ${hit ? "border border-moss/40 bg-moss-soft text-moss" : fuzzy ? "border border-amber/40 bg-amber-soft text-amber" : "border border-hair text-subtle"}`}
+          >
+            {label}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 /** Relative expiration label, e.g. "5 hours", "1 day", "5 days". */
 function expirationLabel(days: number) {
@@ -202,7 +231,7 @@ function ReconciliationPage() {
                   <span className="text-subtle" aria-hidden="true">—</span>
                 )}
               </td>
-              <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}</div><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
+              <td className="px-5 py-3"><div className="flex items-start justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}<MatchSignalChips buy={buy} /></div><Button variant="ghost" size="icon" className="size-7 shrink-0 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
