@@ -27,6 +27,7 @@ import {
 export const Route = createFileRoute("/ledger")({
   validateSearch: (search: Record<string, unknown>) => ({
     contract: typeof search["contract"] === "string" ? search["contract"] : undefined,
+    deal: typeof search["deal"] === "string" ? search["deal"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -86,11 +87,11 @@ const inputClass =
   "mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20";
 
 function LedgerPage() {
-  const { contract: contractParam } = Route.useSearch();
+  const { contract: contractParam, deal: dealParam } = Route.useSearch();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [contractFilter, setContractFilter] = useState(contractParam ?? "");
   const [partnerFilter, setPartnerFilter] = useState("");
-  const [dealFilter, setDealFilter] = useState("");
+  const [dealFilter, setDealFilter] = useState(dealParam ?? "");
   const [typeFilter, setTypeFilter] = useState("all");
   const [transactionFilter, setTransactionFilter] = useState("");
   const [ledgerItemFilter, setLedgerItemFilter] = useState("");
