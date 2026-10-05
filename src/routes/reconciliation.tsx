@@ -293,7 +293,7 @@ function ReconciliationPage() {
                       <span className="flex flex-1 items-start justify-between gap-3">
                         <span className="min-w-0">
                           <span className="block text-sm font-bold text-ink">{candidate.partner}</span>
-                          <span className="mt-1 block text-xs font-semibold text-primary">{candidate.dealNumber}</span>
+                          <span className="mt-1 block text-xs font-semibold text-ink">{candidate.dealNumber}</span>
                           {candidate.dueDate && <span className="mt-1 block text-xs text-subtle">Due {candidate.dueDate}</span>}
                           <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
                         </span>
@@ -313,7 +313,7 @@ function ReconciliationPage() {
                         <span className="flex flex-1 items-start justify-between gap-3">
                           <span className="min-w-0">
                             <span className="block text-sm font-bold text-ink">{selected.contractPartner ?? selected.partner}</span>
-                            <span className="mt-1 block text-xs font-semibold text-primary">{selected.dealNumber}</span>
+                            <span className="mt-1 block text-xs font-semibold text-ink">{selected.dealNumber}</span>
                             {selected.dueDate && <span className="mt-1 block text-xs text-subtle">Due {selected.dueDate}</span>}
                             <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(selected.contractOutstandingRins ?? match?.outstandingRins ?? 0)} RINs</span>
                           </span>
