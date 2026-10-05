@@ -89,6 +89,7 @@ function LedgerPage() {
   const { contract: contractParam } = Route.useSearch();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [contractFilter, setContractFilter] = useState(contractParam ?? "");
+  const [partnerFilter, setPartnerFilter] = useState("");
   const [dealFilter, setDealFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [transactionFilter, setTransactionFilter] = useState("");
