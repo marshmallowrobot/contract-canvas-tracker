@@ -248,7 +248,7 @@ function ReconciliationPage() {
                   <span className="text-subtle" aria-hidden="true">—</span>
                 )}
               </td>
-              <td className="px-5 py-3"><div className="flex items-start justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span><MatchSignalChips buy={buy} outstandingRins={buy.contractOutstandingRins} /></div><Button variant="ghost" size="icon" className="size-7 shrink-0 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
+              <td className="px-5 py-3 align-top"><div className="flex items-start justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span><MatchSignalChips buy={buy} outstandingRins={buy.contractOutstandingRins} /></div><Button variant="ghost" size="icon" className="size-7 shrink-0 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
