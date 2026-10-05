@@ -481,10 +481,19 @@ function LedgerPage() {
                     </td>
                     <td className="px-5 py-3.5">
                       {row.fuelCode ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 whitespace-nowrap">
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[row.fuelCode]}`}>{row.fuelCode}</span>
                           <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{row.fuelYear}</span>
                           {row.assignmentType && <AssignmentMark type={row.assignmentType} />}
+                          {row.qapServiceType && (
+                            <span
+                              title={`QAP service type: ${qapServiceTypeLabel[row.qapServiceType]}`}
+                              aria-label={`QAP service type: ${qapServiceTypeLabel[row.qapServiceType]}`}
+                              className="inline-flex items-center whitespace-nowrap rounded-full border border-hair bg-card px-2 py-0.5 text-[10px] font-bold text-subtle"
+                            >
+                              {row.qapServiceType === "q_rin" ? "Q-RIN" : "UNVER"}
+                            </span>
+                          )}
                         </div>
                       ) : (
                         <span className="text-xs text-subtle">—</span>
