@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LedgerRouteImport } from './routes/ledger'
 import { Route as ReconciliationRouteImport } from './routes/reconciliation'
+import { Route as ReconciliationV1RouteImport } from './routes/reconciliation-v1'
 import { Route as ContractsContractIdRouteImport } from './routes/contracts.$contractId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const ReconciliationRoute = ReconciliationRouteImport.update({
   path: '/reconciliation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReconciliationV1Route = ReconciliationV1RouteImport.update({
+  id: '/reconciliation-v1',
+  path: '/reconciliation-v1',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContractsContractIdRoute = ContractsContractIdRouteImport.update({
   id: '/contracts/$contractId',
   path: '/contracts/$contractId',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ledger': typeof LedgerRoute
   '/reconciliation': typeof ReconciliationRoute
+  '/reconciliation-v1': typeof ReconciliationV1Route
   '/contracts/$contractId': typeof ContractsContractIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ledger': typeof LedgerRoute
   '/reconciliation': typeof ReconciliationRoute
+  '/reconciliation-v1': typeof ReconciliationV1Route
   '/contracts/$contractId': typeof ContractsContractIdRoute
 }
 export interface FileRoutesById {
@@ -52,21 +60,38 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/ledger': typeof LedgerRoute
   '/reconciliation': typeof ReconciliationRoute
+  '/reconciliation-v1': typeof ReconciliationV1Route
   '/contracts/$contractId': typeof ContractsContractIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ledger' | '/reconciliation' | '/contracts/$contractId'
+  fullPaths:
+    | '/'
+    | '/ledger'
+    | '/reconciliation'
+    | '/reconciliation-v1'
+    | '/contracts/$contractId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ledger' | '/reconciliation' | '/contracts/$contractId'
+  to:
+    | '/'
+    | '/ledger'
+    | '/reconciliation'
+    | '/reconciliation-v1'
+    | '/contracts/$contractId'
   id:
-    '__root__' | '/' | '/ledger' | '/reconciliation' | '/contracts/$contractId'
+    | '__root__'
+    | '/'
+    | '/ledger'
+    | '/reconciliation'
+    | '/reconciliation-v1'
+    | '/contracts/$contractId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LedgerRoute: typeof LedgerRoute
   ReconciliationRoute: typeof ReconciliationRoute
+  ReconciliationV1Route: typeof ReconciliationV1Route
   ContractsContractIdRoute: typeof ContractsContractIdRoute
 }
 
@@ -93,6 +118,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReconciliationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reconciliation-v1': {
+      id: '/reconciliation-v1'
+      path: '/reconciliation-v1'
+      fullPath: '/reconciliation-v1'
+      preLoaderRoute: typeof ReconciliationV1RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contracts/$contractId': {
       id: '/contracts/$contractId'
       path: '/contracts/$contractId'
@@ -107,6 +139,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LedgerRoute: LedgerRoute,
   ReconciliationRoute: ReconciliationRoute,
+  ReconciliationV1Route: ReconciliationV1Route,
   ContractsContractIdRoute: ContractsContractIdRoute,
 }
 export const routeTree = rootRouteImport
