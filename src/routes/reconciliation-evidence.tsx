@@ -69,7 +69,7 @@ function ConfidenceBar({ assessment }: { assessment: Assessment }) {
   );
 }
 
-function BuyRow({ buy, assessment, active, onSelect }: { buy: PendingBuy; assessment?: Assessment; active: boolean; onSelect: () => void }) {
+function BuyRow({ buy, assessment, active, onSelect }: { buy: PendingBuy; assessment?: Assessment | undefined; active: boolean; onSelect: () => void }) {
   const meta = assessment ? confidenceMeta[assessment.confidence] : null;
   return (
     <button
