@@ -31,6 +31,35 @@ const fuelClass: Record<RinCode, string> = {
 };
 const matchLabel = { matched: "Matched", "needs-review": "Needs Review", unmatched: "Unmatched" } as const;
 
+/** Why the engine selected the matched contract: one chip per search field, hit / miss / fuzzy. */
+function MatchSignalChips({ buy }: { buy: PendingBuy }) {
+  const signals = matchSignals[buy.id];
+  if (!signals) return null;
+  return (
+    <div className="mt-1.5 flex flex-wrap gap-1" aria-label={`Match signals for ${buy.id}`}>
+      {SIGNAL_FIELDS.map(({ key, label }) => {
+        const value = signals[key];
+        const hit = value === true;
+        const fuzzy = value === "fuzzy";
+        const title = hit
+          ? `${label} found on ${buy.contractId}`
+          : fuzzy
+            ? `Partner differs slightly from ${buy.contractId} (fuzzy match)`
+            : `${label} not found on ${buy.contractId ?? "any contract"}`;
+        return (
+          <span
+            key={key}
+            title={title}
+            className={`rounded px-1 py-px text-[9px] font-bold uppercase tracking-wide ${hit ? "border border-moss/40 bg-moss-soft text-moss" : fuzzy ? "border border-amber/40 bg-amber-soft text-amber" : "border border-hair text-subtle"}`}
+          >
+            {label}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 /** Relative expiration label, e.g. "5 hours", "1 day", "5 days". */
 function expirationLabel(days: number) {
   if (days <= 0) return "5 hours";
