@@ -323,11 +323,11 @@ function LedgerPage() {
                     />
                   </label>
                   <label className="block">
-                    <FilterLabel>Deal Number</FilterLabel>
+                    <FilterLabel>Source Key</FilterLabel>
                     <input
                       value={dealFilter}
                       onChange={(event) => setDealFilter(event.target.value)}
-                      aria-label="Filter by deal number"
+                      aria-label="Filter by source key"
                       placeholder="Exact match, e.g. CONTI26TP0002"
                       className={inputClass}
                     />

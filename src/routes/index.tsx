@@ -249,12 +249,12 @@ function ContractBalances() {
                     />
                   </label>
                   <label className="block">
-                    <span className="text-[11px] font-bold uppercase text-ink">Deal Number</span>
+                    <span className="text-[11px] font-bold uppercase text-ink">Source Key</span>
                     <input
                       value={dealFilter}
                       onChange={(event) => setDealFilter(event.target.value)}
-                      aria-label="Filter by deal number"
-                      placeholder="Filter by deal number"
+                      aria-label="Filter by source key"
+                      placeholder="Filter by source key"
                       className="mt-1 h-9 w-full rounded-md border border-input bg-panel px-3 text-sm shadow-sm outline-none placeholder:text-subtle focus:border-primary focus:ring-2 focus:ring-ring/20"
                     />
                   </label>
@@ -272,7 +272,7 @@ function ContractBalances() {
               <div className="grid grid-cols-[180px_170px_150px_120px_120px_120px] items-center gap-3 border-b border-hair bg-table-head px-5 py-2 text-[10px] font-bold uppercase text-subtle">
                 <SortHeader label="Contract" field="contractId" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <SortHeader label="Trading Partner" field="counterparty" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
-                <SortHeader label="Deal" field="dealNumber" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
+                <SortHeader label="Source Key" field="dealNumber" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <span>Buys</span>
                 <SortHeader label="Due date" field="dueDate" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
                 <div className="flex justify-end">
