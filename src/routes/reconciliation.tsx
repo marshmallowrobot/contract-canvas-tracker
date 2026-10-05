@@ -42,38 +42,6 @@ function wouldSettle(buy: PendingBuy) {
   return buy.match === "matched" && buy.contractOutstandingRins != null && buy.rins >= buy.contractOutstandingRins * 0.99;
 }
 
-function MatchedTo({ buy }: { buy: PendingBuy }) {
-  const candidates = buy.candidateContracts?.length
-    ? buy.candidateContracts.map((candidate) => ({
-        id: candidate.contractId,
-        partner: candidate.partner,
-        outstanding: candidate.outstandingRins,
-        reason: `Matched on ${candidate.matchedOn}`,
-      }))
-    : buy.contractId
-      ? [{
-          id: buy.contractId,
-          partner: buy.contractPartner ?? openContracts.find((contract) => contract.contractId === buy.contractId)?.counterparty ?? buy.partner,
-          outstanding: buy.contractOutstandingRins ?? openContracts.find((contract) => contract.contractId === buy.contractId)?.outstandingRins,
-          reason: buy.reason,
-        }]
-      : [];
-
-  if (!candidates.length) return <div className="max-w-[300px] text-xs"><span className="font-semibold text-ink">No contract suggested</span><p className="mt-1 leading-relaxed text-subtle">{buy.reason}</p></div>;
-
-  return <div className="max-w-[320px] space-y-2.5">
-    {candidates.length > 1 && <div className="text-[11px] font-semibold text-amber">{candidates.length} possible contracts · choose in Review</div>}
-    {candidates.map((candidate) => <div key={candidate.id} className={candidates.length > 1 ? "border-l-2 border-hair pl-2" : ""}>
-      <div className="text-xs font-semibold text-ink">{candidate.partner}</div>
-      <div className="mt-0.5 flex flex-wrap items-baseline gap-x-2 text-[11px]">
-        <span className="font-semibold text-primary">{candidate.id}</span>
-        <span className="tabular-nums text-ink">{candidate.outstanding == null ? "—" : `${numberFmt.format(candidate.outstanding)} outstanding RINs`}</span>
-      </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-subtle">{candidate.reason}</p>
-    </div>)}
-  </div>;
-}
-
 function Fuel({ buy }: { buy: PendingBuy }) {
   return <div className="flex items-center gap-2 whitespace-nowrap">
     <span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[buy.fuel]}`}>{buy.fuel}</span>
@@ -199,16 +167,15 @@ function ReconciliationPage() {
           <div className="mt-6 flex justify-end"><Button size="sm" onClick={() => setFiltersOpen(false)}>Apply filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}</Button></div>
         </div>}
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1050px] border-collapse text-left text-sm">
+          <table className="w-full min-w-[900px] border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="w-10 px-3 py-2"><input type="checkbox" aria-label="Select all matched buys" checked={allMatchedChecked} onChange={toggleAllMatched} disabled={matchedVisible.length === 0} className="size-4 accent-primary disabled:opacity-40" /></th><th className="w-32 px-3 py-2">Match</th><th className="w-[32%] min-w-[260px] px-3 py-2">Matched to</th><th className="px-3 py-2">Trading partner</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">Expires in</th><th className="px-3 py-2 text-right">RINs / Gal</th><th className="px-3 py-2 text-right">Price</th><th className="w-10 px-3 py-2"><span className="sr-only">Review</span></th></tr>
+              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="w-10 px-3 py-2"><input type="checkbox" aria-label="Select all matched buys" checked={allMatchedChecked} onChange={toggleAllMatched} disabled={matchedVisible.length === 0} className="size-4 accent-primary disabled:opacity-40" /></th><th className="px-5 py-2">Trading partner</th><th className="px-3 py-2">Fuel</th><th className="px-3 py-2">PTD</th><th className="px-3 py-2">Transaction date</th><th className="px-3 py-2">Expires in</th><th className="px-3 py-2 text-right">RINs / Gal</th><th className="px-3 py-2 text-right">Price</th><th className="px-5 py-2">Match</th></tr>
             </thead>
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
               <td className="px-3 py-3">{buy.match === "matched" && <input type="checkbox" aria-label={`Select matched buy from ${buy.partner}`} checked={checkedIds.has(buy.id)} onChange={() => toggleBuy(buy)} className="size-4 accent-primary" />}</td>
-              <td className="px-3 py-3"><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}</td>
-              <td className="px-3 py-3 align-top"><MatchedTo buy={buy} /></td>
-              <td className="max-w-40 px-3 py-3 text-xs font-medium">{buy.partner}</td>
-              <td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs font-semibold"><span className={buy.expiresInDays <= 1 ? "text-rose" : buy.expiresInDays <= 5 ? "text-amber" : "text-ink"}>{expirationLabel(buy.expiresInDays)}</span></td><td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td><td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td><td className="px-3 py-3"><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></td>
+              <td className="max-w-44 px-5 py-3"><div className="text-xs font-medium">{buy.partner}</div>{buy.contractId && <div className="mt-0.5 text-[11px] font-semibold text-primary">{buy.contractId} · {buy.dealNumber}</div>}</td>
+              <td className="px-3 py-3"><Fuel buy={buy} /></td><td className="px-3 py-3 text-xs">{buy.ptd}</td><td className="px-3 py-3 text-xs">{buy.received}</td><td className="px-3 py-3 text-xs font-semibold"><span className={buy.expiresInDays <= 1 ? "text-rose" : buy.expiresInDays <= 5 ? "text-amber" : "text-ink"}>{expirationLabel(buy.expiresInDays)}</span></td><td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td><td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
+              <td className="px-5 py-3"><div className="flex items-center justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span>{wouldSettle(buy) && <span className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</span>}</div><Button variant="ghost" size="icon" className="size-7 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
