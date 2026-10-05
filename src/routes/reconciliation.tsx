@@ -216,7 +216,7 @@ function ReconciliationPage() {
             <colgroup>
               <col className="w-10" />
               <col className="w-[29%]" />
-              <col className="w-[104px]" />
+              <col className="w-[172px]" />
               <col className="w-[112px]" />
               <col className="w-[88px]" />
               <col className="w-[26%]" />
