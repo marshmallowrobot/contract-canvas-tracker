@@ -82,10 +82,6 @@ function wouldSettle(buy: PendingBuy) {
 }
 
 /** QAP service type chiclet: identical neutral pill style; hover spells the value out. */
-function Qap({ qap }: { qap: PendingBuy["qap"] }) {
-  return <span title={`QAP service type: ${qap}`} aria-label={`QAP service type: ${qap}`} className="inline-flex items-center rounded-full border border-hair bg-card px-2 py-0.5 text-[10px] font-bold text-subtle">{qap === "Q-RIN" ? "Q-RIN" : "UNVER"}</span>;
-}
-
 function Fuel({ buy }: { buy: PendingBuy }) {
   return <div className="flex flex-wrap items-center gap-1.5 whitespace-nowrap">
     <span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[buy.fuel]}`}>{buy.fuel}</span>
@@ -93,7 +89,6 @@ function Fuel({ buy }: { buy: PendingBuy }) {
     <span title={buy.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={buy.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${buy.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>
       {buy.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}
     </span>
-    <Qap qap={buy.qap} />
   </div>;
 }
 
