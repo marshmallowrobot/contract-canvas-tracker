@@ -316,6 +316,7 @@ function ReconciliationPage() {
                     </span>
                   </button>
                 </div>
+              </div>
 
             {(() => {
               if (!chosenContract || chosenContract === "unreconciled") return null;
@@ -337,6 +338,7 @@ function ReconciliationPage() {
                 </p>
               </div>;
             })()}
+            </section>
 
           </div>
           <div className="mt-auto flex items-center justify-between gap-3 border-t border-hair bg-panel px-6 py-4">
