@@ -54,7 +54,7 @@ export const SIGNAL_FIELDS: { key: SignalKey; label: string }[] = [
   { key: "ptd", label: "PTD" },
   { key: "bol", label: "BOL" },
   { key: "invoice", label: "Invoice" },
-  { key: "document", label: "Document" },
+  { key: "document", label: "Documents" },
 ];
 
 export const matchSignals: Record<string, MatchSignals> = {
