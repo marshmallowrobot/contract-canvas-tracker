@@ -310,11 +310,17 @@ function ReconciliationPage() {
                         <span aria-hidden="true" className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${chosenContract === selected.contractId ? "border-primary bg-primary" : "border-subtle"}`}>
                           {chosenContract === selected.contractId && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
                         </span>
-                        <span className="flex-1">
-                          <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{selected.contractId}</span><span className="text-xs font-semibold text-primary">{selected.dealNumber}</span></span>
-                          <span className="mt-1 block text-xs text-subtle">{selected.contractPartner ?? selected.partner} · {selected.dueDate ? `Due ${selected.dueDate}` : "No due date"}</span>
-                          <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(selected.contractOutstandingRins ?? match?.outstandingRins ?? 0)} RINs</span>
-                          <span className="mt-1 block text-[11px] font-semibold text-amber">{selected.fuzzy ? "Fuzzy match on trading partner" : "Matched on trading partner"}</span>
+                        <span className="flex flex-1 items-start justify-between gap-3">
+                          <span className="min-w-0">
+                            <span className="block text-sm font-bold text-ink">{selected.contractPartner ?? selected.partner}</span>
+                            <span className="mt-1 block text-xs font-semibold text-primary">{selected.dealNumber}</span>
+                            {selected.dueDate && <span className="mt-1 block text-xs text-subtle">Due {selected.dueDate}</span>}
+                            <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(selected.contractOutstandingRins ?? match?.outstandingRins ?? 0)} RINs</span>
+                          </span>
+                          <span className="shrink-0">
+                            <span className="block whitespace-nowrap text-[11px] font-semibold text-amber">{selected.fuzzy ? "Fuzzy match on trading partner" : "Matched on trading partner"}</span>
+                            <MatchSignalChips buy={selected} contractId={selected.contractId} />
+                          </span>
                         </span>
                       </button>;
                     })()}
