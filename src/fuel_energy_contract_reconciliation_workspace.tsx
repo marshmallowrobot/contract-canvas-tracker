@@ -46,7 +46,9 @@ type ContractCandidate = {
   contractPrice: number;
   remainingBalance: number;
   confidence: number;
+  expirationDate?: string;
   isRecommended?: boolean;
+  breakdown?: MatchBreakdownItem[];
 };
 type Buy = {
   id: string;
@@ -310,10 +312,10 @@ export default function ReconciliationWorkspace() {
   // Set default selected fuzzy buy if empty
   React.useEffect(() => {
     if (fuzzyBuys.length > 0 && !focusedFuzzyBuy) {
-      setFocusedFuzzyBuy(fuzzyBuys[0]);
-      if (fuzzyBuys[0].candidates.length > 0) {
-        setSelectedCandidateId(fuzzyBuys[0].candidates[0].contractId);
-      }
+      const first = fuzzyBuys[0];
+      setFocusedFuzzyBuy(first);
+      const firstCandidate = first.candidates[0];
+      if (firstCandidate) setSelectedCandidateId(firstCandidate.contractId);
     }
   }, [fuzzyBuys, focusedFuzzyBuy]);
 
@@ -363,10 +365,10 @@ export default function ReconciliationWorkspace() {
     // Reset focus to next available item
     const remaining = fuzzyBuys.filter(b => b.id !== buyId);
     if (remaining.length > 0) {
-      setFocusedFuzzyBuy(remaining[0]);
-      if (remaining[0].candidates.length > 0) {
-        setSelectedCandidateId(remaining[0].candidates[0].contractId);
-      }
+      const next = remaining[0];
+      setFocusedFuzzyBuy(next);
+      const nextCandidate = next.candidates[0];
+      if (nextCandidate) setSelectedCandidateId(nextCandidate.contractId);
     } else {
       setFocusedFuzzyBuy(null);
     }
@@ -823,9 +825,8 @@ export default function ReconciliationWorkspace() {
                           key={buy.id}
                           onClick={() => {
                             setFocusedFuzzyBuy(buy);
-                            if (buy.candidates.length > 0) {
-                              setSelectedCandidateId(buy.candidates[0].contractId);
-                            }
+                            const firstCandidate = buy.candidates[0];
+                            if (firstCandidate) setSelectedCandidateId(firstCandidate.contractId);
                           }}
                           className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                             isFocused
