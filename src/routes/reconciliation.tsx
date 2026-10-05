@@ -199,12 +199,12 @@ function ReconciliationPage() {
           <table className="w-full min-w-[820px] table-fixed border-collapse text-left text-sm">
             <colgroup>
               <col className="w-10" />
-              <col className="w-[32%]" />
+              <col className="w-[29%]" />
               <col className="w-[104px]" />
               <col className="w-[112px]" />
               <col className="w-[88px]" />
-              <col className="w-[28%]" />
-              <col className="w-[168px]" />
+              <col className="w-[26%]" />
+              <col className="w-[224px]" />
             </colgroup>
             <thead>
               <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-3 py-2"><input type="checkbox" aria-label="Select all matched buys" checked={allMatchedChecked} onChange={toggleAllMatched} disabled={matchedVisible.length === 0} className="size-4 accent-primary disabled:opacity-40" /></th><th className="px-5 py-2">Buy details</th><th className="px-2 py-2">Fuel</th><th className="px-2 py-2 text-right">RINs / Gal</th><th className="px-2 py-2 text-right">Price</th><th className="px-5 py-2">Auto-matched contract</th><th className="px-5 py-2">Match</th></tr>
