@@ -29,7 +29,43 @@ import {
   Columns
 } from 'lucide-react';
 
-const MOCK_BUYS = [
+type MatchBreakdownItem = { field: string; score: number; detail: string };
+type MatchedContract = {
+  contractId: string;
+  counterparty: string;
+  remainingBalance: number;
+  contractPrice: number;
+  fuelCode: string;
+  expirationDate: string;
+  breakdown: MatchBreakdownItem[];
+};
+type ContractCandidate = {
+  contractId: string;
+  counterparty: string;
+  fuelCode: string;
+  contractPrice: number;
+  remainingBalance: number;
+  confidence: number;
+  isRecommended?: boolean;
+};
+type Buy = {
+  id: string;
+  counterparty: string;
+  fuelCode: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  totalValue: number;
+  deliveryDate: string;
+  location: string;
+  confidence: number;
+  category: "high" | "fuzzy" | "unmatched";
+  reasonSummary?: string;
+  matchedContract: MatchedContract | null;
+  candidates: ContractCandidate[];
+};
+
+const MOCK_BUYS: Buy[] = [
   // High Confidence Matches
   {
     id: "BUY-8841",
@@ -248,18 +284,18 @@ const MASTER_CONTRACTS_LIBRARY = [
 export default function ReconciliationWorkspace() {
   const [activeTab, setActiveTab] = useState('high'); // 'high', 'fuzzy', 'unmatched'
   const [prototypeMode, setPrototypeMode] = useState('grid'); // 'grid' (Prototype A) or 'split' (Prototype B)
-  const [buysData, setBuysData] = useState(MOCK_BUYS);
+  const [buysData, setBuysData] = useState<Buy[]>(MOCK_BUYS);
   
   // Selection and Modal State
-  const [selectedBuyIds, setSelectedBuyIds] = useState([]);
+  const [selectedBuyIds, setSelectedBuyIds] = useState<string[]>([]);
   const [executingBatch, setExecutingBatch] = useState(false);
-  const [executedToast, setExecutedToast] = useState(null);
+  const [executedToast, setExecutedToast] = useState<string | null>(null);
   
   // Fuzzy & Manual Match Details State
-  const [focusedFuzzyBuy, setFocusedFuzzyBuy] = useState(null);
-  const [selectedCandidateId, setSelectedCandidateId] = useState(null);
-  const [manualLinkBuy, setManualLinkBuy] = useState(null);
-  const [unreconcileBuyModal, setUnreconcileBuyModal] = useState(null);
+  const [focusedFuzzyBuy, setFocusedFuzzyBuy] = useState<Buy | null>(null);
+  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
+  const [manualLinkBuy, setManualLinkBuy] = useState<Buy | null>(null);
+  const [unreconcileBuyModal, setUnreconcileBuyModal] = useState<Buy | null>(null);
   const [unreconcileReason, setUnreconcileReason] = useState('Spot Market Exemption');
   const [searchTerm, setSearchTerm] = useState('');
   
