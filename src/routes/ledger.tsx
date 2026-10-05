@@ -332,7 +332,7 @@ function LedgerPage() {
                     />
                   </label>
                   <label className="block">
-                    <FilterLabel>Source Key</FilterLabel>
+                    <FilterLabel>Contract</FilterLabel>
                     <input
                       value={dealFilter}
                       onChange={(event) => setDealFilter(event.target.value)}
