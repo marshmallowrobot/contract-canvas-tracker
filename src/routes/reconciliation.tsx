@@ -182,16 +182,16 @@ function ReconciliationPage() {
             </thead>
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
               <td className="px-3 py-3">{buy.match === "matched" ? <input type="checkbox" aria-label={`Select matched buy from ${buy.partner}`} checked={checkedIds.has(buy.id)} onChange={() => toggleBuy(buy)} className="size-4 accent-primary" /> : <span className="text-subtle" aria-hidden="true">—</span>}</td>
-              <td className="max-w-44 px-5 py-3">
+              <td className="px-5 py-3 align-top">
                 <div className="text-xs font-semibold">{buy.partner}</div>
-                <div className="mt-1 text-[11px] text-subtle">{buy.ptd} · {buy.bol}</div>
-                <div className="text-[11px] text-subtle">{buy.invoice}</div>
+                <div className="mt-1 text-[11px] text-subtle"><span className="break-all">{buy.ptd}</span> · <span className="break-all">{buy.bol}</span></div>
+                <div className="break-all text-[11px] text-subtle">{buy.invoice}</div>
                 <div className={`mt-1 text-[11px] font-semibold ${buy.expiresInDays <= 1 ? "text-rose" : buy.expiresInDays <= 5 ? "text-amber" : "text-ink"}`}>Expires in {expirationLabel(buy.expiresInDays)}</div>
               </td>
-              <td className="px-3 py-3"><Fuel buy={buy} /></td>
-              <td className="px-3 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td>
-              <td className="px-3 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
-              <td className="max-w-44 px-5 py-3">
+              <td className="px-2 py-3"><Fuel buy={buy} /></td>
+              <td className="px-2 py-3 text-right tabular-nums"><div className="font-semibold">{numberFmt.format(buy.rins)}</div><div className="text-[11px] text-subtle">{numberFmt.format(buy.gallons)} gal</div></td>
+              <td className="px-2 py-3 text-right text-xs font-semibold tabular-nums">{buy.price}</td>
+              <td className="px-5 py-3 align-top">
                 {buy.contractId ? (
                   <div>
                     <div className="text-xs font-medium">{buy.contractPartner ?? buy.partner}</div>
