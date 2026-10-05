@@ -313,9 +313,11 @@ export default function ReconciliationWorkspace() {
   React.useEffect(() => {
     if (fuzzyBuys.length > 0 && !focusedFuzzyBuy) {
       const first = fuzzyBuys[0];
-      setFocusedFuzzyBuy(first);
-      const firstCandidate = first.candidates[0];
-      if (firstCandidate) setSelectedCandidateId(firstCandidate.contractId);
+      if (first) {
+        setFocusedFuzzyBuy(first);
+        const firstCandidate = first.candidates[0];
+        if (firstCandidate) setSelectedCandidateId(firstCandidate.contractId);
+      }
     }
   }, [fuzzyBuys, focusedFuzzyBuy]);
 
@@ -366,9 +368,11 @@ export default function ReconciliationWorkspace() {
     const remaining = fuzzyBuys.filter(b => b.id !== buyId);
     if (remaining.length > 0) {
       const next = remaining[0];
-      setFocusedFuzzyBuy(next);
-      const nextCandidate = next.candidates[0];
-      if (nextCandidate) setSelectedCandidateId(nextCandidate.contractId);
+      if (next) {
+        setFocusedFuzzyBuy(next);
+        const nextCandidate = next.candidates[0];
+        if (nextCandidate) setSelectedCandidateId(nextCandidate.contractId);
+      }
     } else {
       setFocusedFuzzyBuy(null);
     }
