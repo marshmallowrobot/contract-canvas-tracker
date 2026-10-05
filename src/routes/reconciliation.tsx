@@ -32,20 +32,15 @@ const fuelClass: Record<RinCode, string> = {
 const matchLabel = { matched: "Matched", "needs-review": "Needs Review", unmatched: "Unmatched" } as const;
 
 /** Why the engine selected the matched contract: one chip per search field, hit / miss / fuzzy. */
-function MatchSignalChips({ buy }: { buy: PendingBuy }) {
+function MatchSignalChips({ buy, contractId }: { buy: PendingBuy; contractId?: string | null }) {
   const signals = matchSignals[buy.id];
   if (!signals) return null;
-  return (
-    <div className="mt-1.5 flex flex-wrap gap-1" aria-label={`Match signals for ${buy.id}`}>
-      {SIGNAL_FIELDS.map(({ key, label }) => {
-        const value = signals[key];
-        const hit = value === true;
-        const fuzzy = value === "fuzzy";
-        const title = hit
-          ? `${label} found on ${buy.contractId}`
-          : fuzzy
-            ? `Partner differs slightly from ${buy.contractId} (fuzzy match)`
-            : `${label} not found on ${buy.contractId ?? "any contract"}`;
+  const target = contractId ?? buy.contractId;
+  const title = hit
+    ? `${label} found on ${target}`
+    : fuzzy
+      ? `Partner differs slightly from ${target} (fuzzy match)`
+      : `${label} not found on ${target ?? "any contract"}`;
         return (
           <span
             key={key}
