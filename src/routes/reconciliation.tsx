@@ -33,7 +33,7 @@ const fuelClass: Record<RinCode, string> = {
 const matchLabel = { matched: "Matched", "needs-review": "Needs Review", unmatched: "Unmatched" } as const;
 
 /** Why the engine selected the matched contract: one chip per search field, hit / miss / fuzzy. */
-function MatchSignalChips({ buy, contractId, outstandingRins }: { buy: PendingBuy; contractId?: string | null; outstandingRins?: number | null }) {
+function MatchSignalChips({ buy, contractId, outstandingRins }: { buy: PendingBuy; contractId?: string | null; outstandingRins?: number | null | undefined }) {
   const signals = matchSignals[buy.id];
   const target = contractId ?? buy.contractId;
   const qtyExact = outstandingRins != null && buy.rins === outstandingRins;
