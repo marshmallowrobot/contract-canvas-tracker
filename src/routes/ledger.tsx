@@ -197,6 +197,7 @@ function LedgerPage() {
   const activeFilterCount =
     (contractFilter.trim() ? 1 : 0) +
     (dealFilter.trim() ? 1 : 0) +
+    (partnerFilter.trim() ? 1 : 0) +
     (typeFilter !== "all" ? 1 : 0) +
     (transactionFilter.trim() ? 1 : 0) +
     (ledgerItemFilter.trim() ? 1 : 0) +
@@ -205,7 +206,7 @@ function LedgerPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
+  }, [contractFilter, dealFilter, partnerFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
 
   const totalPages = Math.max(Math.ceil(visibleRows.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
