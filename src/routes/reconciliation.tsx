@@ -331,7 +331,7 @@ function ReconciliationPage() {
                     <SelectTrigger aria-label="Choose from all open contracts" className="w-full bg-panel"><SelectValue placeholder="Select an open contract…" /></SelectTrigger>
                     <SelectContent>
                       {openContracts.map((contract) => <SelectItem key={contract.contractId} value={contract.contractId}>
-                        {contract.contractId} · {contract.dealNumber} · {contract.counterparty}
+                        {contract.counterparty} · {contract.dealNumber} · {numberFmt.format(contract.outstandingRins)} RINs
                       </SelectItem>)}
                     </SelectContent>
                   </Select>
