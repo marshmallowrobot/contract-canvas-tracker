@@ -321,12 +321,12 @@ function LedgerPage() {
                 </button>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <label className="block">
-                    <FilterLabel>Buy Contract ID</FilterLabel>
+                    <FilterLabel>Trading Partner</FilterLabel>
                     <input
-                      value={contractFilter}
-                      onChange={(event) => setContractFilter(event.target.value)}
-                      aria-label="Filter by buy contract ID"
-                      placeholder="Exact match, e.g. CT-4821"
+                      value={partnerFilter}
+                      onChange={(event) => setPartnerFilter(event.target.value)}
+                      aria-label="Filter by trading partner"
+                      placeholder="Contains, e.g. Conti"
                       className={inputClass}
                     />
                   </label>
