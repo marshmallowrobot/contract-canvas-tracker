@@ -95,7 +95,7 @@ function LedgerPage() {
   const [ledgerItemFilter, setLedgerItemFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [dateSort, setDateSort] = useState<SortDirection>("desc");
+  const [dateSort, setDateSort] = useState<SortDirection>("asc");
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZE_OPTIONS[0]);
   const [page, setPage] = useState(1);
   const [detailRow, setDetailRow] = useState<LedgerItem | null>(null);
@@ -204,8 +204,8 @@ function LedgerPage() {
   const totalPages = Math.max(Math.ceil(visibleRows.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
   const startIndex = (currentPage - 1) * pageSize;
-  // Date sort drives the on-screen order (newest first by default); the
-  // running balance was already computed chronologically.
+  // Date sort drives the on-screen order (oldest first by default, like a
+  // conventional ledger); the running balance was already computed chronologically.
   const pageRows = [...visibleRows]
     .sort((a, b) => (dateSort === "asc" ? a.timestamp.localeCompare(b.timestamp) : b.timestamp.localeCompare(a.timestamp)))
     .slice(startIndex, startIndex + pageSize);
