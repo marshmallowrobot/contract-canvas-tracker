@@ -247,7 +247,30 @@ function ReconciliationPage() {
         {selected && <>
           <SheetHeader className="border-b border-hair bg-panel px-6 py-5 text-left"><SheetDescription className="sr-only">Review pending buy {selected.id}</SheetDescription><div className="flex items-start justify-between gap-3 pr-4"><SheetTitle className="font-display text-xl text-ink">Review Incoming Buy</SheetTitle><span className={`mt-1 shrink-0 whitespace-nowrap rounded px-2 py-1 text-[11px] font-bold uppercase tracking-wide ${selected.match === "matched" ? "bg-moss-soft text-moss" : "bg-amber-soft text-amber"}`}>{matchLabel[selected.match]}</span></div></SheetHeader>
           <div className="flex-1 space-y-5 px-6 pb-6 pt-4">
-            <section><h3 className="mb-3 text-[10px] font-bold uppercase tracking-[0.1em] text-subtle">Incoming RIN buy</h3><dl className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel/50 p-4 shadow-inner"><Detail label="Trading partner" value={selected.partner} /><Detail label="RIN quantity" value={numberFmt.format(selected.rins)} /><Detail label="Gallons" value={numberFmt.format(selected.gallons)} /><Detail label="Price" value={selected.price} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Fuel / assignment</dt><dd className="mt-2 flex items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span></dd></div><Detail label="Invoice number" value={selected.invoice} /><Detail label="PTD number" value={selected.ptd} /><Detail label="Bill of lading" value={selected.bol} /><Detail label="Received" value={selected.received} /><div><dt className="text-[10px] font-bold uppercase text-subtle">Expires in</dt><dd className={`mt-2 text-sm font-semibold ${selected.expiresInDays <= 1 ? "text-rose" : selected.expiresInDays <= 5 ? "text-amber" : "text-ink"}`}>{expirationLabel(selected.expiresInDays)}</dd></div></dl></section>
+            <section><h3 className="mb-3 text-[10px] font-bold uppercase tracking-[0.1em] text-subtle">Incoming RIN buy</h3><div className="grid grid-cols-2 gap-4 rounded-md border border-hair bg-panel/50 p-4 shadow-inner">
+              <dl className="flex flex-col gap-4">
+                <Detail label="Trading partner" value={selected.partner} />
+                <Detail label="PTD number" value={selected.ptd} />
+                <Detail label="Bill of lading" value={selected.bol} />
+                <Detail label="Invoice number" value={selected.invoice} />
+                <Detail label="Received" value={selected.received} />
+              </dl>
+              <dl className="flex flex-col gap-4">
+                <div>
+                  <dt className="text-[10px] font-bold uppercase text-subtle">Fuel</dt>
+                  <dd className="mt-2 flex items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span></dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] font-bold uppercase text-subtle">RINs / Gal</dt>
+                  <dd className="mt-2 text-sm font-semibold tabular-nums">{numberFmt.format(selected.rins)} <span className="text-[11px] font-normal text-subtle">/ {numberFmt.format(selected.gallons)} gal</span></dd>
+                </div>
+                <Detail label="Price" value={selected.price} />
+                <div>
+                  <dt className="text-[10px] font-bold uppercase text-subtle">Expires in</dt>
+                  <dd className={`mt-2 text-sm font-semibold ${selected.expiresInDays <= 1 ? "text-rose" : selected.expiresInDays <= 5 ? "text-amber" : "text-ink"}`}>{expirationLabel(selected.expiresInDays)}</dd>
+                </div>
+              </dl>
+            </div></section>
 
             {suggestions.length > 0 && <div className="rounded-md bg-settle-soft p-4"><p className="text-xs font-semibold text-ink"><Layers className="mr-1 inline size-3.5 text-settle" />Possible settlement {suggestions.length === 1 ? "group" : "groups"}</p><p className="mt-1 text-[11px] text-subtle">Buys that together land within 1% of the contracts' outstanding balance</p><ul className="mt-3 space-y-2">{suggestions.map((g) => <li key={g.key} className="flex items-center justify-between gap-3 rounded border border-hair bg-panel px-3 py-2"><div className="text-xs"><span className="font-bold text-ink">{g.contractId}</span> <span className="text-subtle">· {g.partner}</span><div className="mt-0.5 text-[11px] text-subtle">This buy + {g.buys.length - 1} other{g.buys.length > 2 ? "s" : ""} · {numberFmt.format(g.total)} / {numberFmt.format(g.outstandingRins)} RINs</div></div><Button size="sm" variant="outline" className="shrink-0" onClick={() => openGroup(g)}>Review group</Button></li>)}</ul></div>}
 
