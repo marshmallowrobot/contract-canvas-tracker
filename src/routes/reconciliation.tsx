@@ -63,6 +63,9 @@ function MatchSignalChips({ buy, contractId, outstandingRins }: { buy: PendingBu
           </span>
         );
       })}
+      <span key="qty" title={qtyTitle} className={`rounded px-1 py-px text-[9px] font-bold uppercase tracking-wide ${qtyExact ? "border border-moss/40 bg-moss-soft text-moss" : "border border-hair text-subtle"}`}>
+        Qty
+      </span>
     </div>
   );
 }
