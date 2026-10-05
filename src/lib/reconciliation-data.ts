@@ -115,7 +115,7 @@ export type OpenContractRef = { contractId: string; dealNumber: string; counterp
  *  - Needs Review buys: limited by trading partner — only open contracts for that
  *    partner (or already-matched candidates), pooled with other pending buys from
  *    the same partner (name compared loosely: case, punctuation, Inc/LLC suffixes).
- * Groups are 2–3 buys totalling 99%–100% of the outstanding balance (never over).
+ * Groups are 2–3 buys totalling exactly the outstanding balance (never over).
  * Search uses a quantity-sorted pool + binary search: pairs are O(log n) and
  * triples O(n log n) per contract. Closest suggestions first, max 3.
  */
@@ -152,7 +152,7 @@ export function suggestSettlementGroups(buy: PendingBuy, buys: PendingBuy[], ope
         : b.match !== "matched" && normalizePartner(b.contractPartner ?? b.partner) === cKey))
       .sort((a, b) => a.rins - b.rins);
     const hi = c.outstandingRins - buy.rins;
-    const lo = c.outstandingRins * 0.99 - buy.rins;
+    const lo = hi; // exact-quantity settlement only
     if (hi <= 0) continue;
     const push = (members: PendingBuy[]) => {
       const total = members.reduce((s, b) => s + b.rins, 0);

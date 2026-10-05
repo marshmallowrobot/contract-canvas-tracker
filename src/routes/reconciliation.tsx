@@ -67,9 +67,9 @@ function expirationLabel(days: number) {
   return days === 1 ? "1 day" : `${days} days`;
 }
 
-/** Matched buy whose RINs land within 1% of the matched contract's balance — approving settles it. */
+/** Matched buy whose RINs exactly equal the matched contract's balance — approving settles it. */
 function wouldSettle(buy: PendingBuy) {
-  return buy.match === "matched" && buy.contractOutstandingRins != null && buy.rins >= buy.contractOutstandingRins * 0.99;
+  return buy.match === "matched" && buy.contractOutstandingRins != null && buy.rins === buy.contractOutstandingRins;
 }
 
 function Fuel({ buy }: { buy: PendingBuy }) {
@@ -273,7 +273,7 @@ function ReconciliationPage() {
               </dl>
             </div></section>
 
-            {suggestions.length > 0 && <div className="rounded-md bg-settle-soft p-4"><p className="text-xs font-semibold text-ink"><Layers className="mr-1 inline size-3.5 text-settle" />Possible settlement {suggestions.length === 1 ? "group" : "groups"}</p><p className="mt-1 text-[11px] text-subtle">Buys that together land within 1% of the contracts' outstanding balance</p><ul className="mt-3 space-y-2">{suggestions.map((g) => <li key={g.key} className="flex items-center justify-between gap-3 rounded border border-hair bg-panel px-3 py-2"><div className="text-xs"><span className="font-bold text-ink">{g.contractId}</span> <span className="text-subtle">· {g.partner}</span><div className="mt-0.5 text-[11px] text-subtle">This buy + {g.buys.length - 1} other{g.buys.length > 2 ? "s" : ""} · {numberFmt.format(g.total)} / {numberFmt.format(g.outstandingRins)} RINs</div></div><Button size="sm" variant="outline" className="shrink-0" onClick={() => openGroup(g)}>Review group</Button></li>)}</ul></div>}
+            {suggestions.length > 0 && <div className="rounded-md bg-settle-soft p-4"><p className="text-xs font-semibold text-ink"><Layers className="mr-1 inline size-3.5 text-settle" />Possible settlement {suggestions.length === 1 ? "group" : "groups"}</p><p className="mt-1 text-[11px] text-subtle">Buys that together will settle a contract's outstanding balance</p><ul className="mt-3 space-y-2">{suggestions.map((g) => <li key={g.key} className="flex items-center justify-between gap-3 rounded border border-hair bg-panel px-3 py-2"><div className="text-xs"><span className="font-bold text-ink">{g.contractId}</span> <span className="text-subtle">· {g.partner}</span><div className="mt-0.5 text-[11px] text-subtle">This buy + {g.buys.length - 1} other{g.buys.length > 2 ? "s" : ""} · {numberFmt.format(g.total)} / {numberFmt.format(g.outstandingRins)} RINs</div></div><Button size="sm" variant="outline" className="shrink-0" onClick={() => openGroup(g)}>Review group</Button></li>)}</ul></div>}
 
             <section className="rounded-md border border-hair bg-panel p-4 shadow-sm">
               <h3 className="mb-1 font-display text-sm font-bold">Apply this buy to a contract</h3>
@@ -407,7 +407,7 @@ function ReconciliationPage() {
             </section>
             <div role="alert" className="rounded-md bg-settle-soft p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-settle">Contract would settle</p>
-              <p className="mt-1 text-xs leading-relaxed text-ink">Approving all {group.buys.length} buys applies {numberFmt.format(group.total)} RINs to {group.contractId}{group.total === group.outstandingRins ? ", exactly matching its outstanding balance" : `, within 1% of its ${numberFmt.format(group.outstandingRins)} outstanding RINs`}. The contract settles. To handle a buy differently, review it on its own instead.</p>
+              <p className="mt-1 text-xs leading-relaxed text-ink">Approving all {group.buys.length} buys applies {numberFmt.format(group.total)} RINs to {group.contractId}. The contract settles. To handle a buy differently, review it on its own instead.</p>
             </div>
           </div>
           <div className="mt-auto flex items-center justify-between gap-3 border-t border-hair bg-panel px-6 py-4">
