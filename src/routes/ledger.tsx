@@ -422,6 +422,7 @@ function LedgerPage() {
 {showBalance && (
                     <th className="px-5 py-2.5 text-right font-medium">{contractScopeActive ? "Contract Balance" : "Balance"}</th>
                   )}
+                  <th className="w-10 px-3 py-2.5"><span className="sr-only">Open details</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -432,11 +433,7 @@ function LedgerPage() {
                   return (
                   <tr
                     key={row.ledgerItemId}
-                    className="group cursor-pointer border-b border-hair last:border-0 hover:bg-table-head"
-                    onClick={(e) => {
-                      if ((e.target as HTMLElement).closest("a,button")) return;
-                      setDetailRow(row);
-                    }}
+                    className="border-b border-hair last:border-0 hover:bg-table-head"
                   >
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
@@ -491,6 +488,11 @@ function LedgerPage() {
                         {numberFmt.format(contractScopeActive ? scopedBalances.get(row.ledgerItemId) ?? row.runningBalance : row.runningBalance)}
                       </td>
                     )}
+                    <td className="w-10 px-3 py-3.5 text-right">
+                      <Button variant="ghost" size="icon" className="size-7 text-primary" title={`Ledger item ${row.ledgerItemId}`} aria-label={`Open details for ${row.ledgerItemId}`} onClick={() => setDetailRow(row)}>
+                        <ChevronRight className="size-4" />
+                      </Button>
+                    </td>
                   </tr>
                   );
                 })}
@@ -517,6 +519,7 @@ function LedgerPage() {
                         )}
                       </td>
                     )}
+                    <td />
                   </tr>
                 </tfoot>
               )}
