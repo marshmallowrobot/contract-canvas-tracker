@@ -307,7 +307,7 @@ function ReconciliationPage() {
                           <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
                         </span>
                         <span className="shrink-0">
-                          <MatchSignalChips buy={selected} contractId={candidate.contractId} />
+                          <MatchSignalChips buy={selected} contractId={candidate.contractId} outstandingRins={candidate.outstandingRins} />
                         </span>
                       </span>
                     </button>)}
@@ -326,7 +326,7 @@ function ReconciliationPage() {
                             <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(selected.contractOutstandingRins ?? match?.outstandingRins ?? 0)} RINs</span>
                           </span>
                           <span className="shrink-0">
-                            <MatchSignalChips buy={selected} contractId={selected.contractId} />
+                            <MatchSignalChips buy={selected} contractId={selected.contractId} outstandingRins={selected.contractOutstandingRins ?? match?.outstandingRins} />
                           </span>
                         </span>
                       </button>;
