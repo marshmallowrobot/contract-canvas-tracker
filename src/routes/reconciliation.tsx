@@ -33,10 +33,15 @@ const fuelClass: Record<RinCode, string> = {
 const matchLabel = { matched: "Matched", "needs-review": "Needs Review", unmatched: "Unmatched" } as const;
 
 /** Why the engine selected the matched contract: one chip per search field, hit / miss / fuzzy. */
-function MatchSignalChips({ buy, contractId }: { buy: PendingBuy; contractId?: string | null }) {
+function MatchSignalChips({ buy, contractId, outstandingRins }: { buy: PendingBuy; contractId?: string | null; outstandingRins?: number | null }) {
   const signals = matchSignals[buy.id];
-  if (!signals) return null;
   const target = contractId ?? buy.contractId;
+  const qtyExact = outstandingRins != null && buy.rins === outstandingRins;
+  const qtyTitle = outstandingRins == null
+    ? "No contract selected to compare quantity"
+    : qtyExact
+      ? `${numberFmt.format(buy.rins)} RINs exactly match ${target ?? "the contract"}'s outstanding balance`
+      : `${numberFmt.format(buy.rins)} RINs vs ${numberFmt.format(outstandingRins)} RINs outstanding — not an exact match`;
   return (
     <div className="mt-1.5 flex flex-wrap gap-1" aria-label={`Match signals for ${buy.id}`}>
       {SIGNAL_FIELDS.map(({ key, label }) => {
