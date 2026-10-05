@@ -33,14 +33,19 @@ const fuelClass: Record<RinCode, string> = {
 const matchLabel = { matched: "Matched", "needs-review": "Needs Review", unmatched: "Unmatched" } as const;
 
 /** Why the engine selected the matched contract: one chip per search field, hit / miss / fuzzy. */
-function MatchSignalChips({ buy, contractId }: { buy: PendingBuy; contractId?: string | null }) {
+function MatchSignalChips({ buy, contractId, outstandingRins }: { buy: PendingBuy; contractId?: string | null; outstandingRins?: number | null | undefined }) {
   const signals = matchSignals[buy.id];
-  if (!signals) return null;
   const target = contractId ?? buy.contractId;
+  const qtyExact = outstandingRins != null && buy.rins === outstandingRins;
+  const qtyTitle = outstandingRins == null
+    ? "No contract selected to compare quantity"
+    : qtyExact
+      ? `${numberFmt.format(buy.rins)} RINs exactly match ${target ?? "the contract"}'s outstanding balance`
+      : `${numberFmt.format(buy.rins)} RINs vs ${numberFmt.format(outstandingRins)} RINs outstanding — not an exact match`;
   return (
     <div className="mt-1.5 flex flex-wrap gap-1" aria-label={`Match signals for ${buy.id}`}>
       {SIGNAL_FIELDS.map(({ key, label }) => {
-        const value = signals[key];
+        const value = signals?.[key];
         const hit = value === true;
         const fuzzy = value === "fuzzy";
         const title = hit
@@ -58,6 +63,9 @@ function MatchSignalChips({ buy, contractId }: { buy: PendingBuy; contractId?: s
           </span>
         );
       })}
+      <span key="qty" title={qtyTitle} className={`rounded px-1 py-px text-[9px] font-bold uppercase tracking-wide ${qtyExact ? "border border-moss/40 bg-moss-soft text-moss" : "border border-hair text-subtle"}`}>
+        Qty
+      </span>
     </div>
   );
 }
@@ -234,7 +242,7 @@ function ReconciliationPage() {
                   <span className="text-subtle" aria-hidden="true">—</span>
                 )}
               </td>
-              <td className="px-5 py-3"><div className="flex items-start justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span><MatchSignalChips buy={buy} /></div><Button variant="ghost" size="icon" className="size-7 shrink-0 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
+              <td className="px-5 py-3"><div className="flex items-start justify-between gap-2"><div><span className={`whitespace-nowrap text-xs font-semibold ${buy.match === "matched" ? "text-moss" : "text-amber"}`}>{matchLabel[buy.match]}</span><MatchSignalChips buy={buy} outstandingRins={buy.contractOutstandingRins} /></div><Button variant="ghost" size="icon" className="size-7 shrink-0 text-primary" title={`Review ${buy.id}`} aria-label={`Review ${buy.id}`} onClick={() => openReview(buy)}><ChevronRight className="size-4" /></Button></div></td>
             </tr>)}</tbody>
           </table>
           {visible.length === 0 && <div className="py-12 text-center text-sm text-subtle">No pending buys match these filters.</div>}
@@ -299,7 +307,7 @@ function ReconciliationPage() {
                           <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
                         </span>
                         <span className="shrink-0">
-                          <MatchSignalChips buy={selected} contractId={candidate.contractId} />
+                          <MatchSignalChips buy={selected} contractId={candidate.contractId} outstandingRins={candidate.outstandingRins} />
                         </span>
                       </span>
                     </button>)}
@@ -318,7 +326,7 @@ function ReconciliationPage() {
                             <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(selected.contractOutstandingRins ?? match?.outstandingRins ?? 0)} RINs</span>
                           </span>
                           <span className="shrink-0">
-                            <MatchSignalChips buy={selected} contractId={selected.contractId} />
+                            <MatchSignalChips buy={selected} contractId={selected.contractId} outstandingRins={selected.contractOutstandingRins ?? match?.outstandingRins} />
                           </span>
                         </span>
                       </button>;
