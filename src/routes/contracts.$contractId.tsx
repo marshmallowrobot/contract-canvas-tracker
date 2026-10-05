@@ -251,7 +251,7 @@ function ContractDetail() {
           </Button>
           <div className="flex items-center gap-2">
             <Button asChild variant="outline" size="sm" className="border-hair text-primary hover:bg-table-head hover:text-primary">
-              <Link to="/ledger" search={{ contract: contract.contractId }}>
+              <Link to="/ledger" search={{ contract: undefined, deal: contract.dealNumber }}>
                 View ledger entries
               </Link>
             </Button>
