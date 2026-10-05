@@ -81,13 +81,19 @@ function wouldSettle(buy: PendingBuy) {
   return buy.match === "matched" && buy.contractOutstandingRins != null && buy.rins === buy.contractOutstandingRins;
 }
 
+/** QAP service type chiclet: "QR" for Q-RIN, "UNV" for Unverified; hover spells it out. */
+function Qap({ qap }: { qap: PendingBuy["qap"] }) {
+  return <span title={`QAP service type: ${qap}`} aria-label={`QAP service type: ${qap}`} className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold ${qap === "Q-RIN" ? "border border-moss/40 bg-moss-soft text-moss" : "border border-dashed border-hair bg-panel text-subtle"}`}>{qap === "Q-RIN" ? "QR" : "UNV"}</span>;
+}
+
 function Fuel({ buy }: { buy: PendingBuy }) {
-  return <div className="flex items-center gap-2 whitespace-nowrap">
+  return <div className="flex flex-wrap items-center gap-1.5 whitespace-nowrap">
     <span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[buy.fuel]}`}>{buy.fuel}</span>
     <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{buy.year}</span>
     <span title={buy.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={buy.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${buy.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>
       {buy.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}
     </span>
+    <Qap qap={buy.qap} />
   </div>;
 }
 
@@ -268,7 +274,7 @@ function ReconciliationPage() {
               <dl className="flex flex-col gap-4">
                 <div>
                   <dt className="text-[10px] font-bold uppercase text-subtle">Fuel</dt>
-                  <dd className="mt-2 flex items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span></dd>
+                  <dd className="mt-2 flex flex-wrap items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span> <Qap qap={selected.qap} /></dd>
                 </div>
                 <div>
                   <dt className="text-[10px] font-bold uppercase text-subtle">RINs / Gal</dt>
