@@ -82,10 +82,6 @@ function wouldSettle(buy: PendingBuy) {
 }
 
 /** QAP service type chiclet: identical neutral pill style; hover spells the value out. */
-function Qap({ qap }: { qap: PendingBuy["qap"] }) {
-  return <span title={`QAP service type: ${qap}`} aria-label={`QAP service type: ${qap}`} className="inline-flex items-center rounded-full border border-hair bg-card px-2 py-0.5 text-[10px] font-bold text-subtle">{qap === "Q-RIN" ? "Q-RIN" : "UNVER"}</span>;
-}
-
 function Fuel({ buy }: { buy: PendingBuy }) {
   return <div className="flex flex-wrap items-center gap-1.5 whitespace-nowrap">
     <span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[buy.fuel]}`}>{buy.fuel}</span>
@@ -93,7 +89,6 @@ function Fuel({ buy }: { buy: PendingBuy }) {
     <span title={buy.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={buy.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${buy.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>
       {buy.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}
     </span>
-    <Qap qap={buy.qap} />
   </div>;
 }
 
@@ -223,7 +218,7 @@ function ReconciliationPage() {
               <col className="w-[224px]" />
             </colgroup>
             <thead>
-              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-3 py-2"><input type="checkbox" aria-label="Select all matched buys" checked={allMatchedChecked} onChange={toggleAllMatched} disabled={matchedVisible.length === 0} className="size-4 accent-primary disabled:opacity-40" /></th><th className="px-5 py-2">Buy details</th><th className="px-2 py-2">Fuel</th><th className="px-2 py-2 text-right">RINs / Gal</th><th className="px-2 py-2 text-right">Price</th><th className="px-5 py-2">Auto-matched contract</th><th className="px-5 py-2">Match</th></tr>
+              <tr className="border-b border-hair bg-table-head text-[10px] font-bold uppercase text-subtle"><th className="px-3 py-2"><input type="checkbox" aria-label="Select all matched buys" checked={allMatchedChecked} onChange={toggleAllMatched} disabled={matchedVisible.length === 0} className="size-4 accent-primary disabled:opacity-40" /></th><th className="px-5 py-2">Buy details</th><th className="px-2 py-2">RIN Details</th><th className="px-2 py-2 text-right">RINs / Gal</th><th className="px-2 py-2 text-right">Price</th><th className="px-5 py-2">Auto-matched contract</th><th className="px-5 py-2">Match</th></tr>
             </thead>
             <tbody>{visible.map((buy) => <tr key={buy.id} className="border-b border-hair last:border-0 hover:bg-table-head">
               <td className="px-3 py-3">{buy.match === "matched" ? <input type="checkbox" aria-label={`Select matched buy from ${buy.partner}`} checked={checkedIds.has(buy.id)} onChange={() => toggleBuy(buy)} className="size-4 accent-primary" /> : <span className="text-subtle" aria-hidden="true">—</span>}</td>
@@ -274,7 +269,7 @@ function ReconciliationPage() {
               <dl className="flex flex-col gap-4">
                 <div>
                   <dt className="text-[10px] font-bold uppercase text-subtle">Fuel</dt>
-                  <dd className="mt-2 flex flex-wrap items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span> <Qap qap={selected.qap} /></dd>
+                  <dd className="mt-2 flex flex-wrap items-center gap-1.5"><span className={`inline-flex min-w-8 items-center justify-center rounded px-1.5 py-0.5 text-[11px] font-bold ${fuelClass[selected.fuel]}`}>{selected.fuel}</span> <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{selected.year}</span> <span title={selected.assignment === "assigned" ? "Assigned" : "Separated"} aria-label={selected.assignment === "assigned" ? "Assigned" : "Separated"} className={`inline-flex size-5 items-center justify-center rounded-sm border ${selected.assignment === "assigned" ? "border-assigned-border bg-assigned text-assigned-foreground" : "border-hair bg-panel text-ink"}`}>{selected.assignment === "assigned" ? <ArrowRight className="size-3" /> : <Split className="size-3" />}</span></dd>
                 </div>
                 <div>
                   <dt className="text-[10px] font-bold uppercase text-subtle">RINs / Gal</dt>

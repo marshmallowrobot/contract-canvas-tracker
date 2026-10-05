@@ -29,7 +29,45 @@ import {
   Columns
 } from 'lucide-react';
 
-const MOCK_BUYS = [
+type MatchBreakdownItem = { field: string; score: number; detail: string };
+type MatchedContract = {
+  contractId: string;
+  counterparty: string;
+  remainingBalance: number;
+  contractPrice: number;
+  fuelCode: string;
+  expirationDate: string;
+  breakdown: MatchBreakdownItem[];
+};
+type ContractCandidate = {
+  contractId: string;
+  counterparty: string;
+  fuelCode: string;
+  contractPrice: number;
+  remainingBalance: number;
+  confidence: number;
+  expirationDate?: string;
+  isRecommended?: boolean;
+  breakdown?: MatchBreakdownItem[];
+};
+type Buy = {
+  id: string;
+  counterparty: string;
+  fuelCode: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  totalValue: number;
+  deliveryDate: string;
+  location: string;
+  confidence: number;
+  category: "high" | "fuzzy" | "unmatched";
+  reasonSummary?: string;
+  matchedContract: MatchedContract | null;
+  candidates: ContractCandidate[];
+};
+
+const MOCK_BUYS: Buy[] = [
   // High Confidence Matches
   {
     id: "BUY-8841",
@@ -248,18 +286,18 @@ const MASTER_CONTRACTS_LIBRARY = [
 export default function ReconciliationWorkspace() {
   const [activeTab, setActiveTab] = useState('high'); // 'high', 'fuzzy', 'unmatched'
   const [prototypeMode, setPrototypeMode] = useState('grid'); // 'grid' (Prototype A) or 'split' (Prototype B)
-  const [buysData, setBuysData] = useState(MOCK_BUYS);
+  const [buysData, setBuysData] = useState<Buy[]>(MOCK_BUYS);
   
   // Selection and Modal State
-  const [selectedBuyIds, setSelectedBuyIds] = useState([]);
+  const [selectedBuyIds, setSelectedBuyIds] = useState<string[]>([]);
   const [executingBatch, setExecutingBatch] = useState(false);
-  const [executedToast, setExecutedToast] = useState(null);
+  const [executedToast, setExecutedToast] = useState<string | null>(null);
   
   // Fuzzy & Manual Match Details State
-  const [focusedFuzzyBuy, setFocusedFuzzyBuy] = useState(null);
-  const [selectedCandidateId, setSelectedCandidateId] = useState(null);
-  const [manualLinkBuy, setManualLinkBuy] = useState(null);
-  const [unreconcileBuyModal, setUnreconcileBuyModal] = useState(null);
+  const [focusedFuzzyBuy, setFocusedFuzzyBuy] = useState<Buy | null>(null);
+  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
+  const [manualLinkBuy, setManualLinkBuy] = useState<Buy | null>(null);
+  const [unreconcileBuyModal, setUnreconcileBuyModal] = useState<Buy | null>(null);
   const [unreconcileReason, setUnreconcileReason] = useState('Spot Market Exemption');
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -274,9 +312,11 @@ export default function ReconciliationWorkspace() {
   // Set default selected fuzzy buy if empty
   React.useEffect(() => {
     if (fuzzyBuys.length > 0 && !focusedFuzzyBuy) {
-      setFocusedFuzzyBuy(fuzzyBuys[0]);
-      if (fuzzyBuys[0].candidates.length > 0) {
-        setSelectedCandidateId(fuzzyBuys[0].candidates[0].contractId);
+      const first = fuzzyBuys[0];
+      if (first) {
+        setFocusedFuzzyBuy(first);
+        const firstCandidate = first.candidates[0];
+        if (firstCandidate) setSelectedCandidateId(firstCandidate.contractId);
       }
     }
   }, [fuzzyBuys, focusedFuzzyBuy]);
@@ -297,7 +337,7 @@ export default function ReconciliationWorkspace() {
   }, [activeTab, highBuys, fuzzyBuys, unmatchedBuys, searchTerm, filterFuel]);
 
   // Selection Logic for Tab 1 (Bulk)
-  const handleSelectAll = (e) => {
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       setSelectedBuyIds(currentTabBuys.map(b => b.id));
     } else {
@@ -305,7 +345,7 @@ export default function ReconciliationWorkspace() {
     }
   };
 
-  const handleSelectOne = (id) => {
+  const handleSelectOne = (id: string) => {
     if (selectedBuyIds.includes(id)) {
       setSelectedBuyIds(selectedBuyIds.filter(item => item !== id));
     } else {
@@ -321,41 +361,43 @@ export default function ReconciliationWorkspace() {
     triggerToast(`Successfully executed and reconciled ${count} High-Confidence Buys.`);
   };
 
-  const handleApproveFuzzyMatch = (buyId, candidateContractId) => {
+  const handleApproveFuzzyMatch = (buyId: string, candidateContractId: string) => {
     setBuysData(prev => prev.filter(b => b.id !== buyId));
     triggerToast(`Buy ${buyId} approved & linked to Contract ${candidateContractId}.`);
     // Reset focus to next available item
     const remaining = fuzzyBuys.filter(b => b.id !== buyId);
     if (remaining.length > 0) {
-      setFocusedFuzzyBuy(remaining[0]);
-      if (remaining[0].candidates.length > 0) {
-        setSelectedCandidateId(remaining[0].candidates[0].contractId);
+      const next = remaining[0];
+      if (next) {
+        setFocusedFuzzyBuy(next);
+        const nextCandidate = next.candidates[0];
+        if (nextCandidate) setSelectedCandidateId(nextCandidate.contractId);
       }
     } else {
       setFocusedFuzzyBuy(null);
     }
   };
 
-  const handleManualContractLink = (buyId, contractId) => {
+  const handleManualContractLink = (buyId: string, contractId: string) => {
     setBuysData(prev => prev.filter(b => b.id !== buyId));
     setManualLinkBuy(null);
     triggerToast(`Buy ${buyId} manually mapped to Contract ${contractId} and executed.`);
   };
 
-  const handleApproveUnreconciled = (buyId) => {
+  const handleApproveUnreconciled = (buyId: string) => {
     setBuysData(prev => prev.filter(b => b.id !== buyId));
     setUnreconcileBuyModal(null);
     triggerToast(`Buy ${buyId} approved as UNRECONCILED. Audit Log updated with tag: "${unreconcileReason}".`);
   };
 
-  const triggerToast = (msg) => {
+  const triggerToast = (msg: string) => {
     setExecutedToast(msg);
     setTimeout(() => {
       setExecutedToast(null);
     }, 4500);
   };
 
-  const renderScoreBadge = (score, category) => {
+  const renderScoreBadge = (score: number, category: 'high' | 'fuzzy' | 'unmatched') => {
     let bgColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
     let icon = <CheckCircle2 className="w-3.5 h-3.5 mr-1" />;
     
@@ -601,7 +643,7 @@ export default function ReconciliationWorkspace() {
                 <tbody className="divide-y divide-slate-800/60">
                   {currentTabBuys.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="p-8 text-center text-slate-500">
+                      <td colSpan={7} className="p-8 text-center text-slate-500">
                         No high confidence buys pending execution.
                       </td>
                     </tr>
@@ -641,9 +683,9 @@ export default function ReconciliationWorkspace() {
                             <div className="text-slate-400">${buy.unitPrice.toFixed(2)}/gal (${buy.totalValue.toLocaleString()})</div>
                           </td>
                           <td className="p-3.5">
-                            <div className="font-mono text-emerald-400 font-bold">{buy.matchedContract.contractId}</div>
+                            <div className="font-mono text-emerald-400 font-bold">{buy.matchedContract!.contractId}</div>
                             <div className="text-slate-400 text-[11px]">
-                              Bal: {buy.matchedContract.remainingBalance.toLocaleString()} {buy.unit}
+                              Bal: {buy.matchedContract!.remainingBalance.toLocaleString()} {buy.unit}
                             </div>
                           </td>
                           <td className="p-3.5 text-center">
@@ -656,7 +698,7 @@ export default function ReconciliationWorkspace() {
                             <button
                               onClick={() => {
                                 setBuysData(prev => prev.filter(b => b.id !== buy.id));
-                                triggerToast(`Executed Buy ${buy.id} against Contract ${buy.matchedContract.contractId}`);
+                                triggerToast(`Executed Buy ${buy.id} against Contract ${buy.matchedContract!.contractId}`);
                               }}
                               className="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 rounded-lg text-xs font-semibold transition-all"
                             >
@@ -747,7 +789,7 @@ export default function ReconciliationWorkspace() {
                               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
                                 Match Rationale Scoring:
                               </span>
-                              {cand.breakdown.map((item, idx) => (
+                              {(cand.breakdown ?? []).map((item, idx) => (
                                 <div key={idx} className="flex items-center justify-between text-[11px]">
                                   <span className="text-slate-400">{item.field}:</span>
                                   <span className={`font-semibold ${item.score >= 90 ? 'text-emerald-400' : 'text-amber-400'}`}>
@@ -787,9 +829,8 @@ export default function ReconciliationWorkspace() {
                           key={buy.id}
                           onClick={() => {
                             setFocusedFuzzyBuy(buy);
-                            if (buy.candidates.length > 0) {
-                              setSelectedCandidateId(buy.candidates[0].contractId);
-                            }
+                            const firstCandidate = buy.candidates[0];
+                            if (firstCandidate) setSelectedCandidateId(firstCandidate.contractId);
                           }}
                           className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                             isFocused
@@ -958,7 +999,7 @@ export default function ReconciliationWorkspace() {
                 <tbody className="divide-y divide-slate-800/60">
                   {currentTabBuys.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="p-8 text-center text-slate-500">
+                      <td colSpan={6} className="p-8 text-center text-slate-500">
                         No unmatched exception buys present.
                       </td>
                     </tr>

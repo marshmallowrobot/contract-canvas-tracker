@@ -54,7 +54,7 @@ function expiryClass(days: number) {
 type Row = {
   buy: PendingBuy;
   candidates: Assessment[];
-  best?: Assessment;
+  best?: Assessment | undefined;
   /** More than one contract explains this buy nearly as well — never safe to bulk-approve. */
   ambiguous: boolean;
   ready: boolean;
@@ -96,7 +96,7 @@ function partialDrawNote(assessment?: Assessment) {
 }
 
 /** One evidence cell. The hover title carries both values so nothing needs opening. */
-function EvidenceCell({ assessment, columnKey }: { assessment?: Assessment; columnKey: string }) {
+function EvidenceCell({ assessment, columnKey }: { assessment?: Assessment | undefined; columnKey: string }) {
   if (!assessment) return <td className="border-l border-hair bg-table-head/40 px-0 py-2 text-center text-subtle">·</td>;
   const signal = assessment.signals.find((entry) => entry.key === columnKey)!;
   const meta = verdictMeta[signal.verdict];
@@ -114,7 +114,7 @@ function EvidenceCell({ assessment, columnKey }: { assessment?: Assessment; colu
   );
 }
 
-function ScorePill({ assessment }: { assessment?: Assessment }) {
+function ScorePill({ assessment }: { assessment?: Assessment | undefined }) {
   if (!assessment) return <span className="text-[10px] font-bold uppercase text-subtle">None</span>;
   const meta = confidenceMeta[assessment.confidence];
   return (
