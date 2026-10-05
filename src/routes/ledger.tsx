@@ -191,7 +191,7 @@ function LedgerPage() {
       if (toDate && row.timestamp > toDate) return false;
       return true;
     });
-  }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
+  }, [contractFilter, dealFilter, partnerFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
 
 
   const activeFilterCount =
