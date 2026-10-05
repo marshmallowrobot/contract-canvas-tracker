@@ -290,11 +290,17 @@ function ReconciliationPage() {
                       <span aria-hidden="true" className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${chosenContract === candidate.contractId ? "border-primary bg-primary" : "border-subtle"}`}>
                         {chosenContract === candidate.contractId && <Check className="size-2.5 text-primary-foreground" strokeWidth={3.5} />}
                       </span>
-                      <span className="flex-1">
-                        <span className="flex flex-wrap items-baseline justify-between gap-2"><span className="text-sm font-bold text-ink">{candidate.contractId}</span><span className="text-xs font-semibold text-primary">{candidate.dealNumber}</span></span>
-                        <span className="mt-1 block text-xs text-subtle">{candidate.partner} · {candidate.dueDate ? `Due ${candidate.dueDate}` : "No due date"}</span>
-                        <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
-                        <span className="mt-1 block text-[11px] font-semibold text-amber">Matched on {candidate.matchedOn}</span>
+                      <span className="flex flex-1 items-start justify-between gap-3">
+                        <span className="min-w-0">
+                          <span className="block text-sm font-bold text-ink">{candidate.partner}</span>
+                          <span className="mt-1 block text-xs font-semibold text-primary">{candidate.dealNumber}</span>
+                          {candidate.dueDate && <span className="mt-1 block text-xs text-subtle">Due {candidate.dueDate}</span>}
+                          <span className="mt-1 block text-xs text-subtle">Outstanding {numberFmt.format(candidate.outstandingRins)} RINs</span>
+                        </span>
+                        <span className="shrink-0">
+                          <span className={`block whitespace-nowrap text-[11px] font-semibold ${selected.match === "matched" ? "text-moss" : "text-amber"}`}>Matched on {candidate.matchedOn}</span>
+                          <MatchSignalChips buy={selected} contractId={candidate.contractId} />
+                        </span>
                       </span>
                     </button>)}
                     {!selected.candidateContracts?.length && selected.contractId && (() => {
