@@ -81,9 +81,9 @@ function wouldSettle(buy: PendingBuy) {
   return buy.match === "matched" && buy.contractOutstandingRins != null && buy.rins === buy.contractOutstandingRins;
 }
 
-/** QAP service type chiclet: "QRIN" for Q-RIN, "UNVER" for Unverified; hover spells it out. */
+/** QAP service type chiclet: "Q-RIN" for Q-RIN, "UNVER" for Unverified; hover spells it out. */
 function Qap({ qap }: { qap: PendingBuy["qap"] }) {
-  return <span title={`QAP service type: ${qap}`} aria-label={`QAP service type: ${qap}`} className={`inline-flex items-center rounded-full border bg-card px-2 py-0.5 text-[10px] font-bold ${qap === "Q-RIN" ? "border-moss text-moss" : "border-hair text-subtle"}`}>{qap === "Q-RIN" ? "QRIN" : "UNVER"}</span>;
+  return <span title={`QAP service type: ${qap}`} aria-label={`QAP service type: ${qap}`} className={`inline-flex items-center rounded-full border bg-card px-2 py-0.5 text-[10px] font-bold ${qap === "Q-RIN" ? "border-moss text-moss" : "border-hair text-subtle"}`}>{qap === "Q-RIN" ? "Q-RIN" : "UNVER"}</span>;
 }
 
 function Fuel({ buy }: { buy: PendingBuy }) {
