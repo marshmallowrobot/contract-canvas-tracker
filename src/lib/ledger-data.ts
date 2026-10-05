@@ -141,7 +141,7 @@ function contractEntries(): Draft[] {
 
     const last = txs.length ? txs[txs.length - 1]!.iso : opened;
     if (c.contractStatus === "cancelled") {
-      out.push({ ...base, ...noFuel, timestamp: addDays(last, 5), ledgerItemType: "contract_cancellation", quantity: -starting, transactionId: null, createdBy: user(1) });
+      out.push({ ...base, ...noFuel, timestamp: addDays(last, 5), ledgerItemType: "contract_cancellation", quantity: -starting, transactionId: null, createdBy: user(1), notes: c.terminationNote ?? `Contract cancelled before any buys were applied; ${starting.toLocaleString("en-US")} RINs removed.` });
     }
     if (c.contractStatus === "terminated" && c.writtenDownRins) {
       out.push({ ...base, ...noFuel, timestamp: addDays(last, 7), ledgerItemType: "contract_termination", quantity: -c.writtenDownRins, transactionId: null, createdBy: user(1), notes: c.terminationNote ?? `Contract terminated; remaining ${c.writtenDownRins.toLocaleString("en-US")} RINs written down.` });
