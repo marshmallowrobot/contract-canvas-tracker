@@ -36,11 +36,17 @@ function MatchSignalChips({ buy, contractId }: { buy: PendingBuy; contractId?: s
   const signals = matchSignals[buy.id];
   if (!signals) return null;
   const target = contractId ?? buy.contractId;
-  const title = hit
-    ? `${label} found on ${target}`
-    : fuzzy
-      ? `Partner differs slightly from ${target} (fuzzy match)`
-      : `${label} not found on ${target ?? "any contract"}`;
+  return (
+    <div className="mt-1.5 flex flex-wrap gap-1" aria-label={`Match signals for ${buy.id}`}>
+      {SIGNAL_FIELDS.map(({ key, label }) => {
+        const value = signals[key];
+        const hit = value === true;
+        const fuzzy = value === "fuzzy";
+        const title = hit
+          ? `${label} found on ${target}`
+          : fuzzy
+            ? `Partner differs slightly from ${target} (fuzzy match)`
+            : `${label} not found on ${target ?? "any contract"}`;
         return (
           <span
             key={key}
