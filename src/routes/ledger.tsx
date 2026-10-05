@@ -171,6 +171,7 @@ function LedgerPage() {
   const visibleRows = useMemo(() => {
     const contract = contractFilter.trim().toLowerCase();
     const deal = dealFilter.trim().toLowerCase();
+    const partner = partnerFilter.trim().toLowerCase();
     const transaction = transactionFilter.trim().toLowerCase();
     const ledgerItem = ledgerItemFilter.trim().toLowerCase();
     return rows.filter((row) => {
@@ -178,6 +179,10 @@ function LedgerPage() {
       if (deal) {
         const dealNumber = row.buyContractId ? getContract(row.buyContractId)?.dealNumber ?? "" : "";
         if (dealNumber.toLowerCase() !== deal) return false;
+      }
+      if (partner) {
+        const name = row.buyContractId ? getContract(row.buyContractId)?.counterparty ?? "" : "";
+        if (!name.toLowerCase().includes(partner)) return false;
       }
       if (typeFilter !== "all" && row.ledgerItemType !== typeFilter) return false;
       if (transaction && !(row.transactionId ?? "").toLowerCase().includes(transaction)) return false;
