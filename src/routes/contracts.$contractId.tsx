@@ -305,7 +305,7 @@ function ContractDetail() {
                 {contract.contractId}
               </h1>
               <div className="mt-1 text-sm text-subtle">
-                Deal #{contract.dealNumber} ·{" "}
+                Source Key {contract.dealNumber} ·{" "}
                 {contract.dueDate ? (
                   overdue || dueSoon ? (
                     <span className={`font-semibold ${dueTint}`}>
