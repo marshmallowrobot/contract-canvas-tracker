@@ -227,7 +227,7 @@ function ReconciliationPage() {
                     <div className="text-xs font-medium">{buy.contractPartner ?? buy.partner}</div>
                     <div className="mt-0.5 text-[11px] text-subtle">{buy.dealNumber}</div>
                     <div className="mt-0.5 text-[11px] text-subtle">Balance {numberFmt.format(buy.contractOutstandingRins ?? 0)} RINs</div>
-                    {wouldSettle(buy) && <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract would settle"><TriangleAlert className="size-3" /> Would settle</div>}
+                    {wouldSettle(buy) && <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-settle" title="Contract settles"><TriangleAlert className="size-3" /> Settles</div>}
                   </div>
                 ) : (
                   <span className="text-subtle" aria-hidden="true">—</span>
