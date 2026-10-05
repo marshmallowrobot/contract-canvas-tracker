@@ -359,16 +359,11 @@ function ReconciliationPage() {
                 ?? (selected.contractId === chosenContract ? selected.contractOutstandingRins ?? openContracts.find((c) => c.contractId === chosenContract)?.outstandingRins : undefined)
                 ?? openContracts.find((c) => c.contractId === chosenContract)?.outstandingRins;
               if (outstanding == null) return null;
-              if (selected.rins < outstanding * 0.99) return null;
-              const overflow = selected.rins - outstanding;
+              if (selected.rins !== outstanding) return null;
               return <div role="alert" className="rounded-md bg-settle-soft p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-settle">Contract would settle</p>
                 <p className="mt-1 text-xs leading-relaxed text-ink">
-                  {overflow > 0
-                    ? `The buy's ${numberFmt.format(selected.rins)} RINs exceed ${chosenContract}'s outstanding balance of ${numberFmt.format(outstanding)} RINs. Approving settles the contract and moves the extra ${numberFmt.format(overflow)} RINs to the Unassigned pool.`
-                    : overflow === 0
-                      ? `The buy's ${numberFmt.format(selected.rins)} RINs exactly match ${chosenContract}'s outstanding balance. Approving settles the contract.`
-                      : `The buy's ${numberFmt.format(selected.rins)} RINs are within 1% of ${chosenContract}'s outstanding balance of ${numberFmt.format(outstanding)} RINs. Approving settles the contract.`}
+                  {`The buy's ${numberFmt.format(selected.rins)} RINs exactly match ${chosenContract}'s outstanding balance. Approving settles the contract.`}
                 </p>
               </div>;
             })()}
