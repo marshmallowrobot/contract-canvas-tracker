@@ -28,6 +28,8 @@ export type BuyTransaction = {
   rinCode: RinCode;
   vintageYear: number;
   assignmentType: AssignmentType;
+  /** QAP verification status for this buy. */
+  qapServiceType: "q_rin" | "unverified";
   txStatus: BuyTransactionStatus;
   /** RINs applied to this contract (capped at the outstanding balance). */
   rinApplied: number;
