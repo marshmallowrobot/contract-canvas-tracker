@@ -230,6 +230,7 @@ function LedgerPage() {
 
   const clearFilters = () => {
     setContractFilter("");
+    setPartnerFilter("");
     setDealFilter("");
     setTypeFilter("all");
     setTransactionFilter("");
