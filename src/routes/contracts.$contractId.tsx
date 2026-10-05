@@ -406,10 +406,17 @@ function ContractDetail() {
                   <td className="px-4 py-3 text-xs font-semibold tabular-nums">{t.transactionId}</td>
                   <td className="px-4 py-2.5 text-[13px] text-subtle">{t.ptdNumber}</td>
                   <td className="px-4 py-2.5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 whitespace-nowrap">
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${rinCodeClass[t.rinCode]}`}>{t.rinCode}</span>
                       <span className="rounded-full border border-hair bg-panel px-2 py-0.5 text-[10px] font-bold text-ink">{t.vintageYear}</span>
                       <AssignmentMark type={t.assignmentType} />
+                      <span
+                        title={`QAP service type: ${qapServiceTypeLabel[t.qapServiceType]}`}
+                        aria-label={`QAP service type: ${qapServiceTypeLabel[t.qapServiceType]}`}
+                        className="inline-flex items-center whitespace-nowrap rounded-full border border-hair bg-card px-2 py-0.5 text-[10px] font-bold text-subtle"
+                      >
+                        {t.qapServiceType === "q_rin" ? "Q-RIN" : "UNVER"}
+                      </span>
                     </div>
                   </td>
                   <td className="px-4 py-2.5"><TxStatusText status={t.txStatus} /></td>
