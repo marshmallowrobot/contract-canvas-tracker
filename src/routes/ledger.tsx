@@ -89,6 +89,7 @@ function LedgerPage() {
   const { contract: contractParam } = Route.useSearch();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [contractFilter, setContractFilter] = useState(contractParam ?? "");
+  const [partnerFilter, setPartnerFilter] = useState("");
   const [dealFilter, setDealFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [transactionFilter, setTransactionFilter] = useState("");
@@ -170,6 +171,7 @@ function LedgerPage() {
   const visibleRows = useMemo(() => {
     const contract = contractFilter.trim().toLowerCase();
     const deal = dealFilter.trim().toLowerCase();
+    const partner = partnerFilter.trim().toLowerCase();
     const transaction = transactionFilter.trim().toLowerCase();
     const ledgerItem = ledgerItemFilter.trim().toLowerCase();
     return rows.filter((row) => {
@@ -178,6 +180,10 @@ function LedgerPage() {
         const dealNumber = row.buyContractId ? getContract(row.buyContractId)?.dealNumber ?? "" : "";
         if (dealNumber.toLowerCase() !== deal) return false;
       }
+      if (partner) {
+        const name = row.buyContractId ? getContract(row.buyContractId)?.counterparty ?? "" : "";
+        if (!name.toLowerCase().includes(partner)) return false;
+      }
       if (typeFilter !== "all" && row.ledgerItemType !== typeFilter) return false;
       if (transaction && !(row.transactionId ?? "").toLowerCase().includes(transaction)) return false;
       if (ledgerItem && !row.ledgerItemId.toLowerCase().includes(ledgerItem)) return false;
@@ -185,12 +191,13 @@ function LedgerPage() {
       if (toDate && row.timestamp > toDate) return false;
       return true;
     });
-  }, [contractFilter, dealFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
+  }, [contractFilter, dealFilter, partnerFilter, fromDate, ledgerItemFilter, rows, toDate, transactionFilter, typeFilter]);
 
 
   const activeFilterCount =
     (contractFilter.trim() ? 1 : 0) +
     (dealFilter.trim() ? 1 : 0) +
+    (partnerFilter.trim() ? 1 : 0) +
     (typeFilter !== "all" ? 1 : 0) +
     (transactionFilter.trim() ? 1 : 0) +
     (ledgerItemFilter.trim() ? 1 : 0) +
@@ -199,7 +206,7 @@ function LedgerPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [contractFilter, dealFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
+  }, [contractFilter, dealFilter, partnerFilter, ledgerItemFilter, typeFilter, transactionFilter, fromDate, toDate, dateSort, pageSize]);
 
   const totalPages = Math.max(Math.ceil(visibleRows.length / pageSize), 1);
   const currentPage = Math.min(page, totalPages);
@@ -223,6 +230,7 @@ function LedgerPage() {
 
   const clearFilters = () => {
     setContractFilter("");
+    setPartnerFilter("");
     setDealFilter("");
     setTypeFilter("all");
     setTransactionFilter("");
@@ -313,12 +321,12 @@ function LedgerPage() {
                 </button>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <label className="block">
-                    <FilterLabel>Buy Contract ID</FilterLabel>
+                    <FilterLabel>Trading Partner</FilterLabel>
                     <input
-                      value={contractFilter}
-                      onChange={(event) => setContractFilter(event.target.value)}
-                      aria-label="Filter by buy contract ID"
-                      placeholder="Exact match, e.g. CT-4821"
+                      value={partnerFilter}
+                      onChange={(event) => setPartnerFilter(event.target.value)}
+                      aria-label="Filter by trading partner"
+                      placeholder="Contains, e.g. Conti"
                       className={inputClass}
                     />
                   </label>
