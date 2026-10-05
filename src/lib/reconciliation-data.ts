@@ -40,6 +40,37 @@ export type PendingBuy = {
 };
 
 /** Pending imports are separate prototype records; none are posted to contracts or the ledger. */
+/**
+ * Why the engine selected the matched contract: which of the buy's fields
+ * were found somewhere in the contract's fields. `true` = found, `false` =
+ * not found, `"fuzzy"` = near-match (partner name). Keyed by buy id; buys
+ * without a key have no contract signals (unmatched).
+ */
+export type SignalKey = "partner" | "ptd" | "bol" | "invoice" | "document";
+export type MatchSignals = Partial<Record<SignalKey, boolean | "fuzzy">>;
+
+export const SIGNAL_FIELDS: { key: SignalKey; label: string }[] = [
+  { key: "partner", label: "Partner" },
+  { key: "ptd", label: "PTD" },
+  { key: "bol", label: "BOL" },
+  { key: "invoice", label: "Invoice" },
+  { key: "document", label: "Document" },
+];
+
+export const matchSignals: Record<string, MatchSignals> = {
+  "PB-80214": { partner: true, ptd: true, bol: true, invoice: true, document: false },
+  "PB-80215": { partner: true, ptd: true, bol: true, invoice: true, document: true },
+  "PB-80216": { partner: true, ptd: true, bol: true, invoice: false, document: false },
+  "PB-80217": { partner: true, ptd: true, bol: false, invoice: true, document: false },
+  "PB-80219": { partner: true, ptd: true, bol: true, invoice: true, document: true },
+  "PB-80220": { partner: true, ptd: true, bol: false, invoice: true, document: false },
+  "PB-80222": { partner: true, ptd: true, bol: false, invoice: false, document: false },
+  "PB-80223": { partner: true, ptd: true, bol: true, invoice: false, document: false },
+  "PB-80224": { partner: "fuzzy", ptd: true, bol: false, invoice: false, document: false },
+  "PB-80225": { partner: "fuzzy", ptd: true, bol: false, invoice: false, document: false },
+  "PB-80232": { partner: true, ptd: false, bol: false, invoice: false, document: false },
+};
+
 export const pendingBuys: PendingBuy[] = [
   { id: "PB-80214", contractId: "CT-4902", dealNumber: "EVERG26TP0018", contractOutstandingRins: 15600, partner: "Evergreen Refinery", received: "Sep 29, 2026", expiresInDays: 0, dueDate: "Oct 12, 2026", invoice: "INV-70421", expectedRins: 7800, rins: 7800, gallons: 7800, price: "$2.020/gal", fuel: "D6", year: 2026, assignment: "assigned", qap: "Unverified", ptd: "B1772029D14605981C", bol: "041063/104142103", match: "matched", reason: "Contract, trading partner, and RIN quantity align." },
   { id: "PB-80215", contractId: "CT-4904", dealNumber: "EVERG26TP0020", contractOutstandingRins: 25000, partner: "Harbor Line Energy", received: "Sep 29, 2026", expiresInDays: 2, dueDate: "Oct 16, 2026", invoice: "INV-70425", expectedRins: 12500, rins: 12500, gallons: 8333, price: "$2.150/RIN", fuel: "D4", year: 2026, assignment: "separated", qap: "Q-RIN", ptd: "PTD 1558015", bol: "BOL-871218", match: "matched", reason: "Contract, trading partner, and RIN quantity align." },
